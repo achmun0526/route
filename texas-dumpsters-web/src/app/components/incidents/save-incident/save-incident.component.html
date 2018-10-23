@@ -1,0 +1,40 @@
+
+<!-- Modal Structure -->
+<form class="col s12" #addAddressform="ngForm" (submit)="saveIncident()">
+  <div class="modal-content">
+    <h4>{{title}}</h4>
+    <div class="row">
+      <div class="input-field col s12 l10">
+      <textarea
+        id="notes"
+        class="materialize-textarea"
+        materialize="characterCounter"
+        name="notes"
+        [(ngModel)]="incident.incident_notes"
+        [attr.length]="maxLength">
+      </textarea>
+        <label for="notes">Notes</label>
+      </div>
+
+      <div class="col l2">
+        <form action="#" method = "get">
+            <input
+             type="checkbox"
+             id="incident_canceled_status"
+             name = "incident_canceled_status"
+             [checked]="incident.order_status"
+             (change)="update_order_status()">
+            <label for="incident_canceled_status">Order Canceled</label>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="row">
+        <div class="close-footer">
+          <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
+          <button class="waves-effect waves-green btn-flat" type="submit">Save Incident</button>
+        </div>
+    </div>
+  </div>
+</form>

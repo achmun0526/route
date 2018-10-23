@@ -1,0 +1,158 @@
+<div class="{{cssClass}}">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="saveCustomer()">
+		<div class="modal-content">
+			<h4>{{title}}</h4>
+      		<h5>Customer Info</h5>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<input
+						id="customer_name"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.customer_name"
+						name="customer_name"
+						placeholder="Example"
+						required>
+					<label for="customer_name">Customer Name</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_name"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.contact_name"
+						name="contact_name"
+						placeholder="Example"
+						required>
+					<label for="contact_name">Contact Name</label>
+				</div>
+
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_email"
+						type="email"
+						class="validate"
+						[(ngModel)]="customer.contact_email"
+						name="contact_email"
+						pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+						placeholder="Example@mail.com"
+						required>
+					<label for="contact_email">Contact Email</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_phone"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.contact_phone"
+						(ngModelChange)="changePhone($event)"
+						#ta
+						[value]="customer.contact_phone"
+						(blur)="customer.contact_phone=ta.value"
+						pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+						appPhoneDirective
+						name="contact_phone"
+						placeholder="(111)-111-1111"
+						required>
+					<label for="contact_phone">Contact Phone</label>
+				</div>
+			</div>
+
+			<h5>Billing Address</h5>
+			<div class="row">
+
+				<div class="input-field col s12 m6">
+
+					<app-search-address
+            [initialValue]="customer.billing_address"
+						(getAddress)="customer.billing_address = $event"
+						(getCity)=" customer.billing_city = $event"
+						(getState)=" customer.billing_state= $event"
+						(getzip_code)=" customer.billing_zipcode = $event"
+						>
+					</app-search-address>
+
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="billing_city"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.billing_city"
+						name="billing_city"
+						placeholder="Example"
+						required>
+					<label for="billing_city">City</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="billing_state"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.billing_state"
+						name="billing_state"
+						placeholder="Example"
+						required>
+					<label for="billing_state">State</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="billing_zipcode"
+						type="text"
+						class="validate"
+						[(ngModel)]="customer.billing_zipcode"
+						name="billing_zipcode"
+						placeholder="Example"
+						pattern="[0-9]{4,6}"
+						required>
+					<label for="billing_zipcode">Zip Code</label>
+				</div>
+
+				<div class="input-field col s12 m6" *ngIf="isNullOrUndefined(customer.id)">
+					<input
+						type="checkbox"
+						id="service_addresses"
+						[(ngModel)]="customer.service_addresses"
+						name="service_addresses"
+						/>
+					<label for="service_addresses">Use as Service Address</label>
+				</div>
+
+			</div>
+
+			<div class="row" style="margin-top: 20px;">
+				<div class="input-field col s12">
+					<textarea
+						id="notes"
+						class="materialize-textarea"
+						materialize="characterCounter"
+						name="notes"
+						[(ngModel)]="customer.notes"
+						[attr.length]="maxLength"
+						placeholder="Example">
+					</textarea>
+					<label for="notes">Notes</label>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="cancelAction()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save customer</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Customer saved successfully',4000]" [materializeActions]="addCustomerToast"></a>
+<a materialize [materializeParams]="['There was an error saving a customer',4000]" [materializeActions]="addCustomerToastError"></a>
+
+<!-- delete customer toasts -->
+<a materialize [materializeParams]="['Customer delete successfully',4000]" [materializeActions]="deleteCustomerToast"></a>
+<a materialize [materializeParams]="['There was an error delete a customer',4000]" [materializeActions]="deleteCustomerToastError"></a>

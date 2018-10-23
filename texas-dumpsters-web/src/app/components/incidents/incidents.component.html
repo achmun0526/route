@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="input-field-col col s6 m6 l6" style="display:flex">
+        <input
+        [ngModelOptions]="{standalone: true}"
+        materialize="pickadate"
+        [(ngModel)]="startDate"
+        [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]"
+        type="text"
+        style="margin-right:0.5rem">
+        <input
+        [ngModelOptions]="{standalone: true}"
+        materialize="pickadate"
+        [(ngModel)]="endDate"
+        [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]"
+        type="text"
+        style="margin-left:0.5rem">
+    </div>
+    <div class="col s3 m3 l3" style="height: 45px !important">
+        <a style="top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%)"
+            class="waves-effect waves-light btn modal-trigger" (click)="filter()">Filter</a>
+    </div>
+</div>
+<ul class="collapsible" data-collapsible="accordion">
+	<div class="col s12">
+			<ul class="tab-header lead">
+					<div class="row data-object">
+          	<div class="col s12 m4 l2">Service Order:</div>
+						<div class="col s12 m2 l2">Order Canceled:</div>
+						<div class="col s12 m1 l2">Order Date:</div>
+						<div class="col s12 m1 l2">Incident Date:</div>
+            <div class="col s12 m2 l2">Incident Notes:</div>
+					</div>
+			</ul>
+			<ul *ngFor="let item of incidentsDisplayList" class="table">
+					<div class="row data-object">
+                        <div class="col s12 m4 l2">
+                            <div class="tab_label">Service Order :</div>
+                                {{ item.service_ticket_id}}
+                        </div>
+												<div class="col s12 m2 l2">
+														<div class="tab_label">Order Canceled:</div>
+																{{item.order_canceled}}
+												</div>
+												<div class="col s12 m2 l2">
+														<div class="tab_label">Order Date:</div>
+																{{item.report_datetime}}
+												</div>
+												<div class="col s12 m2 l2">
+														<div class="tab_label">Order Date:</div>
+																{{item.created_at}}
+												</div>
+                        <div class="col s12 m2 l2">
+                            <div class="tab_label">Incident Notes:</div>
+                                {{item.incident_notes}}
+                        </div>
+                        <app-icon-tooltip
+                                          [iconName]="'mode_edit'"
+                                          [tooltipText]="'Edit'"
+                                          (click)="openEditIncidentModal(item)">
+                        </app-icon-tooltip>
+                        <app-icon-tooltip
+                                          [iconName]="'delete'"
+                                          [tooltipText]="'Delete'"
+                                          (click)="deleteIncident(item)">
+                        </app-icon-tooltip>
+                        <!-- <div class="col s12 m2 l2">
+                          <p class="secondary-content">
+                            <app-icon-tooltip *ngIf="item.has_attachments"
+                                              [iconName]="'attachments'"
+                                              [tooltipText]="'View Attachments'"
+                                              (click)="viewAttachments(item.id)">
+                            </app-icon-tooltip>
+                          </p>
+                        </div> -->
+				</div>
+			</ul>
+	   </div>
+    </ul>
+<!-- <div class="alert-text" *ngIf="incidentsList.length == 0"> -->
+<div *ngIf="total_incidents == 0" class="alert-text">
+	<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+	<h4 class="center">There are no Incidents to List</h4>
+</div>
+<app-pagination [totalObjects]="total_incidents" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+<a materialize [materializeParams]="['Error, please enter a valid range of dates',4000]" [materializeActions]="filterToastError"></a>
+<div id="modal4" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="attachmentsModal">
+  <app-list-attachments *ngIf="!isNullOrUndefined(entityKeyToViewFiles)"  [entityKey]="entityKeyToViewFiles" (onCloseAction)="attachmentsModal.emit({action:'modal',params:['close']});"></app-list-attachments>
+</div>

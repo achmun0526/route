@@ -1,0 +1,3 @@
+customer * address* city * state * type * size * lat * lng * date *
+forest * 4703 cambridge dr. * Atl * GA * d * 20 * 25 * -98.2 * 04/28/2018
+forest * 301 forest valley ct. * sandy springs * GA * p * 30 * 25 * -97.2 * 04/28/2018

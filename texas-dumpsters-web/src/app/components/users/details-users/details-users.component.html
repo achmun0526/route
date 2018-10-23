@@ -1,0 +1,63 @@
+<!--<a  class="btn-floating waves-effect waves-light red darken-2" (click)="editUser()">
+	<app-icon-tooltip
+									[iconName]="'edit'"
+									[tooltipText]="'Edit User'">
+	</app-icon-tooltip>
+</a>-->
+
+<div class="row detail-table" style="margin-top:20px;">
+	
+	<div class="col s12 m6 l3">
+		<span class="label">email:</span>
+		<p style="margin-top:3px;">
+			{{user.email}}
+		</p>
+		
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">First Name:</span>
+		<p style="margin-top:3px;">
+			{{user.first_name}}
+		</p>
+		
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Last Name:</span>
+		<p style="margin-top:3px;">
+			{{user.last_name}}
+		</p>
+		
+	</div>
+
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone Desk: </span>
+		<p style="margin-top:3px;">
+			{{user.contact_phone_desk}}
+		</p>
+		
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone Mobile: </span>
+		<p style="margin-top:3px;">
+			{{user.contact_phone_mobile}}
+		</p>
+		
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Device Id:</span>
+		<p style="margin-top:3px;">
+			{{user.device_id}}
+		</p>
+		
+	</div>
+		
+	<div class="col s12 m6 l3">
+		<span class="label">Roles:</span>
+		<p style="margin-top:3px;">
+			{{user.roles}}
+		</p>
+		
+	</div>
+
+
+</div>

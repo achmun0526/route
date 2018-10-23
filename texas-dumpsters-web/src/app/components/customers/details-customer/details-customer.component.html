@@ -1,0 +1,147 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="openEditCustomerModal(customer)">
+	<app-icon-tooltip
+		[iconName]="'edit'"
+		[tooltipText]="'Edit Customer'">
+	</app-icon-tooltip>
+</a>
+
+<app-save-addresses (reloadData)="getAddresses()"></app-save-addresses>
+
+<div class="row detail-table" style="margin-top:20px;">
+  <div class="col s12 m6 l3">
+    <span class="label">Customer Name :</span>
+    <p style="margin-top:3px;">
+      {{customer.customer_name}}
+    </p>
+  </div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Name :</span>
+		<p style="margin-top:3px;">
+			{{customer.contact_name }}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Email :</span>
+		<p style="margin-top:3px;">
+			{{customer.contact_email}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone :</span>
+		<p style="margin-top:3px;">
+			{{customer.contact_phone}}
+		</p>
+	</div>
+
+	<div class="col s12 m6 l3">
+		<span class="label">Source System :</span>
+		<p style="margin-top:3px;">
+			{{customer.source_system}}
+		</p>
+	</div>
+	
+	<div class="col s12 m6 l3">
+		<span class="label">Billing Address :</span>
+		<p style="margin-top:3px;">
+			{{customer.billing_address}}
+		</p>
+	</div>
+	
+	<div class="col s12 m6 l3">
+		<span class="label">Billing City :</span>
+		<p style="margin-top:3px;">
+			{{customer.billing_city}}
+		</p>
+	</div>
+	
+	<div class="col s12 m6 l3">
+		<span class="label">Billing State :</span>
+		<p style="margin-top:3px;">
+			{{customer.billing_state}}
+		</p>
+	</div>
+	
+	<div class="col s12 m6 l3">
+		<span class="label">Billing Zip Code :</span>
+		<p style="margin-top:3px;">
+			{{customer.billing_zipcode}}
+		</p>
+	</div>
+
+	<div class="col s12">
+		<span class="label">Notes :</span>
+		<p style="margin-top:3px;">
+			{{customer.notes}}
+		</p>
+	</div>
+
+</div>
+
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="addAddress()">
+	<app-icon-tooltip
+								[iconName]="'add'"
+								[tooltipText]="'add service address'">
+	</app-icon-tooltip>
+
+</a>
+
+<div class="row">
+  <ul class="collapsible" data-collapsible="accordion" *ngIf="addressList.length > 0">
+    <li class="tab-header lead">
+      <div class="collapsible-header">
+        <div class="row data-object">
+          <div class="col s12 m6 l4">Service Address :</div>
+          <div class="col s12 m6 l4">Service City :</div>	
+          <div class="col s12 m6 l4">Service State :</div>
+          <div class="col s12 m6 l4">Service Zip code :</div>
+        </div>
+      </div>
+    </li>
+    <li *ngFor="let item of addressList" class="table">
+      <div class="collapsible-header">
+        <div class="row data-object">
+          <div class="col  s12 m6 l3">
+            <div class="tab_label">Service Address:</div>
+            {{item.address}}
+          </div>
+          <div class="col  s12 m6 l4">
+            <div class="tab_label">Service City :</div>
+            {{item.city}}
+          </div>
+          <div class="col  s12 m6 l4">
+            <div class="tab_label">Service State :</div>
+            {{item.state}}
+          </div>
+					<div class="col  s12 m6 l3">
+            <div class="tab_label">Service Zip code:</div>
+            {{item.zipcode}}
+          </div>
+        </div>
+
+        <p class="secondary-content">
+          <app-icon-tooltip
+            [iconName]="'mode_edit'"
+            [tooltipText]="'Edit'"
+            (click)="editAddress(item)">
+          </app-icon-tooltip>
+
+          <app-icon-tooltip
+            [iconName]="'delete'"
+            [tooltipText]="'Delete'"
+            (click)="deleteAddress(item)">
+          </app-icon-tooltip>
+        </p>
+      </div>
+    </li>
+  </ul>
+  <div class="alert-text" *ngIf="addressList.length == 0">
+    <h2 class="center"><i class="material-icons">assignment_late</i></h2>
+    <h4 class="center">There are no service addresses to list</h4>
+  </div>
+</div>
+<app-pagination [totalObjects]="totalAddress" (pageChange)="changePage($event)"></app-pagination>
+
+<!-- Edit customer modal -->
+<div *ngIf="customerToEdit" id="editCustomerModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editCustomerModal">
+	<app-save-customer [customerToEdit]="customerToEdit" (onSaveCompleted)="onCustomerEdited()" (onCancelAction)="onEditCancelled()"></app-save-customer>
+</div>

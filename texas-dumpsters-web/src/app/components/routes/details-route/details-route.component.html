@@ -1,0 +1,325 @@
+<div *ngIf="!isNullOrUndefined(selectRoute)" class="details-route" (click)="clearSelections()">
+  <!-- route details -->
+  <div class="row detail-table route-sumary">
+
+    <div class="route-cell">
+      <span class="label">Driver: </span>
+      <p style="margin-top:3px;">
+        {{selectRoute.driver.first_name + " " + selectRoute.driver.last_name + " - " + selectRoute.driver.email}}
+      </p>
+    </div>
+
+    <div class="route-cell">
+      <span class="label">Vehicle: </span>
+      <p style="margin-top:3px;">
+        {{selectRoute.vehicle.vehicle_name}}-{{selectRoute.vehicle.tag_number}}
+      </p>
+    </div>
+
+    <div class="route-cell">
+      <span class="label">Date: </span>
+      <p style="margin-top:3px;">
+        <!--{{selectRoute.date | date: 'MM/dd/yyyy hh:mm:ss a'}}-->
+        {{Utils.toAMPM(selectRoute.date)}}
+      </p>
+    </div>
+    <div class="route-cell">
+      <span class="label">Notes: </span>
+      <p style="margin-top:3px;">
+        {{Utils.trimStringOnLength(selectRoute.notes,20,'...')}}
+      </p>
+    </div>
+    <div class="route-cell">
+      <span class="label">Contact driver </span>
+      <p style="margin-top:3px;">
+
+        <app-icon-tooltip
+                          [iconName]="'insert_comment'"
+                          [tooltipText]="'Message'"
+                          [iconSize]="16"
+                          [iconWidth]="16"
+                          (click)="openNewMessageToUserModal(selectRoute.driver)">
+        </app-icon-tooltip>
+
+        <a href="mailto:{{selectRoute.driver.email}}" target="_blank">
+          <app-icon-tooltip *ngIf="selectRoute.driver.email"
+                          [iconName]="'email'"
+                          [tooltipText]="'Email driver'"
+                          [iconSize]="16"
+                          [iconWidth]="16">
+          </app-icon-tooltip>
+        </a>
+
+        <app-icon-tooltip
+                          [iconName]="'textsms'"
+                          [tooltipText]="'Text message'"
+                          [iconSize]="16"
+                          [iconWidth]="16"
+                          (click)="openSMSModal(selectRoute)">
+        </app-icon-tooltip>
+
+        <a href="tel:+1 {{selectRoute.driver.contact_phone_mobile}}">
+          <app-icon-tooltip *ngIf="selectRoute.driver.contact_phone_mobile"
+                            [iconName]="'call'"
+                            [tooltipText]="'Call driver'"
+                            [iconSize]="16"
+                            [iconWidth]="16">
+          </app-icon-tooltip>
+        </a>
+
+      </p>
+    </div>
+    <div class="route-cell">
+      <a  class="btn-floating waves-effect waves-light red darken-2" (click)="openEditRouteModal()">
+        <app-icon-tooltip
+                        [iconName]="'edit'"
+                        [tooltipText]="'Edit Route'">
+        </app-icon-tooltip>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="row container1">
+    <div class="col s12 un">
+      <div class="z-depth-2 unassignedServices-separator">
+        <div class="separator-check">
+          <input class="ckeckServices" type="checkbox" id="serviceorder" [(ngModel)]="list.serviceorderItems"/>
+          <label for="serviceorder" class="tab-header">Service Orders {{unassignedOrdersMarkers.length}}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- unassigned services -->
+    <div class="col s12" *ngIf="list.serviceorderItems">
+      <ul class="collapsible2 collection2 unassigned-s-header" data-collapsible="accordion">
+        <li class="tab-header lead">
+          <div class="collapsible-header2">
+            <div class="row data-object2">
+              <div class="col s12 m2 l1"></div>
+              <div class="col s12 m2 l2">Customer Name:</div>
+              <div class="col s12 m2 l2">Asset Size:</div>
+              <div class="col s12 m2 l2">Purpose:</div>
+              <div class="col s12 m3 l3">Address:</div>
+              <div class="col s12 m2 l2">Notes:</div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <ul class="collapsible2 collection2 unassigned-s" data-collapsible="accordion">
+        <li *ngFor="let item of unassignedOrdersMarkers; let i = index;" class="table collection-item2" id="{{item.element.id}}">
+          <div class="collapsible-header2">
+            <!--<div class="row data-object2" (click)="mapHandler.openInfoWindowOnMarker(item.element.id, true)">-->
+            <!--<div class="row data-object2" (click)="unassignedRouteItem_click(item.element.id, true, $event)">-->
+            <div class="row data-object2" (click)="unassignedRouteItem_click(item, true, $event)">
+
+              <div class="col  s12 m2 l1">
+                <img src="{{item.iconUrl}}" class="row-icon">
+              </div>
+
+              <div class="col  s12 m2 l2">
+                {{item.element.site.contact_name}}
+              </div>
+
+              <div class="col  s12 m2 l2" *ngIf="assetsSizeList.length>0">
+                {{Utils.findNameByIdOnKeyValueList(assetsSizeList,item.element.asset_size)}}
+              </div>
+
+              <div class="col  s12 m2 l2" *ngIf="purposeServiceList.length>0">
+                {{Utils.findNameByIdOnKeyValueList(purposeServiceList,item.element.purpose_of_service)}}
+              </div>
+
+              <div class="col  s12 m3 l3">
+                {{item.element.getFormattedAddress()}}
+              </div>
+              <div class="col  s12 m2 l2">
+                {{item.element.notes}}
+              </div>
+            </div>
+            <p class="secondary-content">
+              <app-icon-tooltip
+                [iconName]="'add'"
+                [tooltipText]="'Add to Route'"
+                (click)="addRouteItemMultiselect(item)">
+              </app-icon-tooltip>
+            </p>
+
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div id="prueba1" class="col s12 container2">
+      <div class="z-depth-2 map-container" style="background:#fff;display: flex;" >
+        <!-- left menu -->
+        <div class="col s2 list left-menu-container font-14">
+          <div class="separator-check">
+            <div class="left-separator-a">
+              <input type="checkbox" id="facility" [(ngModel)]="list.facilityItems"/>
+              <label for="facility" class="tab-header">Facilities</label>
+            </div>
+            <div class="left-separator-b">
+              <img class="leftMenu-icon" src="/assets/markers/facility-blue.png"/>
+            </div>
+          </div>
+          <ul class="left-menu-facility-list collection2" style="color:rgba(29, 60, 106, 0.7);" *ngIf="list.facilityItems">
+            <li [hidden]="item.type != 'facility' " *ngFor="let item of facilitiesMarkers; let i = index;" class="collection-item2" id="{{item.element.id}}">
+              <div class="collapsible-header2">
+                <div class="left-a" (click)="mapHandler.openInfoWindowOnMarker(item.element.id, true)">
+                  {{item.name}}
+                </div>
+                <div class="left-b">
+                  <a (click)="addRouteItem(item)" class="secondary-content"><i class="material-icons plusIcon">add</i></a>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="separator-check">
+            <div class="left-separator-a">
+              <input type="checkbox" id="yard" [(ngModel)]="list.yardItems"/>
+              <label for="yard" class="tab-header">Yards</label>
+            </div>
+            <div class="left-separator-b">
+              <img class="leftMenu-icon" src="/assets/markers/yard-yellow.png"/>
+            </div>
+          </div>
+          <ul class="left-menu-yard-list collection2" style="color:rgba(29, 60, 106, 0.7);" *ngIf="list.yardItems">
+            <li [hidden]="item.type != 'yard'" *ngFor="let item of yardsMarkers; let i = index;" class="collection-item2" id="{{item.element.id}}">
+              <div class="collapsible-header2">
+                <div class="left-a" (click)="mapHandler.openInfoWindowOnMarker(item.element.id, true)">
+                  {{item.name}}
+                </div>
+                <div class="left-b">
+                  <a (click)="addRouteItem(item)" class="secondary-content"><i class="material-icons plusIcon">add</i></a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- map -->
+        <div class="col s10 map" style="padding:0;">
+            <app-map-handler>
+              
+            </app-map-handler>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- refresh map button -->
+    <div class="refreshContainer" *ngIf="refreshMapButton" style="cursor: pointer;" (click)="refreshMap()">
+      <img class="refresMap" src="/assets/refreshEnabled.png" >
+      <span class="enabledLabel"> Refresh map</span>
+    </div>
+
+    <div class="refreshContainer" *ngIf="!refreshMapButton">
+      <img class="refresMap" src="/assets/refreshDisabled.png">
+      <span class="disabledLabel"> Refresh map</span>
+    </div>
+
+  </div>
+
+  <!-- assigned routeItems -->
+  <div class="row">
+    <div class="col s12">
+      <p>Total Route Items {{selectRoute.route_items.length}}</p>
+    </div>
+    <div class="col s12">
+      <ul id="routeItemList" class="collapsible collection2" data-collapsible="accordion" *ngIf="selectRoute.route_items.length > 0">
+        <li class="tab-header lead">
+          <div class="padding-header">
+            <img src="/assets/empty.png">
+          </div>
+          <div class="collapsible-header2">
+            <div class="row data-object2">
+              <div class="col s12 m2 l2">Type:</div>
+              <div class="col s12 m2 l2">Description:</div>
+              <div class="col s12 m3 l3">Address:</div>
+              <div class="col s12 m2 l2">Contact Name:</div>
+              <div class="col s12 m2 l2">Contact phone number:</div>
+            </div>
+          </div>
+        </li>
+        <li *ngFor="let item of selectRoute.route_items; let last=last" class="table table-row collection-item2" id="{{item.id}}">
+          <div class="list-handler">
+            <img src="/assets/reorder.png">
+          </div>
+          <div class="row data-object2" (click)="mapHandler.openInfoWindowOnMarker(item.id, true)">
+            <div class="row data-object2">
+              <div class="col  s12 m2 l2">
+                <img src="{{item.getIconUrl()}}" class="row-icon">
+                {{item.getEntityType()}}
+              </div>
+              <div class="col  s12 m2 l2">
+                {{item.getEntityDescription(assetsSizeList)}}
+              </div>
+              <div class="col  s12 m3 l3">
+                {{item.getEntityAddress()}}
+              </div>
+
+              <div class="col  s12 m2 l2">
+                {{item.getContactName()}}
+              </div>
+
+              <div class="col  s12 m2 l2">
+                {{item.getContactPhoneNumber()}}
+              </div>
+
+            </div>
+            <p class="secondary-content">
+              <!--
+              <app-icon-tooltip
+                                [iconName]="'keyboard_arrow_up'"
+                                [tooltipText]="'Up'"
+                                (click)="arrangeRouteItem(selectRoute.route_items, item, 'up')">
+              </app-icon-tooltip>
+              <app-icon-tooltip
+                                [iconName]="'keyboard_arrow_down'"
+                                [tooltipText]="'Down'"
+                                (click)="arrangeRouteItem(selectRoute.route_items, item, 'down')">
+              </app-icon-tooltip>
+              -->
+              <app-icon-tooltip
+                                [iconName]="'close'"
+                                [tooltipText]="'Remove'"
+                                (click)="deleteRouteItem(item)">
+              </app-icon-tooltip>
+            </p>
+
+          </div>
+          <!-- when ready make list sortable -->
+          <span *ngIf="last">{{makeSortable()}}</span>
+        </li>
+      </ul>
+      <!-- do not erase this div, saves rearrange items -->
+      <div id="fakeSaveRearrange" class="fakeSaveRearrange" (click)="saveRouteItemsOrdered()"></div>
+    </div>
+    <div class="col s12">
+      <div class="alert-text" *ngIf="selectRoute.route_items.length == 0">
+        <h2 class="center"><i class="material-icons">assignment_late</i></h2>
+        <h4 class="center">There are no Routes to list</h4>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editRouteModal">
+    <app-save-route [routeToEdit]="selectRoute" (afterSaveCompleted)="onRouteUpdated()" (onCancelAction)="editRouteModal.emit({action:'modal',params:['close']})"></app-save-route>
+  </div>
+  <!-- Send SMS modal -->
+  <div id="modal3" class="modal modal-height-inherit" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="sendSMSModal">
+    <app-send-sms [userToSend]="selectRoute.driver" (onCancelAction)="onSMSCancelled()" (afterSMSsent)="onSMSsent()"></app-send-sms>
+  </div>
+
+  <!-- add message modal-->
+  <div *ngIf="userToSend!=null" id="modal4" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addMessageToUserModal">
+    <app-save-message [userToSend]="userToSend" (afterSaveCompleted)="onMessageToUserCreated()" (onCancelAction)="onAddMessageToUserCancelled()"></app-save-message>
+  </div>
+</div>
+
+<!-- add Route item toasts -->
+<a materialize [materializeParams]="['Route item saved successfully',300]" [materializeActions]="addRoutesItemToast"></a>
+<a materialize [materializeParams]="['There was an error saving a item Route',300]" [materializeActions]="addRoutesItemToastError"></a>
+
+<!-- add Route item toasts -->
+<a materialize [materializeParams]="['Route item deleted successfully',300]" [materializeActions]="deleteItemToast"></a>
+<a materialize [materializeParams]="['There was an error delete a item Route',300]" [materializeActions]="deleteItemToastError"></a>

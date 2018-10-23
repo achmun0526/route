@@ -1,0 +1,47 @@
+<!-- Modal Structure -->
+<div id="csvModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="CSVModal">
+	<form class="col s12" #addCompanyform="ngForm" (ngSubmit)="uploadFile()">
+		<div class="modal-content">
+			<h4>Add a <span style="text-transform: capitalize;">{{title}}</span>  by CSV  File</h4>
+			<div class="row">
+				<div class="file-field input-field col s12 m8 ">
+					<div class="btn red darken-2">
+						<span>File</span>
+						<input type="file" name="file" id="CSV_file" accept=".csv">
+            			<input type="hidden" name="entity" value="customer"> <br>
+            			<input type="hidden" name="company_key" [value]="company_key">
+					</div>
+					<div class="file-path-wrapper">
+						<input
+							class="file-path validate"
+							type="text"
+							placeholder="CVS file"
+							required>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closeCSVModal()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- Modal Structure -->
+<div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
+	<div class="modal-content">
+      <h4>Oops something went wrong!</h4>
+      <p>{{errors}}</p>
+    </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" name="closeErrorModal()">Try Again</a>
+  </div>
+</div>
+
+
+<!-- add CSV File toasts -->
+<!--<a materialize [materializeParams]="['CSV file Added Successfully',4000]" [materializeActions]="addCsvToast"></a>-->
+<a materialize [materializeParams]="[message, 4000]" [materializeActions]="addCsvToast"><span style="color:red; margin-top: 20px;">{{errors}}</span></a>
+<a materialize [materializeParams]="['There Was an Error Adding a CSV File',4000]" [materializeActions]="addCsvToastError"></a>

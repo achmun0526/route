@@ -1,0 +1,17 @@
+<ngui-map zoom="13" center="40.771, -73.974" id="map-panel" style="height:500px; width:75%; margin: 20px auto;">
+	<directions-renderer
+			[suppressMarkers]="true"
+			[draggable]="true"
+			panel="#my-panel"
+			(directions_changed)="directionsChanged()"
+			[directions-request]="direction">
+	</directions-renderer>
+
+	<marker *ngFor="let marker of markers; let i = index" [position]="[marker.latitude, marker.longitude]"
+			[icon]="marker.iconUrl" (click)="openInfoWindowOnMarker($event, marker)" >
+	</marker>
+
+	<info-window *ngFor="let marker of markers; let i = index" id="iw">
+		{{iw_content}}
+	</info-window>
+</ngui-map>

@@ -1,0 +1,45 @@
+<form  #signInForm="ngForm" (submit)="signIn(signInForm)">
+  <div class="modal-content">
+    <h4>{{title}}</h4>
+
+    <h5 align="center">Sign In</h5>
+    <div class="row">
+      <div class="input-field col s12">
+        <input
+          id="email"
+          type="email"
+          class="validate"
+          [(ngModel)]="user.email"
+          name="email"
+          placeholder="example@email.com">
+        <label for="email">
+            Email
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input
+						id="password"
+						type="password"
+						class="validate"
+						[(ngModel)]="user.password"
+						name="password"
+            placeholder="password">
+          <label for="password">
+              Password
+          </label>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="modal-footer">
+    <a class="waves-effect waves-green btn-flat" (click)="onCloseClicked()">Close</a>
+    <button class="waves-effect waves-green btn-flat" type="submit">Login</button>
+  </div>
+</form>
+<!-- add user toasts
+<a materialize [materializeParams]="['User saved successfully',4000]" [materializeActions]="addUserToast"></a>
+<a materialize [materializeParams]="['There was an error adding the user',4000]" [materializeActions]="addUserToastError"></a>
+-->

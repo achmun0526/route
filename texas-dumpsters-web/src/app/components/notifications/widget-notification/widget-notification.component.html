@@ -1,0 +1,25 @@
+<!-- received mesages -->
+<div>   
+
+    <div id="notificationWidget" (click)="showNotifications()">
+        <app-icon-tooltip
+            [iconName]="'notifications'"
+            [tooltipText]="'Show notifications'"
+            [iconSize]="16"
+            [iconWidth]="16"
+            class="notification-icon">
+        </app-icon-tooltip>
+        <span class="notification-counter-container">(<span class="notification-counter">{{totalNotifications}}</span>)</span>
+    </div>
+
+    <div class="notification-list" (mouseleave)="hideNotifications()">
+        <h6 class="notificationList-title">Notifications</h6>
+        <ul *ngIf="totalNotifications > 0">
+            <li *ngFor="let item of notificationList" class="notificationItem" (click)="goToNotificationDetail(item)">
+                <span>{{item.notification_text}}</span>
+            </li>
+        </ul>
+    </div>
+
+</div>
+    

@@ -1,0 +1,15 @@
+.modal-height-inherit{
+    height: 400px !important;
+    height: inherit !important;
+}
+.userList{
+    font-size: 12px;
+}
+.usersIcons .material-icons{
+    display: none;
+}
+.separator{
+    height: 20px;
+    width: 2px;
+    background: #cccccc;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Route Optimizer</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type= text/javascript src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.rawgit.com/chingyawhao/materialize-clockpicker/master/dist/css/materialize.clockpicker.css" rel="stylesheet">
+
+
+
+  <script type= text/javascript src="https://cdn.rawgit.com/chingyawhao/materialize-clockpicker/master/dist/js/materialize.clockpicker.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+
+
+	<style>
+		[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:after{
+			background-color: #b71c1c;
+		}
+		[type="radio"]:checked+label:after, [type="radio"].with-gap:checked+label:before, [type="radio"].with-gap:checked+label:after{
+			border-color: #ff8a80 ;
+		}
+		[type="checkbox"]:checked+label:before{
+			border-top: 2px solid transparent;
+			border-left: 2px solid transparent;
+			border-right: 2px solid #ff8a80;
+			border-bottom: 2px solid #ff8a80;
+		}
+
+		/* label focus color */
+		.input-field input[type=text]:focus + label {
+			color: #8a2d25;
+		}
+		/* label underline focus color */
+		.input-field input[type=text]:focus {
+			border-bottom: 1px solid #8a2d25;
+			box-shadow: 0 1px 0 0 #8a2d25;
+		}
+		/* label focus color */
+		.input-field input[type=email]:focus + label {
+			color: #8a2d25;
+		}
+		/* label underline focus color */
+		.input-field input[type=email]:focus {
+			border-bottom: 1px solid #8a2d25;
+			box-shadow: 0 1px 0 0 #8a2d25;
+		}
+		/* Dropdawn select an menu color*/
+		.dropdown-content li>a, .dropdown-content li>span{
+			color:  #e57373
+		}
+		/*Date piker color correction */
+		.picker__date-display{
+			background-color: #e53935;
+		}
+		.picker__weekday-display{
+			background-color: #b71c1c;
+		}
+	</style>
+</head>
+<body>
+  <app-root>
+
+  </app-root>
+</body>
+</html>

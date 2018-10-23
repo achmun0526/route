@@ -1,0 +1,46 @@
+<!-- /*
+ * Copyright (c) [2018], Forest Schwartz. All rights reserved
+ *
+ * Duplication or reproduction of this code is strictly forbidden without the written and signed consent of the Author.
+ */
+
+/*
+ * File:   main.cpp
+ * Author: forest schwartz
+ *
+ * Created on 8, 2018, 7:09 PM
+ */ -->
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+
+ <nav>
+    <div class="nav-wrapper">
+      <div class="row">
+        <div class="col l1"></div>
+      <div style="font-size:1.5vw" class="col l2"><img src="assets/logo.png" id="company-logo">RoutePrime</div>
+      <div class="col l2" id="phone-number">404-617-9402</div>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a  href="/"(click)=toggleState()>Home</a></li>
+        <li><a href="">Features</a></li>
+        <li><a href="/pricing">Pricing</a></li>
+        <li><a href="collapsible.html">Contact</a></li>
+      </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- This is where the components come in -->
+    <div class="container page-container" style="width: 100%">
+      <router-outlet ></router-outlet>
+    </div>
+    <nav>
+       <div class="nav-wrapper">
+         <div class="row">
+           <ul id="nav-mobile" class="right hide-on-med-and-down">
+           <li><a  href="/"(click)=toggleState()>Home</a></li>
+           <li><a href="">Features</a></li>
+           <li><a href="/pricing">Pricing</a></li>
+           <li><a href="collapsible.html">Contact</a></li>
+         </ul>
+         </div>
+       </div>
+     </nav>

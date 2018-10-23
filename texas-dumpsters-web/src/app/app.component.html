@@ -1,0 +1,134 @@
+<!-- /*
+ * Copyright (c) [2018], Forest Schwartz. All rights reserved
+ *
+ * Duplication or reproduction of this code is strictly forbidden without the written and signed consent of the Author.
+ */
+
+/*
+ * File:   main.cpp
+ * Author: forest schwartz
+ *
+ * Created on December 12, 2017, 7:09 PM
+ */ -->
+<app-side-nav></app-side-nav>
+
+<div class="general-container" [ngClass]="{'openmenu': menuService }">
+
+  <nav *ngIf="!authService.isUserSignedIn()">
+    <div class="nav-wrapper indigo darken-3" id="navbar" >
+
+      <ul class="right hide-on-med-and-down">
+
+        <!--<li  ><a href="/x/v1/sign_in_google">Sign In</a></li>-->
+        <li><a routerLink="/auth/signup">Sign up</a></li>
+      </ul>
+
+    </div>
+  </nav>
+
+  <nav *ngIf="authService.isUserSignedIn()">
+    <div class="nav-wrapper indigo darken-3" id="primaryNavbar">
+      <ul class=" hide-on-med-and-down">
+        <li><a (click)="displayMenu()"><i class="material-icons" >menu</i></a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a (click)="authService.signOut()">Sign Out</a></li>
+      </ul>
+			<div>
+				<h5 id="sf-main-title" class="page-title">title</h5>
+      </div>
+
+      <app-widget-notification style="float:right"></app-widget-notification>
+
+      <div  class="user_UI" >
+        <div class="user_info">
+          <ul class="data_user">
+            <li><a (click)="openEditUserModal()">{{authService.getCurrentUser().email}}</a></li>
+            <li><a class="roleText">({{authService.getCurrentUser().roles?authService.getCurrentUser().roles[0]:'User'}})</a></li>
+          </ul>
+        </div>
+      </div>
+
+
+			<div style="float: right;">
+
+				<a materialize="dropdown" class="waves-effect waves-light indigo darken-3" style="top: -1px;min-width: 200px; text-align: right;" data-activates='dropdown2' >
+					<i *ngIf="authService.getCurrentUser().hasAdminRole()" class="material-icons right">keyboard_arrow_down</i>{{selectedCompany.name}}
+				</a>
+				<ul *ngIf="authService.getCurrentUser().hasAdminRole()" id='dropdown2' class='dropdown-content'>
+				 <li *ngFor="let item of companiesList" (click)="changeSelectedCompany(item)" class="smallDropDownItem"><a>{{item.name}}</a></li>
+				</ul>
+			</div>
+
+    </div>
+
+  </nav>
+
+
+  <!-- <nav *ngIf="authService.isUserSignedIn()" >
+    <div class="nav-wrapper indigo darken-3" id="primaryNavbar" >
+      <ul class=" hide-on-med-and-down">
+        <li><a (click)="displayMenu()"><i class="material-icons" >menu</i></a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a (click)="authService.signOut()">Sign Out</a></li>
+      </ul>
+			<div>
+				<h5 id="sf-main-title" class="page-title">title</h5>
+      </div>
+
+      <app-widget-notification style="float:right"></app-widget-notification>
+
+      <div  class="user_UI" >
+        <div class="user_info">
+          <ul class="data_user">
+            <li><a (click)="openEditUserModal()">{{loggedUser.email}}</a></li>
+            <li><a class="roleText">({{loggedUser.roles?loggedUser.roles[0]:'User'}})</a></li>
+          </ul>
+        </div>
+      </div>
+
+
+			<div style="float: right;">
+
+				<a materialize="dropdown" class="waves-effect waves-light indigo darken-3" style="top: -1px;min-width: 200px; text-align: right;" data-activates='dropdown2' >
+					<i *ngIf="loggedUser.hasAdminRole()" class="material-icons right">keyboard_arrow_down</i>{{selectedCompany.name}}
+				</a>
+				<ul *ngIf="loggedUser.hasAdminRole()" id='dropdown2' class='dropdown-content'>
+				 <li *ngFor="let item of companiesList" (click)="changeSelectedCompany(item)" class="smallDropDownItem"><a>{{item.name}}</a></li>
+				</ul>
+			</div>
+
+    </div>
+
+  </nav> -->
+
+
+
+
+<!-- This is where the components come in -->
+  <div class="container page-container" style="width: 100%;padding:20px;">
+    <router-outlet ></router-outlet>
+  </div>
+
+  <footer class="page-footer indigo darken-3">
+    <div class="footer-copyright">
+      <div class="container">
+        <strong>Powered by</strong> Forest Schwartz © 2018
+      </div>
+    </div>
+  </footer>
+
+	<div id="load-screen">
+		<div class="progress">
+      <div class="indeterminate"></div>
+		</div>
+	</div>
+
+</div>
+
+<div *ngIf="user!=null" id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editUserModal">
+  <app-save-user (afterAddCompleted)="editUserModal.emit({action:'modal',params:['close']})" [userToEdit]="user" (onCancelAction)="editUserModal.emit({action:'modal',params:['close']})"></app-save-user>
+</div>

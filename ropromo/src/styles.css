@@ -1,0 +1,196 @@
+
+/* You can add global styles to this file, and also import other style files */
+body{
+	background: #eeeeee;
+}
+h1,h2,h3,h4,h5,h6,h7{
+	font-weight: 200;
+}
+/** Lateral nav styles**/
+.lateral-nav nav{
+	/*overflow-y: scroll;*/
+}
+/** custom validatiosn styles**/
+.validationError{
+	position: absolute;
+	top: 60px;
+	color: #F44336;
+	opacity: 1;
+}
+/** icon toolptip buton ajusments **/
+.btn-floating app-icon-tooltip{
+	width: inherit;
+	display: inline-block;
+	text-align: center;
+	color: #fff;
+	font-size: 1.6rem;
+	line-height: 40px;
+}
+/** multiple options buttons styles **/
+.btn-list{
+	float: left;
+	margin-right: 15px;
+}
+
+/** select custom error mesege **/
+.error{
+  color: red;
+  position: relative;
+  top: -16px;
+  font-size: 12px;
+}
+/**general details table styles **/
+.detail-table .label{
+	color: #c62828;
+	font-weight: 300;
+}
+.alert-text{
+	color:rgba(0, 0, 0, 0.41);
+}
+.alert-text i{
+	font-size: 60px;
+}
+.col-responsive{
+	display: none;
+}
+.responsive-tab{
+	display: none;
+}
+.large-tab{
+	display: block;
+}
+@media only screen and (max-width: 600px){
+	.toast {
+		word-break: normal;
+	}
+	.responsive-tab{
+		display: block;
+	}
+	.large-tab{
+		display: none;
+	}
+	.material-tooltip{
+		z-index: 1000;
+	}
+	.search-bar{
+		position: absolute;
+    top: 50px;
+    left: 20px;
+    z-index: 10;
+	}
+	.search-bar .input-field{
+		color: #b71c1c;
+	}
+	.search-bar .input-field label.active i,.search-bar .input-field label i{
+		color: #b71c1c;
+	}
+}
+/* responsivi dinamic tabs styles */
+
+.data-object{
+  padding: 10px;
+  margin-bottom: 0;
+  padding-right: 40px;
+  line-height: 20px;
+}
+.table{
+  position: relative;
+	font-weight: 300;
+	background-color: white;
+}
+.table .secondary-content{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin-top: 0;
+}
+.table .secondary-content i{
+  margin-right: 0;
+}
+.tab-header{
+  font-weight: 500;
+  color: #8a2d25;
+	background-color: white;
+}
+.collapsible-body{
+  background-color: #fff;
+	padding: 20px;
+}
+.data-line .label{
+  font-weight: 500;
+  width: 100%;
+  float: left;
+  font-size: 12px;
+  color: #8a2d25;
+}
+.data-line p{
+  padding-bottom: 0;
+  padding-top: 15px;
+}
+.search{
+  position: absolute;
+  right: 20px;
+  font-size: 32px;
+  cursor: pointer;
+}
+.tab_label{
+	display: none;
+}
+@media only screen and (max-width: 720px){
+	.tab_label{
+		display: block;
+		font-weight: 500;
+  	color: #8a2d25;
+	}
+	.tab-header{
+		display: none;
+	}
+}
+/**
+	Modal styles corrections
+**/
+.modal{
+	max-height:80%;
+}
+
+.container{
+    margin: 0;
+		max-width: inherit;
+}
+
+.row{
+	margin-bottom: 0px;
+}
+
+.select-wrapper input.select-dropdown {
+		margin: 0px !important;
+}
+
+#routes .collapsible-header, #orders .collapsible-header{
+	min-height: inherit !important;
+}
+
+#routes .row.data-object, #orders .row.data-object{
+	padding: 0px !important;
+}
+
+#routes .collapsible-header i, #orders .collapsible-header i{
+	  line-height: 1rem !important;
+		font-size: 1rem !important;
+}
+
+#routes p.secondary-content, #orders p.secondary-content{
+	  top: 50% !important;
+    transform: translateY(-50%);
+}
+
+#routes input, #orders input{
+	    margin: 0 !important;
+}
+
+.table-header{
+	line-height: 1rem !important;
+	font-size: 1rem !important;
+	padding: 1px;
+
+}

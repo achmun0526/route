@@ -1,0 +1,80 @@
+/*
+ * This class is used to handle the google map api to verify routes.
+ */
+
+/* 
+ * File:   GM_Handler.cpp
+ * Author: forest
+ * 
+ * Created on January 7, 2018, 10:38 PM
+ */
+
+#include "GM_Handler.h"
+
+
+//function prototypes
+void get_lat_lng();
+
+//Global Varibales     
+string data; //will hold the url's contents
+
+
+
+
+GM_Handler::GM_Handler() {
+}
+
+GM_Handler::GM_Handler(const GM_Handler& orig) {
+}
+
+GM_Handler::~GM_Handler() {
+}
+
+void GM_Handler::get_coordinates(vector<string> address_list){
+
+
+}
+
+
+void GM_Handler::test(){
+    get_lat_lng();
+}
+
+
+size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up)
+{ //callback must have this declaration
+    //buf is a pointer to the data that curl has for us
+    //size*nmemb is the size of the buffer
+
+    for (int c = 0; c<size*nmemb; c++)
+    {
+        data.push_back(buf[c]);
+    }
+    return size*nmemb; //tell curl how many bytes we handled
+}
+
+
+void get_lat_lng(){
+    
+string api_key = "AIzaSyDBWA8Gu8uc_uOL6Sp2ZIFsRI53PKbAjkw";
+string address;
+
+CURL* curl; //our curl object
+string address;
+curl_global_init(CURL_GLOBAL_ALL); //pretty obvious
+curl = curl_easy_init();
+address = "https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=";
+address.append(api_key);
+cout << "address: " << address << endl;
+curl_easy_setopt(curl, CURLOPT_URL, address.c_str());
+curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); //tell curl to output its progress
+
+curl_easy_perform(curl);
+
+cout << endl << data << endl;
+cin.get();
+
+curl_easy_cleanup(curl);
+curl_global_cleanup();
+}

@@ -1,0 +1,194 @@
+<!-- Modal Structure -->
+
+<div class="saveSiteContainer">
+		<div class="modal-content">
+			<h4>Service: {{service_detail_number}}</h4>
+<!-- ////////////////////////// Landfill Modal ///////////////////////////////// -->
+			<div  *ngIf="service_detail_info['entity_type']=='yard'">
+				<div class="row">
+					<label class = "col l3" >Entity Type</label>
+					<label class = "col l4" >Yard Name</label>
+				</div>
+				<div  class="row">
+					<div class="info_item col l3">
+							Landfill
+					</div>
+					<div class="info_item col l4">
+							{{service_detail_info['entity']['yard_name']}}
+					</div>
+			</div>
+			<div class="row">
+				<label class = "col l4" >Contact Name</label>
+				<label class = "col l5" >Email</label>
+				<label class = "col l3" >Phone Number</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['contact_name']}}
+				</div>
+				<div class="info_item col l5">
+						{{service_detail_info['entity']['contact_email']}}
+				</div>
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['contact_phone']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l9" >Address</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l9">
+						{{service_detail_info['entity']['yard_address']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l4">City</label>
+				<label class = "col l4" >State</label>
+				<label class = "col l4" >Zipcode</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['yard_city']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['yard_state']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['yard_zipcode']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l3">Latitude</label>
+				<label class = "col l3" >Longitude</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['latitude']}}
+				</div>
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['longitude']}}
+				</div>
+			</div>
+		</div>
+<!-- /////////////////////////// Facility Modal ///////////////////////////////// -->
+			<div  *ngIf="service_detail_info['entity_type']=='facility'">
+				<div class="row">
+					<label class = "col l3" >Entity Type</label>
+					<label class = "col l4" >Facility Name</label>
+				</div>
+				<div  class="row">
+					<div class="info_item col l3">
+							Facility
+					</div>
+					<div class="info_item col l4">
+							{{service_detail_info['entity']['facility_name']}}
+					</div>
+			</div>
+			<div class="row">
+				<label class = "col l4" >Contact Name</label>
+				<label class = "col l5" >Email</label>
+				<label class = "col l3" >Phone Number</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['contact_name']}}
+				</div>
+				<div class="info_item col l5">
+						{{service_detail_info['entity']['contact_email']}}
+				</div>
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['contact_phone']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l9" >Address</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l9">
+						{{service_detail_info['entity']['facility_address']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l4">City</label>
+				<label class = "col l4" >State</label>
+				<label class = "col l4" >Zipcode</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['facility_city']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['facility_state']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['facility_zipcode']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l3">Latitude</label>
+				<label class = "col l3" >Longitude</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['latitude']}}
+				</div>
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['longitude']}}
+				</div>
+			</div>
+		</div>
+<!-- /////////////////////////// Service Order Modal ////////////////////////////		 -->
+			<div  *ngIf="service_detail_info['entity_type']=='serviceorder'">
+				<div class="row">
+					<label class = "col l3" >Entity Type</label>
+					<label class = "col l3" >Size</label>
+					<label class = "col l4" >Site Name</label>
+				</div>
+				<div  class="row">
+					<div class="info_item col l3">
+						{{get_service_type()}}
+					</div>
+					<div class="info_item col l3">
+						{{get_service_size()}}
+					</div>
+						<div class="info_item col l4">
+								{{service_detail_info['entity']['site']['site_name']}}
+						</div>
+			</div>
+			<div class="row">
+				<label class = "col l9" >Address</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l9">
+						{{service_detail_info['entity']['site']['site_address']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l4">City</label>
+				<label class = "col l4" >State</label>
+				<label class = "col l4" >Zipcode</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['site']['site_city']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['site']['site_state']}}
+				</div>
+				<div class="info_item col l4">
+						{{service_detail_info['entity']['site']['site_zipcode']}}
+				</div>
+			</div>
+			<div class="row">
+				<label class = "col l3">Latitude</label>
+				<label class = "col l3" >Longitude</label>
+			</div>
+			<div  class="row">
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['site']['latitude']}}
+				</div>
+				<div class="info_item col l3">
+						{{service_detail_info['entity']['site']['longitude']}}
+				</div>
+			</div>
+</div>

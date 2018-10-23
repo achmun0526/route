@@ -1,0 +1,127 @@
+
+
+#first-container{
+  width:100%;
+  height:100%;
+  padding-top:100px;
+  padding-left:50px;
+  padding-right:50px;
+  background: -moz-linear-gradient(-45deg, rgba(63,76,107,1) 0%, rgba(63,76,107,0.84) 81%, rgba(63,76,107,0.84) 99%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, rgba(63,76,107,1) 0%,rgba(63,76,107,0.84) 81%,rgba(63,76,107,0.84) 99%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, rgba(63,76,107,1) 0%,rgba(63,76,107,0.84) 81%,rgba(63,76,107,0.84) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+}
+
+#INTRO-TEXT{
+  padding-top: 30px;
+  font-family: 'Roboto';
+  font-size: 42px;
+  color:#FFFFFF;
+}
+
+#intro-text{
+  font-family: 'Roboto';
+  font-size: 14px;
+  color:#FFFFFF;
+}
+
+#pricing-container{
+  margin:10px;
+  background: #FFFFFF;
+}
+
+#pricing-card-left{
+  -webkit-box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  -moz-box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  background: #fff;
+  border-radius: 2px;
+  opacity:0.85;
+}
+#pricing-card-right{
+  background: #fff;
+  border-radius: 2px;
+  opacity:0.85;
+}
+#pricing-card-middle{
+  -webkit-box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  -moz-box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  box-shadow: 5px 0px 0px 0px rgba(0,0,0,1);
+  background: #fff;
+  border-radius: 2px;
+  opacity:0.85;
+}
+
+#cool-truck{
+  width:20%;
+  height:20%;
+  margin-top:24px;
+  margin-bottom:25px;
+}
+#cool-truck2{
+  width:20%;
+  height:20%;
+}
+#pricing-price{
+  font-family: 'Roboto';
+  font-size: 34px;
+  color:#000000;
+}
+#pricing-price-text{
+  font-family: 'Roboto';
+  font-size: 18px;
+  color:#000000;
+}
+
+#pricing-text-container{
+  padding-bottom:50px;
+  margin-left:20%;
+
+}
+#pricing-text{
+  margin:10px;
+  font-family: 'Roboto';
+  font-size: 18px;
+  color:#000000;
+}
+
+#price1-note1{
+  padding-bottom:10px;
+  font-family: 'Roboto';
+  font-size: 18px;
+  color:#000000;
+}
+#price1-note2{
+  padding-bottom:10px;
+  font-family: 'Roboto';
+  font-size: 12px;
+  color:#000000;
+}
+
+#first-center-button{
+  margin-top:100px;
+  margin-bottom:200px;
+}
+
+#question-tab{
+  padding:50px;
+  background: rgba(203,96,179,1);
+  background: -moz-linear-gradient(left, rgba(203,96,179,1) 0%, rgba(193,70,161,1) 22%, rgba(168,0,119,1) 63%, rgba(219,54,164,1) 100%);
+  background: -webkit-linear-gradient(left, rgba(203,96,179,1) 0%, rgba(193,70,161,1) 22%, rgba(168,0,119,1) 63%, rgba(219,54,164,1) 100%);
+  background: -o-linear-gradient(left, rgba(203,96,179,1) 0%, rgba(193,70,161,1) 22%, rgba(168,0,119,1) 63%, rgba(219,54,164,1) 100%);
+  background: -ms-linear-gradient(left, rgba(203,96,179,1) 0%, rgba(193,70,161,1) 22%, rgba(168,0,119,1) 63%, rgba(219,54,164,1) 100%);
+  background: linear-gradient(to right, rgba(203,96,179,1) 0%, rgba(193,70,161,1) 22%, rgba(168,0,119,1) 63%, rgba(219,54,164,1) 100%);
+}
+#question-text{
+  font-family: 'Roboto';
+  font-weight:50;
+  font-size: 34px;
+  color:white;
+}
+
+#email{
+  font-family: 'Roboto';
+  font-weight:50;
+  font-size: 34px;
+  color:white;
+}

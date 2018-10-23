@@ -1,0 +1,51 @@
+<!-- Modal Structure -->
+
+		<div class="modal-content">
+<!-- ////////////////////////// Trial Modal ///////////////////////////////// -->
+<div class="row">
+    <form class="col s12" (submit)="submitTrialRequest()">
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="first_name" type="text" class="validate" name="first_name" [(ngModel)]="first_name">
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name" type="text" class="validate" name="last_name" [(ngModel)]="last_name">
+          <label for="last_name">Last Name</label>
+        </div>
+      </div>
+			<div class="row">
+				<div class="input-field col s12">
+					<input id="company_name" type="text" class="validate" name="company_name" [(ngModel)]="company_name">
+					<label for="company_name">Company Name</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12">
+					<input id="email" type="email" class="validate" name="email" [(ngModel)]="email">
+					<label for="email">Email</label>
+				</div>
+			</div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="password" type="password" class="validate" name="password" [(ngModel)]="password">
+          <label for="password">Password</label>
+        </div>
+				<div class="input-field col s6">
+					<input id="password_check" type="password" class="validate" name="password_check" [(ngModel)]="password_check">
+					<label for="password_check">Confirm Password</label>
+				</div>
+      </div>
+
+			<div class="row">
+          <div class="close-footer">
+            <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
+            <button class="waves-effect waves-green btn-flat" type="submit">Save order</button>
+          </div>
+      </div>
+    </form>
+  </div>
+
+
+<!-- //////////////////////////////////////////////////////////////////////////////////// -->
+</div>

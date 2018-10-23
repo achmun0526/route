@@ -1,0 +1,830 @@
+{
+  "basePath": "/_ah/api",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "ApihandlersGetRequest": {
+      "properties": {
+        "activated": {
+          "type": "string"
+        },
+        "active": {
+          "type": "string"
+        },
+        "company_key": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "driver_key": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "entity_key": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "no_childs": {
+          "type": "string"
+        },
+        "page": {
+          "type": "string"
+        },
+        "page_size": {
+          "type": "string"
+        },
+        "parent_message_key": {
+          "type": "string"
+        },
+        "receiver_user_key": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "string"
+        },
+        "route_key": {
+          "type": "string"
+        },
+        "sender_user_key": {
+          "type": "string"
+        },
+        "service_order_key": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "vehicle_key": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ApihandlersPostRequest": {
+      "properties": {
+        "payload": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ApihandlersResponse": {
+      "properties": {
+        "response": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "host": "texas-dumpsters-development.appspot.com",
+  "info": {
+    "title": "texas_dumpsters_api",
+    "version": "v1.0"
+  },
+  "paths": {
+    "/texas_dumpsters_api/v1.0/attachment/get": {
+      "get": {
+        "operationId": "Attachment_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/attachment/upload": {
+      "post": {
+        "operationId": "Attachment_upload",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/echo1/say_a_number": {
+      "get": {
+        "operationId": "Echo1_sayANumber",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/echo2/say_a_negative_number": {
+      "get": {
+        "operationId": "Echo2_sayANegativeNumber",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/echo3/who_i_am": {
+      "get": {
+        "operationId": "Echo3_whoIAm",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/list/get_by_name": {
+      "get": {
+        "operationId": "List_getByName",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/message/get": {
+      "get": {
+        "operationId": "Message_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/message/save": {
+      "post": {
+        "operationId": "Message_save",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route/change_status": {
+      "post": {
+        "operationId": "Route_changeStatus",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route/get": {
+      "get": {
+        "operationId": "Route_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route_incident/change_status": {
+      "post": {
+        "operationId": "RouteIncident_changeStatus",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route_incident/get": {
+      "get": {
+        "operationId": "RouteIncident_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route_incident/save": {
+      "post": {
+        "operationId": "RouteIncident_save",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/route_position_history/save": {
+      "post": {
+        "operationId": "RoutePositionHistory_save",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/service_order/change_status": {
+      "post": {
+        "operationId": "ServiceOrder_changeStatus",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/service_order_problem/change_status": {
+      "post": {
+        "operationId": "ServiceOrderProblem_changeStatus",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/service_order_problem/get": {
+      "get": {
+        "operationId": "ServiceOrderProblem_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/users/get": {
+      "get": {
+        "operationId": "Users_get",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/texas_dumpsters_api/v1.0/validation/get_user_by_email": {
+      "post": {
+        "operationId": "Validation_getUserByEmail",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ApihandlersResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "x-security": [
+          {
+            "google_id_token": {
+              "audiences": [
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-h97ji8mk0ikknqhegrkg0vruvp95tf0q.apps.googleusercontent.com",
+                "767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleusercontent.com"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "in": "query",
+      "name": "key",
+      "type": "apiKey"
+    },
+    "google_id_token": {
+      "authorizationUrl": "",
+      "flow": "implicit",
+      "type": "oauth2",
+      "x-google-issuer": "accounts.google.com",
+      "x-google-jwks_uri": "https://www.googleapis.com/oauth2/v1/certs"
+    }
+  },
+  "swagger": "2.0"
+}

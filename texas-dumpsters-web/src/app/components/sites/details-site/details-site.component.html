@@ -1,0 +1,75 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="openEditSiteModal(site)">
+	<app-icon-tooltip
+		[iconName]="'edit'"
+		[tooltipText]="'Edit Site'">
+	</app-icon-tooltip>
+</a>
+
+<div class="row detail-table" style="margin-top:20px;">
+
+	<div class="col s12 m6 l3">
+		<span class="label">Site Name</span>
+		<p style="margin-top:3px;">
+			{{site.site_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Name</span>
+		<p style="margin-top:3px;">
+			{{site.contact_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Email</span>
+		<p style="margin-top:3px;">
+			{{site.contact_email}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone</span>
+		<p style="margin-top:3px;">
+			{{site.contact_phone}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Site Address</span>
+		<p style="margin-top:3px;">
+			{{site.site_address}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Site City</span>
+		<p style="margin-top:3px;">
+			{{site.site_city}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Site State</span>
+		<p style="margin-top:3px;">
+			{{site.site_state}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Site Zipcode</span>
+		<p style="margin-top:3px;">
+			{{site.site_zipcode}}
+		</p>
+	</div>
+  <div class="col s12 m6 l3">
+    <span class="label">Site Latitude</span>
+    <p style="margin-top:3px;">
+      {{site.latitude}}
+    </p>
+  </div>
+  <div class="col s12 m6 l3">
+    <span class="label">Site Longitude</span>
+    <p style="margin-top:3px;">
+      {{site.longitude}}
+    </p>
+  </div>
+</div>
+
+<!-- Edit site modal -->
+<div *ngIf="siteToEdit" id="editSiteModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editSiteModal">
+	<app-save-site [siteToEdit]="siteToEdit" (onSaveCompleted)="onSiteEdited()" (onCancelAction)="onEditCancelled()"></app-save-site>
+</div>

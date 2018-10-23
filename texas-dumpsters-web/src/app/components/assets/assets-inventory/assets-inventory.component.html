@@ -1,0 +1,17 @@
+<table class="striped centered">
+    <tbody>
+        <tr *ngFor="let item of report; let i = index" [ngClass]="{'border-bottom-thead': i==0}">
+            <td *ngFor="let item2 of item; let j = index">
+                <div *ngIf="i == 0 && j != 0" style="font-family: roboto; font-weight: bold">
+                    {{ Utils.findNameByIdOnKeyValueList(assetsSizeList,item2) }}
+                </div>
+                <div *ngIf="i != 0 && j != 0" style="font-family: roboto">
+                    {{ item2 }}
+                </div>
+                <div *ngIf="j == 0" style="font-family: roboto; font-weight: bold">
+                     {{ item2 }}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

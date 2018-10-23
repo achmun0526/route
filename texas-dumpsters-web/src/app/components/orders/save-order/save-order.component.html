@@ -1,0 +1,232 @@
+
+<!-- Modal Structure -->
+<form class="col s12" #addAddressform="ngForm" (submit)="saveOrder()">
+  <div class="modal-content">
+    <h4>{{title}}</h4>
+
+    <!-- Customer selection -->
+      <div class="row">
+        <!-- Add Customer Modal -->
+        <!-- <div class="col s2 l2">
+          <div class="btn-list" (click)="toggleCollapsible('addCustomerContainer')">
+            <a class="btn-floating red">
+              <app-icon-tooltip
+                [iconName]="'add'"
+                [tooltipText]="'Add Customer'">
+              </app-icon-tooltip>
+            </a>
+          </div>
+         </div> -->
+
+         <div class="input-field col s10 m6 l6" >
+           <div class="row">
+             <select class="smallDropdown customerDD" *ngIf="totalCustomers > 0"
+                     id="selectedCustomerIndex"
+                     name="selectedCustomerIndex"
+                     [(ngModel)]="selectedCustomerId"
+                     (change)="getSitesForCustomer()"
+                     materialize="material_select"
+                     [materializeSelectOptions]="">
+               <option value="" disabled selected>Select a Customer</option>
+               <option *ngFor="let item of customerList;let i = index;" [value]="item.id">{{item.customer_name}}</option>
+             </select>
+             <span class="error" *ngIf="!validations.site_valid">Select one option</span>
+           </div>
+         </div>
+
+          <!-- This is the autocomplete section -->
+            <!-- <div class="row">
+              <div class="input-field col s10 l10">
+                <i class="material-icons prefix">textsms</i>
+                <input type="text" id="autocomplete-input" class="autocomplete">
+                <label for="autocomplete-input">Autocomplete</label>
+              </div>
+            </div> -->
+
+       </div>
+
+    <!-- Site selection -->
+    <div class="row">
+
+<!-- This is the add site modal.  -->
+      <!-- <div class="input-field col s12 m6" >
+          <div class="btn-list addSiteButton" (click)="toggleCollapsible('addSiteContainer')">
+            <a class="btn-floating red">
+              <app-icon-tooltip
+                [iconName]="'add'"
+                [tooltipText]="'Add Site'">
+              </app-icon-tooltip>
+            </a>
+          </div>
+      </div> -->
+
+      <div class="input-field col s10 m6 l6" >
+        <div class="row">
+          <select class="smallDropdown siteDD" *ngIf="totalSites > 0"
+                  id="selectedSiteIndex"
+                  name="selectedSiteIndex"
+                  [(ngModel)]="selectedSiteId"
+                  materialize="material_select"
+                  [materializeSelectOptions]="">
+            <option value="" disabled selected>Select a site</option>
+            <option *ngFor="let item of siteList;let i = index;" [value]="item.id">{{item.site_name}}</option>
+          </select>
+          <span class="error" *ngIf="!validations.site_valid">Select one option</span>
+        </div>
+      </div>
+
+
+    </div>
+    <!-- add site collapsible -->
+    <!-- <div class="row addSiteContainer collapsibleItem" *ngIf="siteBox">
+      <app-save-site (onSaveCompleted)="onSiteCreated()" (onCancelAction)="closeAddSite()"></app-save-site>
+    </div> -->
+
+    <div class="row">
+      <div class="row">
+        <div class="input-field col s12 m6 l6">
+        <input
+          id="service_ticket_id"
+          name="service_ticket_id"
+          type="text"
+          class="validate"
+          [(ngModel)]="order.service_ticket_id">
+          <label for="service_ticket_id">Service Ticket ID</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ///////////////////////////////////////////////////////////// -->
+
+    <!-- Add order form -->
+    <div class="row" style="margin-top: 30px;">
+      <div class="row">
+        <div class="input-field col s12 m6 l6">
+          <input
+            id="assets"
+            type="text"
+            class="validate"
+            [(ngModel)]="order.assets"
+            name="assets"
+            required>
+          <label for="assets">Order Asset</label>
+        </div>
+
+        <div class="input-field col s12 m6 l6">
+          <select *ngIf="assetsSizeList.length>0" class="smallDropdown"
+                  id="asset_size"
+                  name="asset_size"
+                  [(ngModel)]="order.asset_size"
+                  materialize="material_select">
+            <option value="" disabled selected>Choose one</option>
+            <option *ngFor="let item of assetsSizeList;let i = index;" [value]="item.id">{{item.name}}</option>
+          </select>
+          <label data-error="wrong">Size</label>
+          <span class="error" *ngIf="!validations.asset_size_valid">Select one option</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 m6 l6">
+          <select *ngIf="purposeServiceList.length>0" class="smallDropdown"
+                  id="purpose_of_service"
+                  name="purpose_of_service"
+                  [(ngModel)]="order.purpose_of_service"
+                  materialize="material_select">
+            <option value="" disabled selected>Choose one</option>
+            <option *ngFor="let item of purposeServiceList;let i = index;" [value]="item.id">{{item.name}}</option>
+          </select>
+          <label data-error="wrong">Purpose of Service</label>
+          <span class="error" *ngIf="!validations.type_valid">Select one option</span>
+        </div>
+
+        <div class="col s12 m6 l6">
+          <label for="date">Date</label>
+          <input id="date" name="date" materialize="pickadate" type="text" style="margin-right:0.5rem"
+                 [ngModelOptions]="{standalone: true}"
+                 [(ngModel)]="date.date"
+                 [min]="date.date"
+                 [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 m6 l6">
+          <div class="input-field col s4">
+            <input
+              id="hour"
+              type="number"
+              max="12"
+              min="1"
+              class="validate"
+              [(ngModel)]="date.hour"
+              name="hour"
+              required>
+            <label for="hour">Hour</label>
+          </div>
+
+          <div class="input-field col s4">
+            <input
+              id="minutes"
+              type="number"
+              max="59"
+              min="00"
+              class="validate"
+              [(ngModel)]="date.minutes"
+              name="minutes"
+              required>
+            <label for="minutes">Minutes</label>
+          </div>
+
+          <div class="col s4">
+            <p>
+              <select class="smallDropdown"
+                      id="time_frame"
+                      name="time_frame"
+                      [(ngModel)]="order.service_time_frame"
+                      materialize="material_select">
+                <option value="Am" selected>AM</option>
+                <option value="Pm">Pm</option>
+              </select>
+            </p>
+          </div>
+        </div>
+
+        <div class="input-field col s12 m6 l6">
+          <select class="smallDropdown"
+                  id="state"
+                  name="stateOfOrders"
+                  [(ngModel)]="order.state"
+                  [disabled]="true"
+                  materialize="material_select">
+            <option value="" disabled selected>Choose one</option>
+            <option *ngFor="let item of orderStateList;let i = index;" [value]="item.id">{{item.name}}</option>
+          </select>
+          <label data-error="wrong">Order State</label>
+        </div>
+      </div>
+      <div class="row">
+          <div class="close-footer">
+            <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
+            <button class="waves-effect waves-green btn-flat" type="submit">Save order</button>
+          </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 l12">
+        <textarea
+          id="notes"
+          class="materialize-textarea"
+          materialize="characterCounter"
+          name="notes"
+          [(ngModel)]="order.notes"
+          [attr.length]="maxLength">
+        </textarea>
+          <label for="notes">Setting instructions</label>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</form>
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Order saved successfully',4000]" [materializeActions]="addOrderToast"></a>
+<a materialize [materializeParams]="['There was an error saving the order',4000]" [materializeActions]="addOrderToastError"></a>

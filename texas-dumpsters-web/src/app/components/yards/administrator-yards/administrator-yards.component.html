@@ -1,0 +1,97 @@
+<div class="row">
+	<div class="col s12">
+			<ul>
+				<li class="btn-list">
+					<a class="btn-floating red" (click)="addYards()">
+						<app-icon-tooltip
+															[iconName]="'add'"
+															[tooltipText]="'Add Yard'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+				<li class="btn-list">
+					<a class="btn-floating green" (click)="addCVSfile()">
+						<app-icon-tooltip
+															[iconName]="'publish'"
+															[tooltipText]="'CSV Yard'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+			</ul>
+	</div>
+</div>
+
+<app-csv-file [entity]="'yard'" (reloadData)="getYards()"></app-csv-file>
+<app-save-yards (reloadData)="getYards()"></app-save-yards>
+
+<div class="col s12">
+	<p>Total Yards {{totalYards}}</p>
+</div>
+
+<div class="row">
+	<div class="col s12">
+		<ul  data-collapsible="accordion" *ngIf="yardsList.length > 0">
+			<li class="tab-header lead">
+					<div class="row data-object">
+						<div class="col s12 m3 l3">Name :</div>
+						<div class="col s12 m3 l3">Address :</div>
+						<div class="col s12 m3 l3">Phone Number :</div>
+						<div class="col s12 m3 l3">Email :</div>
+					</div>
+			</li>
+
+			<li *ngFor="let item of yardsList" class="table">
+				<div class="collapsible-header">
+					<div class="row data-object">
+
+
+						<div class="col s12 m3 l3">
+							<span class="tab_label">Name :</span>
+							{{item.yard_name}}
+						</div>
+						<div class="col s12 m3 l3">
+							<span class="tab_label">Address :</span>
+							{{item.getFormattedAddress()}}
+						</div>
+						<div class="col s12 m3 l3">
+							<span class="tab_label">Phone Number :</span>
+							{{item.contact_phone}}
+						</div>
+						<div class="col s12 m3 l3">
+							<span class="tab_label">Email :</span>
+							{{item.contact_email}}
+						</div>
+
+					</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+															[iconName]="'mode_edit'"
+															[tooltipText]="'Edit'"
+															(click)="editYards(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'visibility'"
+															[tooltipText]="'Details'"
+															(click)="detailsYards(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'delete'"
+															[tooltipText]="'Delete'"
+															(click)="deleteYards(item)">
+						</app-icon-tooltip>
+					</p>
+
+					</div>
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="yardsList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no Yards to list</h4>
+		</div>
+	</div>
+</div>
+
+<app-pagination [totalObjects]="totalYards" (pageChange)="changePage($event)"></app-pagination>

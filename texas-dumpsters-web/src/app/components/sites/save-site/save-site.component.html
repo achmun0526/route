@@ -1,0 +1,198 @@
+<!-- Modal Structure -->
+
+<div class="saveSiteContainer">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="saveSite()">
+		<div class="modal-content">
+			<h4>{{title}}</h4>
+
+			<div class="row">
+
+				<div *ngIf="totalCustomers>0" class="input-field col s12 m6" style="margin-top: 25px;">
+					<select class="smallDropdown customer-dd"
+							id="cutomerId"
+							name="cutomerId"
+							[(ngModel)]="site.customer_key"
+							materialize="material_select"
+							(change)="customerChange()"
+							[materializeSelectOptions]="typeFence">
+						<option value="">Select one customer</option>
+						<option *ngFor="let item of customerList;let i = index" [value]="item.id">{{item.customer_name}}</option>
+					</select>
+					<label data-error="wrong">Customer</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<div class="btn-list" (click)="toggleCollapsible('addCustomerContainer')">
+						<a class="btn-floating red">
+						<app-icon-tooltip
+							[iconName]="'add'"
+							[tooltipText]="'Add Customer'">
+						</app-icon-tooltip>
+						</a>
+						<label style="margin-left: 50px">Add Customer</label>
+					</div>
+				</div>
+			</div>
+
+			<!-- add customer collapsible -->
+			<div class="row addCustomerContainer collapsibleItem">
+				<app-save-customer (onSaveCompleted)="onCustomerCreated()" (onCancelAction)="closeAddCustomer()"></app-save-customer>
+			</div>
+
+			<!-- add site form -->
+			<div class="row" style="margin-top: 20px;">
+
+				<div class="input-field col s12 m6">
+					<input
+						id="site_name"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.site_name"
+						name="site_name"
+						placeholder="Site Name"
+						required>
+					<label for="site_name">Site Name</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_name"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.contact_name"
+						name="contact_name"
+						placeholder="Contact Name"
+						required>
+					<label for="contact_name">Contact Name</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_email"
+						type="email"
+						class="validate"
+						[(ngModel)]="site.contact_email"
+						name="contact_email"
+						placeholder="mail@mail.com"
+						required>
+					<label for="contact_email">Contact Email</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="contact_phone"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.contact_phone"
+						(ngModelChange)="changePhone($event)"
+						#ta
+						[value]="site.contact_phone"
+						(blur)="site.contact_phone=ta.value"
+						pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+						appPhoneDirective
+						name="contact_phone"
+						placeholder="(111)-111-1111"
+						required>
+					<label for="contact_phone">Contact Phone</label>
+				</div>
+				<div class="input-field col s12 m6">
+
+					<app-search-address
+						(getAddress)="site.site_address = $event"
+						(getCity)=" site.site_city = $event"
+						(getState)=" site.site_state= $event"
+						(getzip_code)=" site.site_zipcode = $event"
+            (getLatitude)=" site.latitude = $event"
+            (getLongitude)=" site.longitude = $event"
+            [initialValue]="site.site_address"
+						>
+					</app-search-address>
+
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="site_city"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.site_city"
+						name="site_city"
+						placeholder="Site City"
+            autocomplete="off">
+					<label for="site_city">City</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="site_state"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.site_state"
+						name="site_state"
+						placeholder="Site State"
+            autocomplete="off">
+					<label for="site_state">State</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+						id="site_zipcode"
+						type="text"
+						class="validate"
+						[(ngModel)]="site.site_zipcode"
+						name="site_address"
+						placeholder="Site Zip Code"
+						pattern="[0-9]{4,6}"
+            autocomplete="off">
+					<label for="site_zipcode">Zip Code</label>
+				</div>
+
+        <div class="input-field col s12 m6">
+          <input
+            id="site_latitude"
+            type="text"
+            class="validate"
+            [(ngModel)]="site.latitude"
+            name="site_latitude"
+            placeholder="Latitude"
+            required
+            pattern="-?\d{1,3}\.\d+"
+            autocomplete="off">
+          <label for="site_latitude">Latitude</label>
+        </div>
+
+        <div class="input-field col s12 m6">
+          <input
+            id="site_longitude"
+            type="text"
+            class="validate"
+            [(ngModel)]="site.longitude"
+            name="site_longitude"
+            placeholder="Longitude"
+            required
+            pattern="-?\d{1,3}\.\d+"
+            autocomplete="off">
+          <label for="site_longitude">Longitude</label>
+        </div>
+
+			</div>
+
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="cancelAction()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save site</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Site saved successfully',4000]" [materializeActions]="addSiteToast"></a>
+<a materialize [materializeParams]="['There was an error saving the site',4000]" [materializeActions]="addSiteToastError"></a>
+<a materialize [materializeParams]="['Invalid Customer',4000]" [materializeActions]="customerToastError"></a>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Site deleted successfully',4000]" [materializeActions]="deleteSiteToast"></a>
+<a materialize [materializeParams]="['There was an error deleting the site',4000]" [materializeActions]="deleteSiteToastError"></a>
+
+<a materialize [materializeParams]="['The given address could not be georeversed',4000]" [materializeActions]="addressToastError"></a>

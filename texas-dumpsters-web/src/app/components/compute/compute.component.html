@@ -1,0 +1,159 @@
+<!-- /*
+ * Copyright (c) [2018], Forest Schwartz. All rights reserved
+ *
+ * Duplication or reproduction of this code is strictly forbidden without the written and signed consent of the Author.
+ */
+
+/*
+ * File:   main.cpp
+ * Author: forest schwartz
+ *
+ * Created on December 12, 2017, 7:09 PM
+ */ -->
+
+
+
+<div class = "row">
+  <div class="col s12 m3 l2">
+    <a  class="waves-effect waves-light btn modal-trigger red lighten-1" (click)="compute()">Compute</a>
+  </div>
+  <div class="col s12 m3 l2">
+    <!-- empty space for style purposes -->
+  </div>
+  <div class="input-field col s6 l2">
+    <input
+      placeholder="Truck #"
+      id="num_of_trucks"
+      pattern=""
+      [(ngModel)]="num_of_trucks"
+      type="text"
+      class="validate">
+    </div>
+    <div class="input-field col s6 l2">
+      <input
+        placeholder="Iteration #"
+        id="num_of_iterations"
+        pattern=""
+        [(ngModel)]="num_of_iterations"
+        type="text"
+        class="validate">
+      </div>
+  <div class="input-field col s6 l2">
+    <input
+      placeholder="Yard Time"
+      id="yard_time"
+      pattern=""
+      [(ngModel)]="yard_time"
+      type="text"
+      class="validate">
+  </div>
+
+  <div class="input-field col s6 l2" >
+    <input
+      placeholder="Service Time"
+      id="service_time"
+      pattern=""
+      [(ngModel)]="service_time"
+      type="text"
+      class="validate">
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col s12 m3 l2">
+    <a  class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="filter()">Filter</a>
+  </div>
+  <div class="col s12 m3 l6">
+    <!-- empty space for style purposes -->
+  </div>
+  <div class="col s12 m6 l2">
+    <input class="date" id="date" name="date" materialize="pickadate" type="text"
+           [ngModelOptions]="{standalone: true}"
+           [(ngModel)]="date.date"
+           [min]="date.date"
+           [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]">
+  </div>
+  <div class="col s12 m3 l2">
+    <p>Total Services: {{num_of_services}} </p>
+  </div>
+</div>
+
+
+
+  <ul *ngFor= "let number of numbers; let j= index" >
+      <ul class="collapsible" >
+        <li class="tab-header lead">
+          <div class=row data-object h4>
+            <div class="col s12 m12 l4">Route {{j+1}}</div>
+            <div class="col s12 m12 l4">Hours: {{total_route_duration[j]}}</div>
+            <div class="col s12 m12 l4">Miles: {{total_route_distance[j]}}</div>
+        </div>
+        <div class="col s12 m2 l1">
+          <a  *ngIf="number.display==false" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="view_route(number,j)">View</a>
+          <a  *ngIf="number.display==true" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="close_view_route(number)">Close</a>
+        </div>
+        <div class="row data-object">
+          <div *ngIf="number.display">
+            <div  class="col s12 m10 l10 map" style="padding: 0;">
+              <app-map-handler [service_route]="service_routes[j]" (marker_clicked)="show_event_data($event)"> </app-map-handler>
+            </div>
+            <div class="col s12 m2 l2 scrollable">
+              <li *ngFor="let item of route_object_list_arr[j]; let i = index">
+
+
+                  <div  *ngIf="item.type=='facility'">
+                    <div *ngIf="item.display==false" class="facility_info" (click)="server_entity_view(item,i,j)">Facility</div>
+                    <div *ngIf="item.display==true" class="facility_info_close" (click)="close_server_entity_view(item,i,j)">Facility</div>
+                    <div class="route_item_seperator"></div>
+                  </div>
+                  <div  *ngIf="item.type=='serviceorder'">
+                    <div *ngIf="item.display==false" class="serviceorder_info" (click)="server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
+                    <div *ngIf="item.display==true" class="serviceorder_info_close" (click)="close_server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
+                    <div class="route_item_seperator"></div>
+                  </div>
+                  <div  *ngIf="item.type=='yard'">
+                    <div *ngIf="item.display==false" class="yard_info" (click)="server_entity_view(item,i,j)">Landfill</div>
+                    <div *ngIf="item.display==true" class="yard_info_close" (click)="close_server_entity_view(item,i,j)">Landfill</div>
+                    <div class="route_item_seperator"></div>
+                  </div>
+              </li>
+            </div>
+          </div>
+        </div>
+
+        </li>
+      </ul>
+
+  </ul>
+
+  <!-- <div class="row" *ngIf="num_of_routes>0"> -->
+  <div class="row">
+    <div class="col s12 m2 l2">
+      <a  class="waves-effect waves-light btn modal-trigger green lighten-3" (click)="saveRoutes()">Save Routes</a>
+    </div>
+    <div class="col s12 m8 l8">
+      <!-- empty space for style purposes -->
+    </div>
+  <div  class="row data-object h4">
+    <div class="col s12 m2 l2">Total Distance: {{compiled_route_distance}}</div>
+  </div>
+</div>
+
+<!-- Add service detail modal -->
+<div *ngIf="markers_initialized">
+  <div id="serviceDetailModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="serviceDetailModal">
+  	<app-service-detail [service_detail_number]="service_detail_number" [service_detail_info]="service_detail_info"></app-service-detail>
+  </div>
+</div>
+
+  <!-- Modal Structure -->
+<div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
+    <div class="modal-content">
+      <h4>Oops something went wrong!</h4>
+      <p>{{errorThrown}}</p>
+    </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" name="onCloseClicked()">Try Again</a>
+  </div>
+</div>

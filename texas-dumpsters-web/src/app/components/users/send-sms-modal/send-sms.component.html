@@ -1,0 +1,13 @@
+<div class="content-txtModal">
+    <h5 class="titulo">Write the message you want to send to the driver</h5>
+    <textarea class="texto" [(ngModel)]="message"></textarea>
+    <p class="counter">{{message.length}}/255</p>
+    <div>
+        <button [disabled]="blockSubmit || message.length == 0 || message.length > 255" class="submitButton" (click)="send()">Send SMS</button>
+        <button class="submitButton" (click)="close()">Close</button>
+    </div>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['SMS sent successfully',4000]" [materializeActions]="add_SMS_Toast"></a>
+<a materialize [materializeParams]="['There was an error sending the message',4000]" [materializeActions]="add_SMS_ToastError"></a>

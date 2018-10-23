@@ -1,0 +1,73 @@
+<div class="saveMessage-modal-container">
+  
+
+  <div class="content-txtModal">
+
+      <h5 class="titulo">{{title}}</h5>
+      
+      <!-- rol filter -->
+      <div class="messageFilter" *ngIf="roles.length>0">
+        <div style="height:30px;">
+          <label>Filter by rol</label>
+          <img src="/assets/loading_spinner.gif" class="spinnerImg" style="display:none; width:20px; height:20px; margin-left:10px;">
+        </div>
+        <div  class="input-field col s6 m6 l6">
+          <select class="smallDropdown"
+            id="role"
+            [(ngModel)]="filterRol"
+            name="role"
+            [disabled]="updateProfileMode"
+            materialize="material_select"
+            [materializeSelectOptions]="role"
+            (change)="filterUsersByRol()">
+            <option value="0" disabled selected>Choose one role</option>
+            <option *ngFor="let i of roles" [value]="i">{{i}}</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- user selection only for new -->
+      <div *ngIf="userList.length>0" class="input-field col s12 m6 l3">
+        <select class="smallDropdown1 usersDD" *ngIf="totalUsers > 0"
+          id="userSelect"
+          [(ngModel)]="message.receiver_user_key"
+          name="userSelect"
+          [disabled]="false"
+          materialize="material_select"
+          [materializeSelectOptions]="driver"
+          (change)="userChanged()">
+          <option value="0" disabled selected>Choose one user</option>
+          <option *ngFor="let i of userList" [value]="i.user_key">{{i.first_name}} {{i.last_name}} - ({{i.email}})</option>
+        </select>
+        <label data-error="wrong">User</label>
+        <span class="error" *ngIf="!validations.driver_valid">Select one option</span>
+      </div>
+      
+      
+      <label>Subject: </label>
+      <input type="text" class="texto" [(ngModel)]="message.message_title">
+
+      <div *ngIf="messageToReply" class="messageToReply-container">
+        <label>{{messageToReply.sender_user.first_name}} {{messageToReply.sender_user.last_name}} - ({{messageToReply.sender_user.email}}) said: </label>
+        <p>{{messageToReply.message_body}}</p>
+      </div>
+      
+      <label>Message: </label>
+      <textarea class="texto" [(ngModel)]="message.message_body"></textarea>
+      <p class="counter">{{message.message_body.length}}/255</p>
+  </div>
+
+  <!-- Modal Structure -->
+  <form class="col s12" #addMessageform="ngForm" (submit)="saveMessage()">
+
+    <div class="modal-footer" style="width: 95%;">
+      <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
+      <button class="waves-effect waves-green btn-flat" type="submit">Send</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Message saved successfully',4000]" [materializeActions]="addMessageToast"></a>
+<a materialize [materializeParams]="['There was an error saving the message',4000]" [materializeActions]="addMessageToastError"></a>

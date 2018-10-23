@@ -1,0 +1,47 @@
+<!-- Modal Structure -->
+<div id="companyModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="pricingModal">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="savePrice()">
+		<div class="modal-content">
+			<h4>Add Price</h4>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<input
+								 id="size"
+								 type="number"
+								 class="validate"
+								 [(ngModel)]="pricing.dumpser_size"
+								 name="size"
+								 placeholder="0000"
+								 required>
+					<label for="size">Dumpsters Size</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="price"
+								 type="number"
+								 class="validate"
+								 [(ngModel)]="pricing.price"
+								 name="price"
+								 placeholder="$00.000"
+								 required>
+					<label for="price">Price</label>
+				</div>
+
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closePricingModal()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add price toasts -->
+<a materialize [materializeParams]="['Service Pricing save successfully',4000]" [materializeActions]="addPriceToast"></a>
+<a materialize [materializeParams]="['There was an error saving a Service Pricing',4000]" [materializeActions]="addPriceToastError"></a>
+
+<!-- delete price toasts -->
+<a materialize [materializeParams]="['Service Pricing delete successfully',4000]" [materializeActions]="deletePriceToast"></a>
+<a materialize [materializeParams]="['There was an error delete a Service Pricing',4000]" [materializeActions]="deletePriceToastError"></a>

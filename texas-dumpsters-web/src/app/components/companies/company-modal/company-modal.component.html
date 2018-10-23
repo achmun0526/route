@@ -1,0 +1,155 @@
+<!-- Modal Structure -->
+<div id="companyModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="companyModal">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="addCompany()">
+		<div class="modal-content">
+			<h4>{{title}} Company</h4>
+			<div class="row">
+				<div class="input-field col s12 m4">
+					<input
+								 id="companyName"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.name"
+								 name="companyName"
+								 required>
+					<label for="companyName">Company Name</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+								 id="domain"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.domain"
+								 name="domain"
+								 required>
+					<label for="domain">Domain</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+								 id="contact_phone"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.contact_phone"
+								 (ngModelChange)="changeModel($event)"
+								 #ta
+								 [value]="company.contact_phone"
+								 (blur)="company.contact_phone=ta.value"
+								 pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+								 appPhoneDirective
+								 name="contact_phone"
+								 required>
+					<label for="contact_phone">Contact Phone</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12 m4">
+					<input
+								 id="contact_email"
+								 type="email"
+								 class="validate"
+								 [(ngModel)]="company.contact_email"
+								 name="contact_email"
+								 pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+								 required>
+					<label for="contact_email">Contact Email</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+							id="address"
+							type="text"
+							class="validate"
+							[(ngModel)]="company.address"
+							name="address"
+							placeholder="Example"
+							required>
+					<label for="address">Address</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+								 id="city"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.city"
+								 name="city"
+								 placeholder="Example"
+								 required>
+					<label for="city">City</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+								 id="state"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.state"
+								 name="state"
+								 placeholder="Example"
+								 required>
+					<label for="state">State</label>
+				</div>
+
+				<div class="input-field col s12 m4">
+					<input
+								 id="zipcode"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="company.zipcode"
+								 name="zipcode"
+								 pattern="[0-9]{4,6}"
+								 placeholder="Example"
+								 required>
+					<label for="zipcode">Zip Code</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="file-field input-field col s12 m8 ">
+					<div class="btn red darken-2">
+						<span>File</span>
+						<input type="file" id="logo_file" accept=".png">
+					</div>
+					<div class="file-path-wrapper">
+						<input
+									 class="file-path validate"
+									 type="text"
+									 placeholder="Company logo"
+									 required>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="input-field col s12">
+					<textarea
+										id="vendor_notes"
+										class="materialize-textarea"
+										materialize="characterCounter"
+										name="vendor_notes"
+										[(ngModel)]="company.vendor_notes"
+										[attr.length]="maxLength">
+					</textarea>
+					<label for="vendor_notes">Vendor Notes</label>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closeModal1()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add company toasts -->
+<a materialize [materializeParams]="['Company added successfully',4000]" [materializeActions]="addCompanyToast"></a>
+<a materialize [materializeParams]="['There was an error adding a Company',4000]" [materializeActions]="addCompanyToastError"></a>
+
+<!-- add company toasts -->
+<a materialize [materializeParams]="['Company deleted successfully',4000]" [materializeActions]="deleteCompanyToast"></a>
+<a materialize [materializeParams]="['There was an error delete a Company',4000]" [materializeActions]="deleteCompanyToastError"></a>
+
+<!-- Georeference toast error -->
+<a materialize [materializeParams]="['The given address could not be georeversed',4000]" [materializeActions]="addressToastError"></a>

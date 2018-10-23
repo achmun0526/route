@@ -1,0 +1,97 @@
+<div class="row">
+	<div class="col s12">
+			<ul>
+				<li class="btn-list">
+					<a class="btn-floating red" (click)="addVehicles()">
+						<app-icon-tooltip
+															[iconName]="'add'"
+															[tooltipText]="'Add Vehicle'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+				<li class="btn-list">
+					<a class="btn-floating green" (click)="addCVSfile()">
+						<app-icon-tooltip
+															[iconName]="'publish'"
+															[tooltipText]="'CSV Vehicles'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+			</ul>
+	</div>
+</div>
+
+<app-csv-file [entity]="'vehicle'" (reloadData)="getVehicles()"></app-csv-file>
+<app-save-vehicles (reloadData)="getVehicles()"></app-save-vehicles>
+
+<div class="col s12">
+	<p>Total Vehicles {{totalVehicles}}</p>
+</div>
+
+<div class="row">
+	<div class="col s12">
+		<ul class="collapsible" data-collapsible="accordion" *ngIf="vehiclesList.length > 0">
+			<li class="tab-header lead">
+				<div class="collapsible-header">
+					<div class="row data-object">
+						<div class="col s12 m3 l3">Vehicle Name</div>
+						<div class="col s12 m3 l4">Driver Name</div>
+						<div class="col s12 m3 l3">Make/Model</div>
+						<div class="col s12 m3 l2">Tag Number</div>
+					</div>
+				</div>
+			</li>
+			<li *ngFor="let item of vehiclesList" class="table">
+				<div class="collapsible-header">
+					<div class="row data-object">
+
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Vehicle Name :</div>
+							{{item.vehicle_name}}
+						</div>
+						<div class="col s12 m3 l4">
+							<div class="tab_label">Driver Name :</div>
+							{{item.driver.first_name + " " + item.driver.last_name + " - " + item.driver.email}} 
+						</div>
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Make/Model :</div>
+							{{item.model}}
+						</div>
+						<div class="col s12 m3 l2">
+							<div class="tab_label">Tag Number :</div>
+							{{item.tag_number}}
+						</div>
+
+					</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+															[iconName]="'mode_edit'"
+															[tooltipText]="'Edit'"
+															(click)="editVehicles(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'visibility'"
+															[tooltipText]="'Details'"
+															(click)="detailsVehicles(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'delete'"
+															[tooltipText]="'Delete'"
+															(click)="deleteVehicles(item)">
+						</app-icon-tooltip>
+					</p>
+
+					</div>
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="vehiclesList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no vehicles to list</h4>
+		</div>
+	</div>
+</div>
+
+<app-pagination [totalObjects]="totalVehicles" (pageChange)="changePage($event)"></app-pagination>

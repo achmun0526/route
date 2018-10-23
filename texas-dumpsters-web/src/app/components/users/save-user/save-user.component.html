@@ -1,0 +1,158 @@
+<form  #addUserCompanyform="ngForm" (submit)="saveUser()">
+  <div class="modal-content">
+    <h4>{{title}}</h4>
+
+    <h5>User Settings</h5>
+    <div class="row">
+      <div *ngIf="roles.length>0" class="input-field col s12 m6 l6">
+        <select class="smallDropdown"
+          id="role"
+          [(ngModel)]="user.role"
+          name="role"
+          [disabled]="updateProfileMode"
+          materialize="material_select"
+          [materializeSelectOptions]="role">
+          <option value="0" disabled selected>Choose one role</option>
+          <option *ngFor="let i of roles" [value]="i">{{i}}</option>
+        </select>
+        <label data-error="wrong">
+            Role <span class="required">*</span>
+        </label>
+        <span class="error" *ngIf="!validations.role_valid">Select one option</span>
+      </div>
+      <div *ngIf="user.role!=ROLE_NAMES.ADMIN">
+        <div *ngIf="companies.length>0" class="input-field col s12 m6 l6">
+          <select class="smallDropdown"
+            id="company"
+            [(ngModel)]="user.company_key"
+            name="company"
+            [disabled]="!selectCompanyAllowed || updateProfileMode"
+            materialize="material_select"
+            [materializeSelectOptions]="company">
+            <option value="0" disabled selected>Choose one company</option>
+            <option *ngFor="let i of companies" [value]="i.id">{{i.name}}</option>
+          </select>
+          <label data-error="wrong">
+            Company <span class="required">*</span>
+          </label>
+          <span class="error" *ngIf="!validations.company_valid">Select one option</span>
+        </div>
+      </div>
+    </div>
+
+    <h5>User Info</h5>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input
+          id="first_name"
+          type="text"
+          class="validate"
+          [(ngModel)]="user.first_name"
+          name="first_name"
+          placeholder="Example"
+          required>
+        <label for="first_name">
+          First Name <span class="required">*</span>
+        </label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input
+          id="last_name"
+          type="text"
+          class="validate"
+          [(ngModel)]="user.last_name"
+          name="last_name"
+          placeholder="Example"
+          required>
+        <label for="last_name">
+          Last Name <span class="required">*</span>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input
+          id="email"
+          type="email"
+          class="validate"
+          [(ngModel)]="user.email"
+          [(ngModel)]="user.auth_id"
+          [disabled]="!isNullOrUndefined(user.user_key)"
+					(blur)="emailValidation()"
+          name="email"
+          pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+          placeholder="example@example.com"
+          required>
+        <label for="email" data-error="Wrong email format">
+          Email <span class="required">*</span>
+        </label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="user.password"
+          name="password"
+          placeholder="1234"
+          required>
+        <label for="password">
+          Password <span class="required">*</span>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input
+							id="contact_phone_desk"
+							type="text"
+							class="validate"
+							[(ngModel)]="user.contact_phone_desk"
+							#tel
+							[value]="user.contact_phone_desk"
+							(blur)="user.contact_phone_desk=tel.value"
+							name="contact_phone_desk"
+							(ngModelChange)="changeDesk($event)"
+							pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+							placeholder="000000000"
+							appPhoneDirective>
+        <label for="contact_phone_desk">Desk Phone</label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input
+							id="contact_phone_mobile"
+							type="text"
+							class="validate"
+							[(ngModel)]="user.contact_phone_mobile"
+							#ta
+							[value]="user.contact_phone_mobile"
+							(blur)="user.contact_phone_mobile=ta.value"
+							name="contact_phone_mobile"
+							(ngModelChange)="changeMobile($event)"
+							pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+							placeholder="000000000"
+							appPhoneDirective>
+        <label for="contact_phone_mobile">Mobile Phone</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input
+          id="device_id"
+          type="text"
+          class="validate"
+          [(ngModel)]="user.device_id"
+          name="device_id"
+          placeholder="Smart Phone">
+        <label for="device_id">Device Id</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <a class="waves-effect waves-green btn-flat" (click)="onCloseClicked()">Close</a>
+    <button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+  </div>
+</form>
+<!-- add user toasts -->
+<a materialize [materializeParams]="['User saved successfully',4000]" [materializeActions]="addUserToast"></a>
+<a materialize [materializeParams]="['There was an error adding the user',4000]" [materializeActions]="addUserToastError"></a>

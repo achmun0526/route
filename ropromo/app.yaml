@@ -1,0 +1,46 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+#version: py1x1
+#project: texas-dumpsters-development
+
+handlers:
+
+- url: /(.*)
+  static_files: dist/index.html
+  upload: dist/(.*)
+  secure: always
+
+# - url: /(.*)
+#   static_files: static/\1
+#   upload: static/(.*)
+#   secure: always
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: ssl
+  version: latest
+- name: pytz
+  version: latest
+- name: pycrypto
+  version: 2.6
+
+skip_files:
+- static/node_modules/lite-server
+
+# PRODUCTION CONFIGS
+#env_variables:
+#  ENDPOINTS_SERVICE_NAME: texas-dumpsters-production.appspot.com
+#  ENDPOINTS_SERVICE_VERSION: 2017-09-08r0
+#
+# END PRODUCTION CONFIGS
+
+# DEVELOPMENT CONFIGS
+env_variables:
+  ENDPOINTS_SERVICE_NAME: ropromo.appspot.com
+  ENDPOINTS_SERVICE_VERSION: 2018-09-01r0
+
+# END DEVELOPMENT CONFIGS

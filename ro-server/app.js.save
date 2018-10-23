@@ -1,0 +1,104 @@
+
+var route_optimizer = require('./books/Route_Optimizer.js');
+var request = require('request');
+var express = require('express');
+var cors = require('cors');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var fs = require('fs');
+var https = require('https');
+
+var index = require('./routes/index');
+var users = require('./routes/users');
+
+
+var app = express();
+
+var computer = require("./optimization-interface/cpp/build/Release/Node_Linker");
+
+app.options('*', cors()); // include before other routes
+
+
+//
+// app.config(function ($httpProvider) {
+//   $httpProvider.defaults.headers.common = {};
+//   $httpProvider.defaults.headers.post = {};
+//   $httpProvider.defaults.headers.put = {};
+//   $httpProvider.defaults.headers.patch = {};
+// });
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'static')));
+app.use('/books', require('./books/crud'));
+app.use('/books',require('./books/Route_Optimizer'))
+app.use('/api/books', require('./books/api'));
+
+
+// https.createServer({
+//   key: fs.readFileSync('key.pem'),
+//   cert: fs.readFileSync('cert.pem')
+// }, app).listen(3000);
+// Websites will deny requests from certain places not specified by the access-control-allow-origin
+// therefore this must be included in order to specify where requests can come from
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// var check = { orders: [ { order_id: 'ah1wfnRleGFzLWR1bXBzdGVycy1kZXZlbG9wbWVudHIZCxIMU2VydmljZU9yZGVyGICAgKCv1oEKDA',
+//        customer_key: 'ah1wfnRleGFzLWR1bXBzdGVycy1kZXZlbG9wbWVudHIVCxIIQ3VzdG9tZXIYgICAwJfnlQkM',
+//        quantity: 0,
+//        site_id: 'ah1wfnRleGFzLWR1bXBzdGVycy1kZXZlbG9wbWVudHIRCxIEU2l0ZRiAgIDAl9KxCgw',
+//        latitude: '40.809098',
+//        longitude: '-73.9526499',
+//        size: '12 Yard',
+//        type: 1 } ],
+//   depots: [ { latitude: '29.377103', longitude: '-98.303581' } ],
+//   landfills: [ { latitude: '29.5531453', longitude: '-98.2674141' } ],
+//   num_of_trucks: [{truck_num: '3'}] };
+
+// Remeber to put routing before any error messages
+app.get('/',function(req,res){
+  // var ro = new route_optimizer();
+  // ro.contact_datastore();
+  res.send("got through to get");
+  });
+
+app.post('/',function(req,res){
+  console.log(req.body);
+  console.log(JSON.stringify(computer.data_rainfall(req.body)));
+  res.header('Content-type', 'text/html');
+  res.send("got through to the post");
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+app.listen(443);

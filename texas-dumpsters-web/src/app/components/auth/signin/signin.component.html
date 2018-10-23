@@ -1,0 +1,19 @@
+<!--<app-auth></app-auth>-->
+<div class="row" style="margin-top:50px;">
+	<div class="col s4"></div>
+	<div class="col s12 m6 l4 card-panel z-depth-3" style="padding:25px;">
+		<div class="row">
+			<div class="col s12" style="text-align:center;">
+				<img src="{{ASSETS}}/default-logo.png">
+			</div>
+		</div>
+			<a class="waves-effect waves-light btn col s12 center red darken-2" style="margin-bottom:5px;" (click)="openSigninModal()">SIGN IN</a>
+			<a class="waves-effect waves-light btn col s12 center red darken-2" href="/x/v1/sign_in_google">SIGN IN WITH GOOGLE</a>
+</div>
+
+<!-- create signin modal + look at user function -->
+<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="signinModal">
+  <app-regular-signin (onCancelAction)="signinModal.emit({action:'modal',params:['close']})"></app-regular-signin>
+</div>
+
+</div>

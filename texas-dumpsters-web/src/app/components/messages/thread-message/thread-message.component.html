@@ -1,0 +1,212 @@
+<!--
+<div class="row">
+	<div class="col s12 m6 l1">
+		<ul>
+			<li class="btn-list">
+				<a class="btn-floating red" (click)="addMessageModal.emit({action:'modal',params:['open']})">
+					<app-icon-tooltip
+						[iconName]="'add'"
+						[tooltipText]="'Add Message'">
+					</app-icon-tooltip>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+-->
+<!--Parent message-->
+
+<div *ngIf="selectedMessage" class="row collapsible-header">
+	<div class="col s12 collapsible">
+		<p>Message</p>
+		<p><strong>From: </strong><label>{{selectedMessage.sender_user.first_name}} {{selectedMessage.sender_user.last_name}} - {{selectedMessage.sender_user.email}}</label></p>
+		<p><strong>To: </strong><label>{{selectedMessage.receiver_user.first_name}} {{selectedMessage.receiver_user.last_name}} - {{selectedMessage.receiver_user.email}}</label></p>	
+		<p><strong>Subject: </strong><label>{{selectedMessage.message_title}}</label></p>
+		<p><strong>Content: </strong><label>{{selectedMessage.message_body}}</label></p>
+	</div>
+	<div class="col s12 collapsible">
+		<app-icon-tooltip
+			[iconName]="'reply'"
+			[tooltipText]="'Reply'"
+			(click)="openReplyMessageModal(selectedMessage)">
+		</app-icon-tooltip>
+
+		<app-icon-tooltip
+			[iconName]="'mode_edit'"
+			[tooltipText]="'Edit'"
+			(click)="openEditMessageModal(selectedMessage)">
+		</app-icon-tooltip>
+
+		<!--
+		<app-icon-tooltip
+			[iconName]="'visibility'"
+			[tooltipText]="'Details'"
+			(click)="goToMessageDetails(parentMessage)">
+		</app-icon-tooltip>
+		-->
+
+		<app-icon-tooltip
+			[iconName]="'delete'"
+			[tooltipText]="'Delete'"
+			(click)="deleteMessage(selectedMessage)">
+		</app-icon-tooltip>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col s12">
+		<p>Messages in this thread</p>
+	</div>
+	<div class="col s12" *ngIf="childMessagesLength > 0 || parentMessage">
+		<ul class="collapsible" data-collapsible="accordion">
+			<li class="tab-header lead">
+				<div class="collapsible-header">
+					<div class="row data-object">
+						<div class="col s12 m4 l2">From:</div>						
+						<div class="col s12 m4 l2">To:</div>
+						<div class="col s12 m4 l2">Subject:</div>
+						<div class="col s12 m4 l3">Body:</div>
+						<div class="col s12 m4 l2">Date:</div>
+					</div>
+				</div>
+			</li>
+			<!--parent message -->
+			<li class="table message-item" *ngIf="parentMessage">
+				<div class="collapsible-header">
+					<div class="row data-object">
+						<div class="col  s12 m4 l2">
+							<div class="tab_label">From:</div>
+							{{parentMessage.sender_user.email}}
+						</div>
+						<div class="col  s12 m4 l2">
+							<div class="tab_label">To:</div>
+							{{parentMessage.receiver_user.email}}
+						</div>
+						<div class="col  s12 m4 l2">
+							<div class="tab_label">Subject:</div>
+							{{parentMessage.message_title}}
+						</div>
+						<div class="col  s12 m4 l3">
+							<div class="tab_label">Message:</div>
+							{{parentMessage.message_body}}
+						</div>
+						<div class="col s12 m4 l2">
+							<div class="tab_label">Date:</div>
+							{{parentMessage.created_at}}
+						</div>
+					</div>
+					<p class="secondary-content">
+
+						<app-icon-tooltip
+							[iconName]="'reply'"
+							[tooltipText]="'Reply'"
+							(click)="openReplyMessageModal(parentMessage)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+							[iconName]="'mode_edit'"
+							[tooltipText]="'Edit'"
+							(click)="openEditMessageModal(parentMessage)">
+						</app-icon-tooltip>
+
+						<!--
+						<app-icon-tooltip
+							[iconName]="'visibility'"
+							[tooltipText]="'Details'"
+							(click)="goToMessageDetails(parentMessage)">
+						</app-icon-tooltip>
+						-->
+
+						<app-icon-tooltip
+							[iconName]="'delete'"
+							[tooltipText]="'Delete'"
+							(click)="deleteMessage(parentMessage)">
+						</app-icon-tooltip>
+					</p>
+
+				</div>
+			</li>
+			<!--childs -->
+			<li *ngFor="let item of childMessages" class="table message-item">
+				<div class="collapsible-header">
+					<div class="row data-object">
+						<div class="col  s12 m4 l2">
+							<div class="tab_label">From:</div>
+							{{item.sender_user.email}}
+						</div>
+						<div class="col  s12 m4 l2">
+							<div class="tab_label">To:</div>
+							{{item.receiver_user.email}}
+						</div>
+						<div class="col s12 m4 l2">
+							<div class="tab_label">Subject:</div>
+							{{item.message_title}}
+						</div>
+						<div class="col  s12 m4 l3">
+							<div class="tab_label">Message:</div>
+							{{item.message_body}}
+						</div>						
+						<div class="col s12 m4 l2">
+							<div class="tab_label">Date:</div>
+							{{Utils.toAMPM(item.date)}}
+						</div>
+					</div>
+					<p class="secondary-content">
+						<app-icon-tooltip
+							[iconName]="'reply'"
+							[tooltipText]="'Reply'"
+							(click)="openReplyMessageModal(parentMessage)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+							[iconName]="'mode_edit'"
+							[tooltipText]="'Edit'"
+							(click)="openEditMessageModal(item)">
+						</app-icon-tooltip>
+
+						<!--
+						<app-icon-tooltip
+							[iconName]="'visibility'"
+							[tooltipText]="'Details'"
+							(click)="goToMessageDetails(item)">
+						</app-icon-tooltip>
+						-->
+
+						<app-icon-tooltip
+							[iconName]="'delete'"
+							[tooltipText]="'Delete'"
+							(click)="deleteMessage(item)">
+						</app-icon-tooltip>
+					</p>
+
+				</div>
+			</li>
+		</ul>
+	</div>
+
+	<div class="alert-text" *ngIf="childMessagesLength==0">
+		<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+		<h4 class="center">There are no messages for this thread</h4>
+	</div>
+
+</div>
+
+<!--this is for create not used
+<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addMessageModal">
+  <app-save-message (afterSaveCompleted)="onMessageCreated()" (onCancelAction)="addMessageModal.emit({action:'modal',params:['close']})"></app-save-message>
+</div>
+-->
+
+<!-- this is for edit message -->
+<div *ngIf="messageToEdit != null" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editMessageModal">
+  <app-save-message [messageToEdit]="messageToEdit" (afterSaveCompleted)="onMessageUpdated()" (onCancelAction)="onEditCancelled()"></app-save-message>
+</div>
+
+<!-- this is for reply message -->
+<div *ngIf="messageToReply != null" id="modal3" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="replyMessageModal">
+  <app-save-message [messageToReply]="messageToReply" (afterSaveCompleted)="onMessageReplyed()" (onCancelAction)="onReplyCancelled()"></app-save-message>
+</div>
+
+<!-- delete customer toasts -->
+<a materialize [materializeParams]="['Message deleted successfully',4000]" [materializeActions]="deleteMessageToast"></a>
+<a materialize [materializeParams]="['There was an error Delete a Message',4000]" [materializeActions]="deleteMessageToastError"></a>

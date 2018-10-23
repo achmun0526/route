@@ -1,0 +1,159 @@
+<!-- Modal Structure -->
+<div id="companyModal" *ngIf="!isNullOrUndefined(yard)" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="yardsModal">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="saveYard()">
+		<div class="modal-content">
+			<h4>{{title}}</h4>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<input
+								 id="name"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.yard_name"
+								 name="name"
+								 placeholder="Example"
+								 required>
+					<label for="name">Name</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="contact_name"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.contact_name"
+								 name="contact_name"
+								 placeholder="Example"
+								 required>
+					<label for="contact_name">Contact Name</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="contact_email"
+								 type="email"
+								 class="validate"
+								 [(ngModel)]="yard.contact_email"
+								 name="contact_email"
+								 pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}"
+								 placeholder="mail@ail.com"
+								 required>
+					<label for="contact_email">Contact Email</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="contact_phone"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.contact_phone"
+								 (ngModelChange)="changePhone($event)"
+								 #ta
+								 [value]="yard.contact_phone"
+								 (blur)="yard.contact_phone=ta.value"
+								 pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+								 appPhoneDirective
+								 name="contact_phone"
+								 placeholder="(111)-111-1111"
+								 required>
+					<label for="contact_phone">Contact Phone</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<app-search-address
+															(getAddress)="yard.yard_address = $event"
+															(getCity)=" yard.yard_city = $event"
+															(getState)=" yard.yard_state= $event"
+															(getzip_code)=" yard.yard_zipcode = $event"
+															(getLatitude)=" yard.latitude = $event"
+															(getLongitude)=" yard.longitude = $event"
+                              [initialValue]="yard.yard_address"
+															>
+					</app-search-address>
+					<span class="error" *ngIf="!validations.latlong_valid">Invalid Address</span>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="city"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.yard_city"
+								 name="city"
+								 placeholder="City"
+                 autocomplete="off">
+					<label for="city">City</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="state"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.yard_state"
+								 name="state"
+								 placeholder="State"
+                 autocomplete="off">
+					<label for="state">State</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="zipcode"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="yard.yard_zipcode"
+								 name="address"
+								 placeholder="Zip Code"
+								 pattern="[0-9]{4,6}"
+                 autocomplete="off">
+					<label for="zipcode">Zip Code</label>
+				</div>
+
+        <div class="input-field col s12 m6 l6">
+          <input
+            id="yard_latitude"
+            type="text"
+            class="validate"
+            [(ngModel)]="yard.latitude"
+            name="yard_latitude"
+            placeholder="Latitude"
+            required
+            pattern="-?\d{1,3}\.\d+"
+            autocomplete="off">
+          <label for="yard_latitude">Latitude</label>
+        </div>
+
+        <div class="input-field col s12 m6 l6">
+          <input
+            id="yard_longitude"
+            type="text"
+            class="validate"
+            [(ngModel)]="yard.longitude"
+            name="yard_longitude"
+            placeholder="Longitude"
+            pattern="-?\d{1,3}\.\d+"
+            required
+            autocomplete="off">
+          <label for="yard_longitude">Longitude</label>
+        </div>
+
+			</div>
+
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closeYardsModal()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Yard saved successfully',4000]" [materializeActions]="addYardsToast"></a>
+<a materialize [materializeParams]="['There was an error saving a Yard',4000]" [materializeActions]="addYardsToastError"></a>
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Yard deleted successfully',4000]" [materializeActions]="deleteYardsToast"></a>
+<a materialize [materializeParams]="['There was an error saving a Yard',4000]" [materializeActions]="deleteYardsToastError"></a>
+
+<a materialize [materializeParams]="['The given address could not be georeversed',4000]" [materializeActions]="addressYardsToastError"></a>

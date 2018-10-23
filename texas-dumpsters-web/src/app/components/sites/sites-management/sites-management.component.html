@@ -1,0 +1,133 @@
+<div class="row">
+	<div class="col s12 m6 l2">
+		<ul>
+			<li class="btn-list">
+				<a class="btn-floating red" (click)="openAddSiteModal()">
+					<app-icon-tooltip
+						[iconName]="'add'"
+						[tooltipText]="'Add Site'">
+					</app-icon-tooltip>
+				</a>
+			</li>
+			<li class="btn-list">
+				<a class="btn-floating green" (click)="addCVSfile()">
+					<app-icon-tooltip
+						[iconName]="'publish'"
+						[tooltipText]="'CSV Sites'">
+					</app-icon-tooltip>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div *ngIf="totalCustomers>0" class="input-field col s12 m3 l3">
+		<select class="smallDropdown"
+				id="cutomerId"
+				name="cutomerId"
+				[(ngModel)]="customerSelectedId"
+				materialize="material_select"
+				(change)="changeCustomerFilter()"
+				[materializeSelectOptions]="typeFence">
+			<option value="">All customers</option>
+			<option *ngFor="let item of customersList;let i = index" [value]="item.id">{{item.customer_name}}</option>
+		</select>
+		<label data-error="wrong">Filter by Customer</label>
+	</div>
+</div>
+
+<app-csv-file [entity]="'site'" (reloadData)="getSitesByCustomer()"></app-csv-file>
+
+<div class="row">
+	<div class="col s12">
+		<p>Total Sites {{totalSites}}</p>
+	</div>
+</div>
+
+<ul class="collapsible" data-collapsible="accordion" *ngIf="siteDisplayList.length > 0">
+
+	<li class="tab-header lead">
+		<div class="row data-object">
+			<div class="col s12 m6 l2">Site Name:</div>
+			<div class="col s12 m6 l2">Contact Name:</div>
+			<div class="col s12 m6 l2">Address:</div>
+			<div class="col s12 m6 l2">Contact email:</div>
+			<div class="col s12 m6 l2">Contact Phone:</div>
+			<div class="col s12 m6 l1">Customer:</div>
+		</div>
+	</li>
+
+	<li *ngFor="let item of siteDisplayList" class="table">
+			<div class="row data-object">
+
+				<div class="col s12 m6 l2 hideOverFlow" title="{{item.site_name}}">
+					<div class="tab_label">Site Name :</div>
+					{{item.site_name}}
+				</div>
+				<div class="col s12 m6 l2 hideOverFlow" title="{{item.contact_name}}">
+					<div class="tab_label">Site Contact Name :</div>
+					{{item.contact_name}}
+				</div>
+
+				<div class="col s12 m6 l2 hideOverFlow" title="address">
+					<div class="tab_label">Site Address :</div>
+					{{item.site_address+', '+item.site_city+', '+item.site_state+', '+item.site_zipcode}}
+				</div>
+
+				<div class="col s12 m6 l2 hideOverFlow" title="{{item.contact_email}}">
+					<div class="tab_label">Site Contact email :</div>
+					{{item.contact_email}}
+				</div>
+
+				<div class="col s12 m6 l2 hideOverFlow" title="{{item.contact_phone}}">
+					<div class="tab_label">Site Contact Phone :</div>
+					{{item.contact_phone}}
+				</div>
+
+				<div class="col s12 m6 l1 hideOverFlow" title="{{item.customer.customer_name}}">
+					<div class="tab_label">Customer name :</div>
+					{{item.customer.customer_name}}
+				</div>
+
+			</div>
+
+			<p class="secondary-content">
+				<app-icon-tooltip
+					[iconName]="'mode_edit'"
+					[tooltipText]="'Edit'"
+					(click)="openEditSiteModal(item)">
+				</app-icon-tooltip>
+
+				<app-icon-tooltip
+					[iconName]="'visibility'"
+					[tooltipText]="'Details'"
+					(click)="redirectSiteDetails(item)">
+				</app-icon-tooltip>
+
+				<app-icon-tooltip
+					[iconName]="'delete'"
+					[tooltipText]="'Delete'"
+					(click)="deleteSite(item)">
+				</app-icon-tooltip>
+			</p>
+	</li>
+</ul>
+
+<div class="alert-text" *ngIf="siteList.length == 0">
+	<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+	<h4 class="center">There are no Sites to list</h4>
+</div>
+
+<app-pagination *ngIf="totalSites>0" [totalObjects]="totalSites" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+
+<!-- Add site modal -->
+<div id="addSiteModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addSiteModal">
+	<app-save-site (onSaveCompleted)="onSiteCreated()" (onCancelAction)="onAddCancelled()"></app-save-site>
+</div>
+
+<!-- Edit site modal -->
+<div *ngIf="siteToEdit" id="editSiteModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editSiteModal">
+	<app-save-site [siteToEdit]="siteToEdit" (onSaveCompleted)="onSiteEdited()" (onCancelAction)="onEditCancelled()"></app-save-site>
+</div>
+
+<!-- delete sites toasts -->
+<a materialize [materializeParams]="['Site deleted successfully',4000]" [materializeActions]="deleteSiteToast"></a>
+<a materialize [materializeParams]="['There was an error deleting the site',4000]" [materializeActions]="deleteSiteToastError"></a>

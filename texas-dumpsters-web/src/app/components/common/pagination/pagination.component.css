@@ -1,0 +1,15 @@
+.disabled{
+  pointer-events: none;
+}
+.pagination{
+  position:relative;
+  float:left;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+	width: auto;
+}
+.pagination li.active a{
+  background-color: #e53935;
+}

@@ -1,0 +1,120 @@
+<!-- Modal Structure -->
+<form class="col s12" #addCompanyform="ngForm" (submit)="saveRoutes()">
+  <div class="modal-content">
+    <h4>{{title}}</h4>
+    <div class="row">
+      <div *ngIf="vehiclesList.length > 0" class="input-field col s12 m6">
+        <select class="smallDropdown"
+                id="selectedVehicleIndex"
+                name="selectedVehicleIndex"
+                [(ngModel)]="selectedVehicleIndex"
+                (change)="onVehicleChanged()"
+                materialize="material_select">
+          <option value="" disabled selected>Choose one Vehicle</option>
+          <option *ngFor="let item of vehiclesList;let i = index;" [value]="i">{{item.vehicle_name}}</option>
+        </select>
+        <label data-error="wrong">Vehicle</label>
+        <span class="error" *ngIf="!validations.vehicle_valid">Select one option</span>
+      </div>
+      <div *ngIf="vehiclesList.length == 0" class="col s12 m6 warning">Please create a vehicle first.</div>
+
+      <div *ngIf="userList.length > 0" class="input-field col s12 m6">
+        <select class="smallDropdown"
+                id="driver_key"
+                name="driver_key"
+                [(ngModel)]="route.driver_key"
+                materialize="material_select"
+                disabled>
+          <option value="" disabled selected>Choose one Driver</option>
+          <option *ngFor="let item of userList;let i = index;" [value]="item.user_key">{{ item.first_name + " " + item.last_name + " - " + item.email}}</option>
+        </select>
+        <label data-error="wrong">Driver</label>
+        <span class="error" *ngIf="!validations.driver_valid">Select one option</span>
+      </div>
+      <div *ngIf="userList.length == 0" class="col s12 m6 warning">Please create a driver first.</div>
+
+        <div class="col s12 m6">
+          <label for="date">Date</label>
+          <input id="date" name="date" materialize="pickadate" type="text" style="margin-right:0.5rem"
+            [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="date.date"
+            [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]">
+        </div>
+
+        <div class="col s12 m6">
+          <div class="input-field col s4">
+            <input
+                  id="hour"
+                  type="number"
+                  max="12"
+                  min="1"
+                  class="validate"
+                  [(ngModel)]="date.hour"
+                  name="hour"
+                  required>
+            <label for="hour">Hour</label>
+          </div>
+
+          <div class="input-field col s4">
+            <input
+                  id="minutes"
+                  type="number"
+                  max="59"
+                  min="00"
+                  class="validate"
+                  [(ngModel)]="date.minutes"
+                  name="minutes"
+                  required>
+            <label for="minutes">Minutes</label>
+          </div>
+
+          <div class="col s4">
+              <p>
+                <input
+                      name="group1"
+                      type="radio"
+                      id="radio1"
+                      [(ngModel)]="date.hour_type"
+                      [value]="1"
+                      (change)="hourConfig()"
+                      />
+                <label for="radio1">Am</label>
+                <input
+                      name="group1"
+                      type="radio"
+                      id="radio2"
+                      [(ngModel)]="date.hour_type"
+                      [value]="2"
+                      (change)="hourConfig()"
+                      />
+                <label for="radio2">Pm</label>
+              </p>
+          </div>
+
+
+      </div>
+    </div>
+
+    <div class="input-field col s12">
+      <textarea
+                id="notes"
+                class="materialize-textarea"
+                materialize="characterCounter"
+                name="notes"
+                [(ngModel)]="route.notes"
+                [attr.length]="maxLength">
+      </textarea>
+      <label for="notes">Notes</label>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
+    <button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+  </div>
+
+</form>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Route saved successfully',4000]" [materializeActions]="addRoutesToast"></a>
+<a materialize [materializeParams]="['There was an error saving the Route',4000]" [materializeActions]="addRoutesToastError"></a>

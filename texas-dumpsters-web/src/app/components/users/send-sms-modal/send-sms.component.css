@@ -1,0 +1,31 @@
+.content-txtModal{
+    text-align: center;
+    margin-top: 25%;
+    /*position: absolute;*/
+    transform: translateY(-50%);
+    width: 100%;
+}
+
+.titulo{
+    margin: 2rem;
+}
+
+.texto{
+    resize: none;
+    width: calc(100% - 4rem) !important;
+    margin-top: 2rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    height: 7rem;
+}
+
+.counter{
+    margin-right: 2rem;
+    text-align: right;
+}
+
+.submitButton{
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+

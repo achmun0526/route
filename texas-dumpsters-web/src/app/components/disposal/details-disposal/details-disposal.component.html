@@ -1,0 +1,79 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="editDisposals()">
+	<app-icon-tooltip
+									[iconName]="'edit'"
+									[tooltipText]="'Edit Facility'">
+	</app-icon-tooltip>
+</a>
+
+<app-save-disposal></app-save-disposal>
+
+<div class="row detail-table" style="margin-top:20px;">
+
+	<div class="col s12 m6 l3">
+		<span class="label">Facility Name</span>
+		<p style="margin-top:3px;">
+			{{diposal.facility_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Hours of Operation</span>
+		<p style="margin-top:3px;">
+			{{diposal.hours_of_operation}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Name</span>
+		<p style="margin-top:3px;">
+			{{diposal.contact_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Email</span>
+		<p style="margin-top:3px;">
+			{{diposal.contact_email}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone</span>
+		<p style="margin-top:3px;">
+			{{diposal.contact_phone}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Facility Address</span>
+		<p style="margin-top:3px;">
+			{{diposal.facility_address}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Facility City</span>
+		<p style="margin-top:3px;">
+			{{diposal.facility_city}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+  <span class="label">Facility State</span>
+  <p style="margin-top:3px;">
+    {{diposal.facility_state}}
+  </p>
+</div>
+  <div class="col s12 m6 l3">
+    <span class="label">Facility Zip Code</span>
+    <p style="margin-top:3px;">
+      {{diposal.facility_zipcode}}
+    </p>
+  </div>
+  <div class="col s12 m6 l3">
+    <span class="label">Facility Latitude</span>
+    <p style="margin-top:3px;">
+      {{diposal.latitude}}
+    </p>
+  </div>
+  <div class="col s12 m6 l3">
+    <span class="label">Facility Longitude</span>
+    <p style="margin-top:3px;">
+      {{diposal.longitude}}
+    </p>
+  </div>
+
+</div>

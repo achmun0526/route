@@ -1,0 +1,37 @@
+<div class="col s12 m6">
+	<div class="input-field col s4">
+		<select
+						id="year"
+						name="year"
+						[(ngModel)]="date.year"
+						(change)="update()"
+						materialize="material_select">
+			<option *ngFor="let item of yearList;" [value]="item">{{item}}</option>
+		</select>
+		<label data-error="wrong">Year</label>
+	</div>
+
+	<div class="input-field col s4" *ngIf="displayed">
+		<select
+						id="month"
+						name="month"
+						[(ngModel)]="date.month"
+						(change)="update()"
+						materialize="material_select">
+			<option *ngFor="let item of monthList;" [value]="item.val">{{item.name}}</option>
+		</select>
+		<label data-error="wrong">Month</label>
+	</div>
+
+	<div class="input-field col s4">
+		<select
+						id="day"
+						name="day"
+						[(ngModel)]="date.day"
+						(change)="update()"
+						materialize="material_select">
+			<option *ngFor="let item of dayList;" [value]="item">{{item}}</option>
+		</select>
+		<label data-error="wrong">Day</label>
+	</div>
+</div>

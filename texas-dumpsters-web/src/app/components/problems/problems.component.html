@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="input-field-col col s3 m3 l6">
+    <select class="smallDropdown"
+            [(ngModel)]="driverSelected"
+            materialize="material_select"
+            [materializeSelectOptions]="driverList">
+      <option value="none" disabled-selected>All</option>
+      <option *ngFor="let item of driverList;let i = index;" [value]="item.user_key">{{item.first_name + " " + item.last_name + " - " + item.email}}</option>
+    </select>
+    <label>Driver</label>
+  </div>
+  <div class="input-field-col col s6 m6 l4" style="display:flex">
+    <input materialize="pickadate" [(ngModel)]="startDate" [materializeParams]="[{format:'mm-dd-yyyy', closeOnSelect: true }]" type="text" style="margin-right:0.5rem">
+    <input materialize="pickadate" [(ngModel)]="endDate" [materializeParams]="[{format:'mm-dd-yyyy', closeOnSelect: true }]" type="text" style="margin-left:0.5rem">
+  </div>
+  <div class="col s3 m3 l2" style="height: 45px !important">
+    <a style="top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%)"
+       class="waves-effect waves-light btn modal-trigger" (click)="filter()">Filter</a>
+  </div>
+</div>
+<div class="row" *ngIf="problemsList.length != 0">
+  <div class="col s12">
+    <ul class="collapsible" data-collapsible="accordion" *ngIf="problemsList.length > 0">
+      <li class="tab-header lead">
+        <div class="collapsible-header">
+          <div class="row data-object">
+            <div class="col s12 m2 l4">Date:</div>
+            <div class="col s12 m1 l2">Status:</div>
+            <div class="col s12 m2 l6">Description:</div>
+          </div>
+        </div>
+      </li>
+      <li *ngFor="let item of problemsList" class="table">
+        <div class="collapsible-header">
+          <div class="row data-object">
+            <div class="col s12 m2 l4">
+              <div class="tab_label">Date :</div>
+              {{Utils.toAMPM(item.problem_datetime)}}
+              <!--{{item.problem_datetime | date: 'MM/dd/yyyy hh:mm:ss a'}}-->
+            </div>
+            <div class="col s12 m1 l2">
+              <div class="tab_label">Status:</div>
+              {{Utils.findNameByIdOnKeyValueList(problemsStatusList,item.state)}}
+            </div>
+            <div class="col s12 m2 l4">
+              <div class="tab_label">Notes:</div>
+              {{item.description}}
+            </div>
+            <div class="col s12 m2 l2">
+              <p class="secondary-content">
+                <app-icon-tooltip *ngIf="item.has_attachments"
+                                  [iconName]="'attachments'"
+                                  [tooltipText]="'View Attachments'"
+                                  (click)="viewAttachments(item.id)">
+                </app-icon-tooltip>
+                <app-icon-tooltip *ngIf="item.state==1"
+                                  [iconName]="'build'"
+                                  [tooltipText]="'Resolve Problem'"
+                                  (click)="problemSolved(item)">
+                </app-icon-tooltip>
+                <app-icon-tooltip *ngIf="item.state==1"
+                                  [iconName]="'block'"
+                                  [tooltipText]="'Fail'"
+                                  (click)="problemNotSolved(item)">
+                </app-icon-tooltip>
+              </p>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="alert-text" *ngIf="problemsList.length == 0">
+  <h2 class="center"><i class="material-icons">assignment_late</i></h2>
+  <h4 class="center">There are no Problems to List</h4>
+</div>
+<app-pagination [totalObjects]="totalProblems" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+<a materialize [materializeParams]="['Error, please enter a valid range of dates',4000]" [materializeActions]="filterToastError"></a>
+<a materialize [materializeParams]="['There was an error performing the action',4000]" [materializeActions]="errorMessage"></a>
+<!-- add message modal-->
+<div id="modal4" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="attachmentsModal">
+  <app-list-attachments *ngIf="!isNullOrUndefined(entityKeyToViewFiles)"  [entityKey]="entityKeyToViewFiles" (onCloseAction)="attachmentsModal.emit({action:'modal',params:['close']});"></app-list-attachments>
+</div>

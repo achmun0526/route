@@ -1,0 +1,69 @@
+<div class="center-align"  id="first-container">
+
+  <div class="center-align" id="INTRO-TEXT">Transparent Pricing</div>
+  <div  class="center-align" id="intro-text">We believe in simple, straight forward pricing.
+Get what you want from the start</div>
+  <div class="center-align row" id="pricing-container">
+     <div class="col l4"  id="pricing-card-left">
+         <img src='assets/cool_truck.png' id="cool-truck">
+         <div class="center-align" id="pricing-price">$50<a id="pricing-price-text">/mo</a></div>
+         <div class="center-align" id="pricing-text-container">
+           <li class="left-align" id="pricing-text"> 3 Site Administrators</li>
+           <li class="left-align" id="pricing-text"> Unlimited Drivers</li>
+           <li class="left-align" id="pricing-text"> 1 Region</li>
+           <li class="left-align" id="pricing-text"> <150 Optimized Orders</li>
+        </div>
+        <div id="price1-note1">+$5 for each additional administrator</div>
+        <div id="price1-note2">*Region = 150 mile radius</div>
+       </div>
+       <div class="col l4"  id="pricing-card-middle">
+           <img src='assets/cool_truck.png' id="cool-truck">
+           <img src='assets/cool_truck.png' id="cool-truck">
+           <div class="center-align" id="pricing-price">$100<a id="pricing-price-text">/mo</a></div>
+           <div class="center-align" id="pricing-text-container">
+             <li class="left-align" id="pricing-text"> 3 Site Administrators</li>
+             <li class="left-align" id="pricing-text"> Unlimited Drivers</li>
+             <li class="left-align" id="pricing-text"> 3 Regions</li>
+             <li class="left-align" id="pricing-text"> <300 Optimized Orders</li>
+          </div>
+          <div id="price1-note1">+$5 for each additional administrator</div>
+          <div id="price1-note2">*Region = 150 mile radius</div>
+         </div>
+         <div class="col l4"  id="pricing-card-right">
+           <div class="row">
+             <img src='assets/cool_truck.png' id="cool-truck2">
+             <img src='assets/cool_truck.png' id="cool-truck2">
+           </div>
+           <div class="row">
+            <img src='assets/cool_truck.png' id="cool-truck2">
+          </div>
+             <div class="center-align" id="pricing-price">$150<a id="pricing-price-text">/mo</a></div>
+             <div class="center-align" id="pricing-text-container">
+               <li class="left-align" id="pricing-text"> 3 Site Administrators</li>
+               <li class="left-align" id="pricing-text"> Unlimited Drivers</li>
+               <li class="left-align" id="pricing-text"> Unlimited Regions</li>
+               <li class="left-align" id="pricing-text"> Unlimited Optimized Orders</li>
+            </div>
+            <div id="price1-note1">+$5 for each additional administrator</div>
+            <div id="price1-note2">*Region = 150 mile radius</div>
+           </div>
+   </div>
+
+     <a  class="center-align waves-effect waves-light btn modal-trigger purple lighten-2" id="first-center-button" (click)="showTrialModal()">Start Free Trial</a>
+</div>
+
+<div class="center-align" id="question-tab">
+  <div id="question-text">
+    For any additional questions email us at
+  </div>
+  <div id="email">
+    f.schwartz@txdumpsters.com
+  </div>
+</div>
+
+<!-- Add service detail modal -->
+<div *ngIf="trial_modal_activated">
+  <div  id="trial_modal"  class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="trial_modal">
+    <app-trial (afterOrderSaved)="onTrialRequested()" (onCancelAction)="closeTrialModal()"></app-trial>
+  </div>
+</div>

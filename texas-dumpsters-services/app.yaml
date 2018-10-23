@@ -1,0 +1,106 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+#version: py1x1
+#project: texas-dumpsters-development
+
+handlers:
+
+- url: /x/a/.*
+  script: main.app
+  login: required
+  secure: always
+
+- url: /x/api/.*
+  script: main.app
+  secure: always
+
+  # The endpoints handler must be mapped to /_ah/api.
+- url: /_ah/api/.*
+  script: main_api.api
+  secure: always
+
+# re-direct to index.html if no path is give
+- url: /x/.*
+  script: main.app
+  secure: always
+
+# re-direct to index.html if no path is give
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+# re-direct to index.html if path ends without an extension
+- url: /[\w_/]+$
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+# Be sure to have an entry for EACH deep url location in your single page application.
+- url: /dashboard
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+# Adding location for communication with compute engine
+- url: /compute
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+# Be sure to have an entry for EACH deep url location in your single page application.
+- url: /(.*)/
+  static_files: static/\1/index.html
+  upload: static/(.*)/index.html
+  secure: always
+
+- url: /settings/.*
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+- url: /management/.*
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+- url: /customers/.*
+  static_files: static/index.html
+  upload: static/index.html
+  secure: always
+
+
+- url: /(.*)
+  static_files: static/\1
+  upload: static/(.*)
+  secure: always
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: ssl
+  version: latest
+- name: pytz
+  version: latest
+- name: pycrypto
+  version: 2.6
+
+skip_files:
+- static/node_modules/lite-server
+
+# PRODUCTION CONFIGS
+#env_variables:
+#  ENDPOINTS_SERVICE_NAME: texas-dumpsters-production.appspot.com
+#  ENDPOINTS_SERVICE_VERSION: 2017-09-08r0
+#
+# END PRODUCTION CONFIGS
+
+# DEVELOPMENT CONFIGS
+env_variables:
+  ENDPOINTS_SERVICE_NAME: texas-dumpsters-development.appspot.com
+  ENDPOINTS_SERVICE_VERSION: 2017-09-08r0
+
+# END DEVELOPMENT CONFIGS

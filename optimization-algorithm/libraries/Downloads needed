@@ -1,0 +1,7 @@
+QT save
+Qwt
+QT
+
+May be able to just use QT and Qwt libraries with cpp files without actually installing them etc... by adding the whole directory to the build in net beans
+
+

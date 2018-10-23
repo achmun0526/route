@@ -1,0 +1,214 @@
+
+<div class="row" *ngIf="!isNullOrUndefined(selectedCompany)">
+	<div class="col s12" style="margin-bottom:30px;">
+		<ul class="tabs" materialize="tabs" style="background-color:transparent;">
+			<li class="tab col s4"><a class="active" href="#info">Company Information</a></li>
+			<li class="tab col s4"><a href="#pricing">Service Pricing</a></li>
+			<li class="tab col s4"><a href="#users">Users</a></li>
+		</ul>
+	</div>
+
+	<div id="info" class="col s12">
+		<a class="btn-floating waves-effect waves-light red darken-2" (click)="editCompany()"><i class="material-icons">edit</i></a>
+
+		<div class="row" style="margin-top:20px;">
+      <div class="col s12 m12 l12">
+				<h3>
+					{{selectedCompany.name}}
+				</h3>
+      </div>
+      <div class="col s12 m6 l3">
+					<span class="label">Domain:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.domain}}
+				</p>
+      </div>
+      <div class="col s12 m6 l3">
+					<span class="label">Contact Phone:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.contact_phone}}
+				</p>
+      </div>
+      <div class="col s12 m6 l3">
+					<span class="label">Contact Email:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.contact_email}}
+				</p>
+      </div>
+      <div class="col s12 m6 l3">
+					<span class="label">Address:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.address}}
+				</p>
+      </div>
+
+			<div class="col s12 m6 l3">
+					<span class="label">City:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.city}}
+				</p>
+      </div>
+
+			<div class="col s12 m6 l3">
+					<span class="label">State:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.state}}
+				</p>
+      </div>
+
+			<div class="col s12 m6 l3">
+					<span class="label">Zip code:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.zipcode}}
+				</p>
+      </div>
+
+      <div class="col s12 m6 l3">
+					<span class="label">Status:</span>
+        <p style="margin-top: 3px;">
+          {{selectedCompany.active?'Active':'Inactive'}}
+				</p>
+      </div>
+      <div class="col s12 m6 l6">
+					<span class="label">Vendor Notes:</span>
+        <p style="margin-top: 3px;">
+					{{selectedCompany.vendor_notes}}
+				</p>
+      </div>
+	    <div class="col s12 m12 l12">
+				<span class="label">Company Logo:</span>
+				<p style="margin-top: 3px;">
+					{{selectedCompany.name}}
+				</p>
+				<img src="{{selectedCompany.logo_url}}">
+			</div>
+		</div>
+
+
+	</div>
+	<div id="users" class="col s12">
+    <a class="btn-floating waves-effect waves-light red darken-2" (click)="addUserModal.emit({action:'modal',params:['open']})"><i class="material-icons">add</i></a>
+		<h4>Company Users</h4>
+    <div class="row">
+      <div class="col s12">
+        <p>Total Users {{userList.length}}</p>
+      </div>
+    </div>
+    <div class="row">
+			<ul class="collapsible" data-collapsible="accordion" *ngIf="userList.length > 0">
+				<li class="tab-header lead">
+					<div class="collapsible-header">
+						<div class="row data-object">
+							<div class="col s12 m6 l4">User Name :</div>
+							<div class="col s12 m6 l4">User Email:</div>
+							<div class="col s12 m6 l4">User Role:</div>
+						</div>
+					</div>
+				</li>
+				<li *ngFor="let item of userList" class="table">
+					<div class="collapsible-header">
+						<div class="row data-object">
+							<div class="col  s12 m6 l4">
+								<div class="tab_label">User Name :</div>
+								{{item.first_name+' '+item.last_name}}
+							</div>
+							<div class="col  s12 m6 l4">
+								<div class="tab_label">User Email :</div>
+								{{item.email}}
+							</div>
+							<div class="col  s12 m6 l3">
+								<div class="tab_label">User Role:</div>
+								{{item.getUserRole()}}
+							</div>
+						</div>
+
+						<p class="secondary-content">
+							<app-icon-tooltip
+								[iconName]="'mode_edit'"
+								[tooltipText]="'Edit'"
+								(click)="openEditUserModal(item)">
+							</app-icon-tooltip>
+						</p>
+					</div>
+				</li>
+			</ul>
+			<div class="alert-text" *ngIf="userList.length == 0">
+				<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+				<h4 class="center">There are no Users to List</h4>
+			</div>
+		</div>
+
+	</div>
+	<div id="pricing" class="col s12">
+		<a class="btn-floating waves-effect waves-light red darken-2" (click)="addPrice()"><i class="material-icons">add</i></a>
+		<h4>Service Pricing</h4>
+		<div class="row">
+			<div class="col s12">
+					<p>Total Service Pricing {{selectedCompany.service_pricing.length}} </p>
+			</div>
+		</div>
+		<div class="row">
+			<ul class="collapsible" data-collapsible="accordion" *ngIf="selectedCompany.service_pricing.length > 0">
+				<li class="tab-header lead">
+					<div class="collapsible-header">
+						<div class="row data-object">
+							<div class="col s12 m6 l4">Dumpster Size :</div>
+							<div class="col s12 m6 l4">Price:</div>
+						</div>
+					</div>
+				</li>
+				<li *ngFor="let item of selectedCompany.service_pricing;let i = index;" class="table">
+					<div class="collapsible-header">
+						<div class="row data-object">
+							<div class="col  s12 m6 l4">
+								<div class="tab_label">Dumpster Size :</div>
+								{{item.dumpser_size}}
+							</div>
+							<div class="col  s12 m6 l4">
+								<div class="tab_label">Price :</div>
+								{{item.price}}
+							</div>
+						</div>
+
+						<p class="secondary-content">
+							<app-icon-tooltip
+								[iconName]="'mode_edit'"
+								[tooltipText]="'Edit'"
+								(click)="editPrice(i)">
+							</app-icon-tooltip>
+
+		          <app-icon-tooltip
+								[iconName]="'delete'"
+								[tooltipText]="'Delete'"
+								(click)="deletePrice(i)">
+							</app-icon-tooltip>
+						</p>
+					</div>
+				</li>
+			</ul>
+			<div class="alert-text" *ngIf="selectedCompany.service_pricing.length == 0">
+				<div class="alert-text">
+					<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+					<h4 class="center">There are no Services Pricing to list</h4>
+				</div>
+			</div>
+
+	</div>
+
+</div>
+<app-company-modal (reloadData)="loadCompanyData()"></app-company-modal>
+
+
+<app-save-pricing (reloadData)="loadCompanyData()"></app-save-pricing>
+
+
+<div *ngIf="!isNullOrUndefined(selectedCompany)" id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addUserModal">
+  <app-save-user [selectedCompany]="selectedCompany" (afterAddCompleted)="onUserCreated()" (onCancelAction)="addUserModal.emit({action:'modal',params:['close']})"></app-save-user>
+</div>
+
+<div *ngIf="!isNullOrUndefined(selectedUser)" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editUserModal">
+  <app-save-user [userToEdit]="selectedUser" [selectedCompany]="selectedCompany" (afterAddCompleted)="onUserEdited()" (onCancelAction)="onEditCancelled()"></app-save-user>
+</div>
+<!-- delete user toasts -->
+<a materialize [materializeParams]="['User delete successfully',4000]" [materializeActions]="deleteUserToast"></a>
+<a materialize [materializeParams]="['There was an error delete a User',4000]" [materializeActions]="deleteUserToastError"></a>

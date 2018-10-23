@@ -1,0 +1,136 @@
+<div class="row">
+	<div class="col s12">
+		<p>Total Users {{totalUsers}}</p>
+	</div>
+	<div class="col s12 m6 l2">
+		<a class="btn-floating red" *ngIf="getBtn()" (click)="openAddUserModal()">
+			<app-icon-tooltip
+				[iconName]="'add'"
+				[tooltipText]="'Add User'">
+			</app-icon-tooltip>
+		</a>
+	</div>
+	<div class="col s12">
+		<ul class="collapsible" data-collapsible="accordion" *ngIf="userList.length > 0">
+			<li class="tab-header lead">
+					<div class="row data-object">
+						<div class="col s12 m2 l2">User Name:</div>
+						<div class="col s12 m2 l3">User Email:</div>
+						<div class="col s12 m2 l2">User Role:</div>
+						<div class="col s12 m2 l2">User Company:</div>
+						<div class="col s12 m2 l2">Contact:</div>
+					</div>
+			</li>
+			<li *ngFor="let item of userList; let i = index" class="table userList">
+					<div class="row data-object">
+						<div class="col  s12 m2 l2">
+							<div class="tab_label">User Name:</div>
+							{{item.first_name +' '+item.last_name}}
+						</div>
+						<div class="col  s12 m2 l3">
+							<div class="tab_label">User Email:</div>
+							<div *ngIf="item.email">
+							{{item.email}}
+							</div>
+						</div>
+						<div class="col  s12 m2 l2">
+							<div class="tab_label">User Role:</div>
+              				{{item.getUserRole()}}
+						</div>
+						<div class="col  s12 m2 l2">
+							<div class="tab_label">User Company:</div>
+							{{item.company!=null?item.company.name:"All"}}
+						</div>
+						<div class="col  s12 m2 l2 usersIcons">
+								<div [attr.id]="'placeholder-div' + i"></div>
+								<p class="secondary-content">
+
+									<app-icon-tooltip *ngIf="item.email"
+																		[iconName]="'insert_comment'"
+																		[tooltipText]="'Message'"
+																		[iconSize]="16"
+																		[iconWidth]="16"
+																		(click)="openNewMessageToUserModal(item)">
+									</app-icon-tooltip>
+
+									<a href="mailto:{{item.email}}" target="_blank"><app-icon-tooltip *ngIf="item.email"
+																		[iconName]="'email'"
+																		[tooltipText]="'Email driver'"
+																		[iconSize]="16"
+																		[iconWidth]="16">
+									</app-icon-tooltip></a>
+
+									<app-icon-tooltip
+																		[iconName]="'textsms'"
+																		[tooltipText]="'Text message'"
+																		[iconSize]="16"
+																		[iconWidth]="16"
+																		(click)="openSMSModal(item)">
+									</app-icon-tooltip>
+
+									<a href="tel:+1 {{item.contact_phone_mobile}}"><app-icon-tooltip *ngIf="item.contact_phone_mobile"
+																		[iconName]="'call'"
+																		[tooltipText]="'Call driver'"
+																		[iconSize]="16"
+																		[iconWidth]="16">
+									</app-icon-tooltip></a>
+
+									<app-icon-tooltip *ngIf="item.email"
+																		[iconName]="'visibility'"
+																		[tooltipText]="'Details'"
+																		[iconSize]="16"
+																		[iconWidth]="16"
+																		(click)="goToUserDetails(item)">
+									</app-icon-tooltip>
+
+									<app-icon-tooltip
+																		[iconName]="'mode_edit'"
+																		[tooltipText]="'Edit'"
+																		[iconSize]="16"
+																		[iconWidth]="16"
+																		(click)="openEditUserModal(item)">
+									</app-icon-tooltip>
+
+									<app-icon-tooltip
+																		[iconName]="'delete'"
+																		[tooltipText]="'Delete'"
+																		[iconSize]="16"
+																		[iconWidth]="16"
+																		(click)="deleteUser(item)">
+									</app-icon-tooltip>
+								</p>
+						</div>
+					</div>
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="userList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no users to list</h4>
+		</div>
+	</div>
+</div>
+<app-pagination [totalObjects]="totalUsers" (pageChange)="changePage($event)"></app-pagination>
+
+<!-- create user modal -->
+<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addUserModal">
+  <app-save-user (afterAddCompleted)="onUserCreated()" (onCancelAction)="addUserModal.emit({action:'modal',params:['close']})"></app-save-user>
+</div>
+
+<!-- edit user modal -->
+<div *ngIf="selectedUser!=null" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editUserModal">
+  	<app-save-user [userToEdit]="selectedUser" (afterAddCompleted)="onUserUpdated()" (onCancelAction)="onEditCancelled()"></app-save-user>
+</div>
+
+<!-- send SMS modal -->
+<div id="modal3" class="modal modal-height-inherit" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="sendSMSModal">
+	<app-send-sms [userToSend]="selectedUser" (onCancelAction)="onSMSCancelled()" (afterSMSsent)="onSMSsent()" ></app-send-sms>
+</div>
+
+<!-- add message modal-->
+<div *ngIf="userToSend!=null" id="modal4" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addMessageToUserModal">
+  <app-save-message [userToSend]="userToSend" (afterSaveCompleted)="onMessageToUserCreated()" (onCancelAction)="onAddMessageToUserCancelled()"></app-save-message>
+</div>
+
+<!-- add user toasts -->
+<a materialize [materializeParams]="['User deleted successfully',4000]" [materializeActions]="deleteUserToast"></a>
+<a materialize [materializeParams]="['There was an error Delete the user',4000]" [materializeActions]="deleteUserToastError"></a>

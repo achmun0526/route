@@ -1,0 +1,70 @@
+<!-- Modal Structure -->
+<div id="companyModal" *ngIf="!isNullOrUndefined(driver)" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="driversModal">
+		<form class="col s12" #addCompanyform="ngForm" (submit)="saveDriver()">
+			<div class="modal-content">
+				<h4>{{title}}</h4>
+				<div class="row">
+					<div class="input-field col s12 m6">
+						<input
+									 id="name"
+									 type="text"
+									 class="validate"
+									 [(ngModel)]="driver.driver_name"
+									 name="name"
+									 placeholder="Example"
+									 required>
+						<label for="name">Name</label>
+					</div>
+	        <div class="input-field col s12 m6">
+	          <input
+	                 id="phone_number"
+	                 type="text"
+	                 class="validate"
+	                 [(ngModel)]="driver.driver_phone"
+	                 name="phone_number"
+	                 placeholder="Example"
+	                 required>
+	          <label for="phone_number">Phone Number</label>
+	        </div>
+
+			</div>
+			<div class="row">
+					<div class="input-field col s12 m6">
+						<input
+									 id="email"
+									 type="text"
+									 class="validate"
+									 [(ngModel)]="driver.driver_email"
+									 name="email"
+									 placeholder="Example"
+									 required>
+						<label for="email">Email</label>
+					</div>
+
+					<div class="input-field col s12 m6">
+						<input
+									 id="ID"
+									 type="text"
+									 class="validate"
+									 [(ngModel)]="driver.driver_id"
+									 name="ID"
+									 placeholder="Example"
+									 required>
+						<label for="ID">ID</label>
+					</div>
+				</div>
+
+			<div class="modal-footer">
+				<a class="waves-effect waves-green btn-flat" (click)="closeDriversModal()">Close</a>
+				<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<!-- <a materialize [materializeParams]="['Driver saved successfully',4000]" [materializeActions]="addDriverToast"></a>
+<a materialize [materializeParams]="['There was an error saving a driver',4000]" [materializeActions]="addDriverToastError"></a> -->
+<!-- delete customer toasts -->
+<!-- <a materialize [materializeParams]="['Driver Delete successfully',4000]" [materializeActions]="deleteDriverToast"></a>
+<a materialize [materializeParams]="['There was an error Delete a driver',4000]" [materializeActions]="deleteDriverToastError"></a> -->

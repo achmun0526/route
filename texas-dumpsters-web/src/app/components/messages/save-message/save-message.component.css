@@ -1,0 +1,21 @@
+.warning{
+    color: red;
+}
+.saveMessage-modal-container{
+    padding: 0 20px;
+}
+
+.saveMessage-modal-container .counter{
+    float: right;
+    font-size: 12px;
+    color: #cccccc
+}
+.messageToReply-container{
+    color: #AAAAAA;
+    padding: 0 15px;
+}
+
+.messageFilter{
+    width: 50%;
+    margin-left: 50%;
+}

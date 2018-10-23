@@ -1,0 +1,171 @@
+
+
+#first-container{
+  background: -moz-linear-gradient(-45deg, rgba(63,76,107,1) 0%, rgba(63,76,107,0.84) 81%, rgba(63,76,107,0.84) 99%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, rgba(63,76,107,1) 0%,rgba(63,76,107,0.84) 81%,rgba(63,76,107,0.84) 99%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, rgba(63,76,107,1) 0%,rgba(63,76,107,0.84) 81%,rgba(63,76,107,0.84) 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+}
+/* hover final state */
+#first-container:hover div.rocket {
+  -webkit-transform: translate(-100%,0px);
+  -moz-transform: translate(-100%,0px);
+  -o-transform: translate(-100%,0px);
+  -ms-transform: translate(-100%,0px);
+  transform: translate(-100%,0px);
+}
+
+#INTRO-TEXT{
+  padding-top: 30px;
+  font-family: 'Roboto';
+  font-size: 42px;
+  color:#FFFFFF;
+}
+
+#intro-text{
+  font-family: 'Roboto';
+  font-size: 14px;
+  color:#FFFFFF;
+}
+
+#first-center-button{
+  margin-top:100px;
+  margin-bottom:200px;
+}
+
+#center-image-container{
+  padding:40px
+}
+#center-image{
+  width: 600PX;
+  height:300PX;
+  border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border: 2px solid #000000;
+}
+
+
+div.rocket {
+  -webkit-transition: 10s ease-in;
+  -moz-transition: 10s ease-in;
+  -o-transition: 10s ease-in;
+  transition: 10s ease-in;
+}
+div.rocket div {
+  width: 100%;
+  height: 100%;
+  background: url(/images/rocket.gif) ;
+  -webkit-transition: 2s ease-in-out;
+  -moz-transition: 2s ease-in-out;
+  -o-transition: 2s ease-in-out;
+  transition: 2s ease-in-out;
+}
+
+#second-container{
+  background:#FFFFFF;
+}
+
+#text-promo{
+  font-family: Raleway, Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: 0px;
+  font-style: normal;
+  font-size:32px;
+  margin:100px;
+  opacity: 0.9;
+  background: #FFFFFF;
+}
+
+
+#third-container{
+  background:#FFFFFF;
+  /* box-shadow: 0px 1px 1px #888, 0px -1px 1px #888; */
+}
+
+#getting-started{
+  margin:50px;
+  font-family: 'Roboto';
+  font-style: bold;
+  font-size: 32px;
+  color:#000000;
+  background:#FFFFFF;
+  text-decoration: underline;
+}
+
+#truck-i
+
+#site-image_container{
+
+}
+
+#site-info-text{
+  padding-top:150px;
+  font-family: 'Roboto';
+  font-style:bold;
+  font-size: 18px;
+
+  color:#000000;
+}
+#site-image{
+  padding: 10px;
+  width: 100%;
+  height:100%;
+}
+#site-image-modal{
+  position:relative;
+  left: 200px;
+  top: -100px;
+  width: 40%;
+  height:40%;
+  border: 1px solid #000000;
+}
+#site-image-csv{
+  position:relative;
+  left: 220px;
+  top: -110px;
+  width: 42%;
+  height: 40%;
+  border: 1px solid #000000;
+}
+
+#fourth-container{
+  padding:30px;
+  background:#FFFFFF;
+  box-shadow: 0px 1px 0px #888, 0px -1px 0px #888;
+}
+
+mg{
+  position: absolute;
+    bottom: 10px;
+    right: 20px;
+  max-height:50px;
+  max-width:50px;
+}
+
+
+#load-screen{
+	background-color: rgba(255,255,255,0.5	);
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	display: none;
+	z-index: 2;
+}
+#load-screen .loading{
+	position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+#load-screen .progress{
+	position: relative;
+	margin-top: 0;
+}
+
+.body{
+  background: #FFFFFF;
+}

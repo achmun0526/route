@@ -1,0 +1,65 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * File:   main.cpp
+ * Author: forest
+ *
+ * Created on December 12, 2017, 7:09 PM
+ */
+
+
+#include "Service.h"
+#include "Landfill.h"
+#include "Depot.h"
+#include "Route_Finder.h"
+#include <iostream>
+
+
+int main(int argc, char *argv[]) {
+    
+    // Setting up Services example
+    Service *d1 = new Service(35.16210530,-85.20578180,"d",20); //0
+    Service *d2 = new Service(35.05143600,-85.31526600,"d",20); //1
+    Service *d3 = new Service(34.99110400,-85.21803700,"d",30); //2
+    Service *d4 = new Service(35,-85.2,"d",40); //3
+    Service *d5 = new Service(34.4,-84.2,"d",40); //4
+    
+    Service *p1 = new Service(35.05143600,-85.31526600,"p",30); //5
+    Service *p2 = new Service(35.03397700,-85.27677900,"p",20); //6
+    Service *p3 = new Service(35.05809390,-85.59604910,"p",30); //7
+    Service *p4 = new Service(35.03024070,-85.31747090,"p",20); //8
+    Service *p5 = new Service(35.83,-84.321,"p",30); //9
+    Service *p6 = new Service(33.49,-84.2,"p",40); //10
+    
+    Service *s1 = new Service(34.84162490,-84.82759570,"s",30); //11
+    Service *s2 = new Service(35.07400590,-85.26767400,"s",20); //12
+    Service *s3 = new Service(33.4,-83.3,"s",20); //13
+    Service *s4 = new Service(34.4,-85.2,"s",30); //14
+
+
+    Service* services[15] = {d1, d2, d3, d4, d5, p1, p2, p3, p4, p5, p6, s1, s2, s3, s4};
+    // Setting up Landfills 
+    Landfill* l1 = new Landfill(34.3,-85.1);
+    Landfill* l2 = new Landfill(36.2,-85.23);
+    Landfill* l3 = new Landfill(35.2,-85.23);
+    
+    Landfill* landfills[3]={l1, l2, l3};
+    // Setting up Depots
+    Depot* de1 = new Depot(35.2,-84.6);
+    Depot* depots[1]={de1};
+    // Number of trucks
+    int num_of_trucks = 2;
+
+    // Testing Brute Force Route Finder
+    //Route_Finder routeFinder = Route_Finder(services, landfills, depots, num_of_trucks);
+    //routeFinder.random_sequential_sort();
+    File_Handler file_handle(services, landfills, depots,num_of_trucks);
+    vector<vector<string>> z = file_handle.parse_services();
+
+    return 0;
+}
+

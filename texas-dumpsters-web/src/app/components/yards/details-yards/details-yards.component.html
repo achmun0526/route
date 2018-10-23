@@ -1,0 +1,72 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="editYards()">
+	<app-icon-tooltip
+									[iconName]="'edit'"
+									[tooltipText]="'Edit Yard'">
+	</app-icon-tooltip>
+</a>
+
+<app-save-yards></app-save-yards>
+
+<div class="row detail-table" style="margin-top:20px;">
+
+	<div class="col s12 m6 l3">
+		<span class="label">Yard Name</span>
+		<p style="margin-top:3px;">
+			{{yard.yard_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Name</span>
+		<p style="margin-top:3px;">
+			{{yard.contact_name}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Email</span>
+		<p style="margin-top:3px;">
+			{{yard.contact_email}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Contact Phone</span>
+		<p style="margin-top:3px;">
+			{{yard.contact_phone}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Yard Address</span>
+		<p style="margin-top:3px;">
+			{{yard.yard_address}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Yard City</span>
+		<p style="margin-top:3px;">
+			{{yard.yard_city}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Yard State</span>
+		<p style="margin-top:3px;">
+			{{yard.yard_state}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Yard Zip Code</span>
+		<p style="margin-top:3px;">
+			{{yard.yard_zipcode}}
+		</p>
+	</div>
+  <div class="col s12 m6 l3">
+    <span class="label">Yard Latitude</span>
+    <p style="margin-top:3px;">
+      {{yard.latitude}}
+    </p>
+  </div>
+  <div class="col s12 m6 l3">
+    <span class="label">Yard Longitude</span>
+    <p style="margin-top:3px;">
+      {{yard.longitude}}
+    </p>
+  </div>
+</div>

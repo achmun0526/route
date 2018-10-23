@@ -1,0 +1,98 @@
+
+/* lateral nav styles*/
+.lateral-nav{
+  width: 250px;
+  top: 0;
+	z-index: 20;
+  position: fixed;
+  background: #fff;
+	height: 100%;
+}
+.lateral-nav nav{
+  height: 100%;
+	height: 80%;
+  max-height: 600px;
+}
+.lateral-nav nav ul li{
+  width: 100%;
+  float: left;
+  overflow: hidden;
+	position: relative;
+}
+.lateral-nav nav ul li a{
+  color: rgba(29, 60, 106, 0.7);
+  width: 250px;
+  margin: 0;
+	font-weight: 300;
+  padding-left: 30px;
+}
+.lateral-nav nav ul .dropdown-menu{
+  padding-left: 50px;
+  position: relative;
+}
+.lateral-nav nav ul .dropdown-menu li{
+  position: relative;
+}
+
+.lateral-nav nav ul .dropdown-menu .subItem{
+  height: 40px;
+}
+.lateral-nav nav ul .dropdown-menu .subItem:hover{
+  background-color: rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.lateral-nav nav ul .dropdown-menu .menu-line{
+  height: 8px;
+  width: 8px;
+  background: rgba(29, 60, 106, 0.7);;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+ul.dropdown-menu li .subItemText{
+    width: auto;
+    color: rgba(29, 60, 106, 0.7);
+    display: inline-block;
+    vertical-align: top;
+    height: 28px;
+    line-height: 25px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+/*lateral nav logo image styles*/
+.lateral-nav .image-logo{
+  width: 100%;
+  padding: 30px;
+  /*min-height: 63px;
+	max-height: 140px;*/
+}
+.lateral-nav img{
+  width: 100%;
+}
+
+@media only screen and (max-width: 720px){
+	.lateral-nav{
+		width: 50px;
+	}
+	.openmenu{
+		padding-left: 50px;
+	}
+	#primaryNavbar{
+		padding-left: 50px;
+	}
+	.lateral-nav nav ul li a{
+		padding-left: 12px;
+	}
+	.lateral-nav .image-logo{
+		padding: 3px;
+	}
+	.page-container{
+		margin-top: 30px;
+	}
+	
+}

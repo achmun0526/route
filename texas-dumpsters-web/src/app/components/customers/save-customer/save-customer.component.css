@@ -1,0 +1,8 @@
+.modal-content{
+	position: relative !important;
+}
+
+.modal-footer{
+    background: none !important;
+    position: relative !important;
+}

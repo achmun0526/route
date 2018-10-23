@@ -1,0 +1,52 @@
+.divisor{
+  border-top: 1px solid #ACACAC;
+  float: left;
+  width: 100%;
+  margin-top: 45px;
+  margin-bottom: 20px;
+  color: #ACACAC;
+}
+.divisor h5{
+  height: 50px;
+  width: 50px;
+  background-color: #fff;
+  margin: 0 auto;
+  border: 1px solid #ACACAC ;
+  margin-top: -25px;
+  border-radius: 25px;
+  display: block;
+  padding: 10px;
+}
+.button{
+  margin-top: 20px;
+  color: #000;
+}
+
+
+/* label focus color */
+.input-field input[type=text]:focus + label {
+  color: #8a2d25;
+}
+/* label underline focus color */
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #8a2d25;
+  box-shadow: 0 1px 0 0 #8a2d25;
+}
+/* label focus color */
+.input-field input[type=email]:focus + label {
+  color: #8a2d25;
+}
+/* label underline focus color */
+.input-field input[type=email]:focus {
+  border-bottom: 1px solid #8a2d25;
+  box-shadow: 0 1px 0 0 #8a2d25;
+}
+img{
+	width: 100%;
+	height: auto;
+}
+
+.modal-height-inherit{
+  height: 400px !important;
+  height: inherit !important;
+}

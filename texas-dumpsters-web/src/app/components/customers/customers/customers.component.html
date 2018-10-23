@@ -1,0 +1,92 @@
+<div class="row" style="z-index:5000">
+	<div class="col s12">
+		<ul>
+			<li class="btn-list">
+				<a class="btn-floating red" (click)="openAddCustomerModal()">
+					<app-icon-tooltip
+						[iconName]="'add'"
+						[tooltipText]="'Add Customer'">
+					</app-icon-tooltip>
+				</a>
+			</li>
+			<li class="btn-list">
+				<a class="btn-floating green" (click)="addCVSfile(getCustomers) ">
+					<app-icon-tooltip
+						[iconName]="'publish'"
+						[tooltipText]="'CSV Customer'">
+					</app-icon-tooltip>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<app-csv-file [entity]="'customer'" (reloadData)="getCustomers(true)"></app-csv-file>
+
+<div class="col s12">
+	<p>Total Customer {{totalCustomers}}</p>
+</div>
+
+<div class="row">
+	<div class="col s12">
+		<ul class="collapsible" data-collapsible="accordion" *ngIf="customersDisplayList.length > 0">
+			<li class="tab-header lead">
+					<div class="row data-object">
+						<div class="col s12 m4 l4">Customer Name :</div>
+						<div class="col s12 m4 l4">Customer Email:</div>
+						<div class="col s12 m4 l3">Customer Address:</div>
+					</div>
+			</li>
+			<li *ngFor="let item of customersDisplayList" class="table">
+					<div class="row data-object">
+						<div class="col  s12 m4 l4">
+							<div class="tab_label">Customer Name :</div>
+							{{item.customer_name}}
+						</div>
+						<div class="col  s12 m4 l4">
+							<div class="tab_label">Customer Email :</div>
+							{{item.contact_email}}
+						</div>
+						<div class="col  s12 m4 l3">
+							<div class="tab_label">Customer Address:</div>
+							{{item.billing_state}} {{item.billing_city}} {{item.billing_address}}
+						</div>
+					</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+							[iconName]="'mode_edit'"
+							[tooltipText]="'Edit'"
+							(click)="openEditCustomerModal(item)">
+						</app-icon-tooltip>
+						<app-icon-tooltip
+							[iconName]="'visibility'"
+							[tooltipText]="'Details'"
+							(click)="redirectToCustomerDetails(item)">
+						</app-icon-tooltip>
+						<app-icon-tooltip
+							[iconName]="'delete'"
+							[tooltipText]="'delete'"
+							(click)="deleteCustomer(item)">
+						</app-icon-tooltip>
+					</p>
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="customersList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no customers to list</h4>
+		</div>
+	</div>
+</div>
+<app-pagination [totalObjects]="totalCustomers" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+
+
+<!-- Add customer modal -->
+<div id="addCustomerModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: false}]" [materializeActions]="addCustomerModal">
+	<app-save-customer (onSaveCompleted)="onCustomerCreated()" (onCancelAction)="onAddCancelled()"></app-save-customer>
+</div>
+
+<!-- Edit customer modal -->
+<div id="editCustomerModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: false}]" [materializeActions]="editCustomerModal">
+	<app-save-customer *ngIf="!isNullOrUndefined(customerToEdit)" [customerToEdit]="customerToEdit" (onSaveCompleted)="onCustomerEdited()" (onCancelAction)="onEditCancelled()"></app-save-customer>
+</div>

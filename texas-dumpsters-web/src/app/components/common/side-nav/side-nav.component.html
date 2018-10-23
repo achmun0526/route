@@ -1,0 +1,44 @@
+<!--
+<ul id="slide-out" class="side-nav">
+	<li><div class="userView">
+		<div class="background">
+			<img src="http://www.txdumpsters.com/images/img3.jpg">
+		</div>
+		<a href="#!user"><img class="circle" src="https://cdn1.iconfinder.com/data/icons/freeline/32/account_friend_human_man_member_person_profile_user_users-256.png"></a>
+		<a href="#!name"><span class="white-text name">John Doe</span></a>
+		<a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
+	</div></li>
+	<li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+	<li><a href="#!">Second Link</a></li>
+	<li><div class="divider"></div></li>
+	<li><a class="subheader">Subheader</a></li>
+	<li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+</ul>
+<a  data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+-->
+
+<div  *ngIf="authService.isUserSignedIn()" class="lateral-nav z-depth-3">
+  <div class="image-logo" style="text-align:center;">
+    <a routerLink="/dashboard">
+      <img src="{{logo_url}}" id="logo-menu">
+    </a>
+  </div>
+  <nav class="grey lighten-5" [ngClass]="{'short': openMenu}">
+      <ul>
+        <li *ngFor="let item of lateralmenu; let i = index; trackBy: trackByFn" [ngClass]="{'dropActive' : item.open}">
+          <a class="waves-effect waves-light grey lighten-3 menuitem" (click)="dropdownMenu(i)">
+            <i class="material-icons left">{{item.icon}}</i>
+            <i class="material-icons right dropclick">keyboard_arrow_down</i>
+            {{item.label}}
+          </a>
+          <ul class="dropdown-menu" [hidden]="!item.open" [ngClass]="{'z-depth-4': openMenu}">
+            <li *ngFor="let sub of lateralmenu[i].dropdown let e = index; trackBy: trackByFn">
+              <div (click)="changePage(i,e)" class="subItem">
+                <div class="menu-line"></div><div class="subItemText"> {{sub.label}} </div>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+  </nav>
+</div>

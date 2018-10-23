@@ -1,0 +1,4 @@
+{
+  "GCLOUD_PROJECT": "texas-dumpsters-development",
+  "DATA_BACKEND": "datastore"
+}

@@ -1,0 +1,75 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="editVehicles()">
+	<app-icon-tooltip
+									[iconName]="'edit'"
+									[tooltipText]="'Edit Vehicle'">
+	</app-icon-tooltip>
+</a>
+
+<app-save-vehicles></app-save-vehicles>
+
+<div class="row detail-table" style="margin-top:20px;">
+	<h4>Vehicle Information</h4>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Vehicle Name :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.vehicle_name}}
+		</p>
+	</div>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Make/Model :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.model}}
+		</p>
+	</div>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Size :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.size}}
+		</p>
+	</div>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Tag Number :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.tag_number}}
+		</p>
+	</div>
+
+</div>
+
+<div class="row detail-table" style="margin-top:20px;">
+	<h4>Driver Information</h4>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Driver Name :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.driver.first_name}} {{vehicle.driver.last_name}} 
+		</p>
+	</div>
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Driver Email :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.driver.email}}
+		</p>
+	</div>
+	
+	<div class="col s6 m3 l3">
+		<span class="label">
+			Contact Phone Mobile :
+		</span>
+		<p style="margin-top:3px">
+			{{vehicle.driver.contact_phone_mobile}}
+		</p>
+	</div>
+
+</div>

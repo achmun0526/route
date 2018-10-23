@@ -1,0 +1,98 @@
+<!-- Modal Structure -->
+<div id="companyModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="vehiclesModal">
+	<form class="col s12" #addCompanyform="ngForm" (submit)="saveVehicle()">
+		<div class="modal-content">
+			<h4>{{title}}</h4>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<input
+								 id="vehicle_name"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="vehicle.vehicle_name"
+								 name="vehicle_name"
+								 placeholder="Example"
+								 required>
+					<label for="vehicle_name">Name</label>
+				</div>
+
+				<div  *ngIf="userList.length>0" class="input-field col s12 m6">
+					<select class="smallDropdown"
+							id="driver"
+							name="driver"
+							[(ngModel)]="vehicle.driver_key"
+							materialize="material_select"
+							[materializeSelectOptions]="">
+						<option value="" disabled selected>Choose your option</option>
+						<option *ngFor="let item of userList;let i = index;" [value]="item.user_key">{{item.first_name + " " + item.last_name + " - " + item.email}}</option>
+					</select>
+					<label data-error="wrong">Driver</label>
+					<span class="error" [hidden]="validations.driver_invalid">Select one option</span>
+				</div>
+
+				<div  *ngIf="userList.length == 0" class="input-field col s12 m6">
+					<input
+								 id="noDrivers"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="noDrivers"
+								 name="noDrivers"
+								 disabled
+								 required>
+					<label for="noDrivers">No Drivers</label>
+          <span class="error" >A driver is required in order to create a vehicle</span>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="model"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="vehicle.model"
+								 name="model"
+								 placeholder="Example"
+								 required>
+					<label for="model">Model</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="size"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="vehicle.size"
+								 name="size"
+								 placeholder="Example"
+								 required>
+					<label for="size">Size</label>
+				</div>
+
+				<div class="input-field col s12 m6">
+					<input
+								 id="tag_number"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="vehicle.tag_number"
+								 name="tag_number"
+								 placeholder="Example"
+								 required>
+					<label for="tag_number">Tag Number</label>
+				</div>
+
+			</div>
+
+		</div>
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closeVehiclesModal()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Vehicle saved successfully',4000]" [materializeActions]="addVehiclesToast"></a>
+<a materialize [materializeParams]="['There was an error saving a vehicle',4000]" [materializeActions]="addVehiclesToastError"></a>
+<!-- delete customer toasts -->
+<a materialize [materializeParams]="['Vehicle Delete successfully',4000]" [materializeActions]="deleteVehiclesToast"></a>
+<a materialize [materializeParams]="['There was an error Delete a vehicle',4000]" [materializeActions]="deleteVehiclesToastError"></a>

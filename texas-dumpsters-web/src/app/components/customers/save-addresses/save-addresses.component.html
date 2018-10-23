@@ -1,0 +1,76 @@
+<!-- Modal Structure -->
+<div id="addressModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addressModal">
+	<form class="col s12" #addAddressform="ngForm" (submit)="saveAddress()">
+		<div class="modal-content">
+			<h4>{{title}}</h4>
+			<div class="row">
+        <div class="input-field col s12 m6">
+          <input
+            id="address"
+            type="text"
+            class="validate"
+            [(ngModel)]="address.address"
+            name="address"
+            required>
+          <label for="address">Service Address</label>
+        </div>
+				<div class="input-field col s12 m6">
+					<input
+								 id="city"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="address.city"
+								 name="city"
+								 required>
+					<label for="city">City</label>
+				</div>
+				
+				<div class="input-field col s12 m6">
+					<input
+								 id="state"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="address.state"
+								 name="state"
+								 required>
+					<label for="state">State</label>
+				</div>
+				
+				<div class="input-field col s12 m6">
+					<input
+								 id="zipcode"
+								 type="text"
+								 class="validate"
+								 [(ngModel)]="address.zipcode"
+								 pattern="[0-9]{4,6}"
+								 name="zipcode"
+								 required>
+					<label for="zipcode">Zip Code</label>
+				</div>
+
+				<div class="input-field col s12">
+					<textarea
+										id="notes"
+										class="materialize-textarea"
+										materialize="characterCounter"
+										name="note"
+										[(ngModel)]="address.notes"
+										[attr.length]="maxLength">
+					</textarea>
+					<label for="notes">Notes</label>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="modal-footer">
+			<a class="waves-effect waves-green btn-flat" (click)="closeAddressModal()">Close</a>
+			<button class="waves-effect waves-green btn-flat" type="submit">Save</button>
+		</div>
+
+	</form>
+</div>
+
+<!-- add customer toasts -->
+<a materialize [materializeParams]="['Address saved successfully',4000]" [materializeActions]="addAddressToast"></a>
+<a materialize [materializeParams]="['There was an error saving the address',4000]" [materializeActions]="addAddressToastError"></a>

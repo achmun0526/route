@@ -1,0 +1,17 @@
+	<input
+				 id="addressSearch"
+				 type="text"
+				 class="autocomplete"
+				 [(ngModel)]="addressModel"
+				 name="addressSearch"
+         autocomplete="off"
+				 (ngModelChange)="modelChange(addressModel)"
+				 (blur)="hidden()"
+         placeholder="123 Main Street">
+
+	<label for="addressSearch">Address</label>
+	<ul class="autocomplete-content dropdown-content" *ngIf="listDisplay">
+		<li *ngFor="let item of addressesList;let i = index" (click)="updateModel(i); listDisplay = false">
+			<span>{{item.formatted_address}}</span>
+		</li>
+	</ul>

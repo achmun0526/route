@@ -1,0 +1,97 @@
+<div class="row">
+	<div class="col s12">
+			<ul>
+				<li class="btn-list">
+					<a class="btn-floating red" (click)="addDisposals()">
+						<app-icon-tooltip
+															[iconName]="'add'"
+															[tooltipText]="'Add Facilities'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+				<li class="btn-list">
+					<a class="btn-floating green" (click)="addCVSfile()">
+						<app-icon-tooltip
+															[iconName]="'publish'"
+															[tooltipText]="'CSV Facilities'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+			</ul>
+	</div>
+</div>
+
+<app-csv-file [entity]="'facility'" (reloadData)="getDisposals()"></app-csv-file>
+<app-save-disposal (reloadData)="getDisposals()"></app-save-disposal>
+
+<div class="col s12">
+	<p>Total Facilities {{totalDisposals}}</p>
+</div>
+
+<div class="row">
+	<div class="col s12">
+		<ul class="collapsible" data-collapsible="accordion" *ngIf="disposalsList.length > 0">
+			<li class="tab-header lead">
+					<div class="row data-object">
+
+						<div class="col s12 m3 l3">Facility Name :</div>
+						<div class="col s12 m3 l3">Address :</div>
+						<div class="col s12 m3 l3">Phone number :</div>
+						<div class="col s12 m3 l3">Hours of operation :</div>
+
+					</div>
+			</li>
+			<li *ngFor="let item of disposalsList" class="table">
+					<div class="row data-object">
+
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Facility Name :</div>
+							{{item.facility_name}}
+						</div>
+
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Address :</div>
+							{{item.getFormattedAddress()}}
+						</div>
+
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Phone number :</div>
+							{{item.contact_phone}}
+						</div>
+
+						<div class="col s12 m3 l3">
+							<div class="tab_label">Hours of operation  :</div>
+							{{item.hours_of_operation}}
+						</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+															[iconName]="'mode_edit'"
+															[tooltipText]="'Edit'"
+															(click)="editDisposals(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'visibility'"
+															[tooltipText]="'Details'"
+															(click)="detailsDisposals(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'delete'"
+															[tooltipText]="'Delete'"
+															(click)="deleteDisposals(item)">
+						</app-icon-tooltip>
+					</p>
+
+					</div>
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="disposalsList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no Facilities to list</h4>
+		</div>
+	</div>
+</div>
+
+<app-pagination [totalObjects]="totalDisposals" (pageChange)="changePage($event)"></app-pagination>

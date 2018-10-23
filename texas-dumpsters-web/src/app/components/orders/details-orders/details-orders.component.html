@@ -1,0 +1,126 @@
+<a  class="btn-floating waves-effect waves-light red darken-2" (click)="editOrderModal.emit({action:'modal',params:['open']})">
+	<app-icon-tooltip
+		[iconName]="'edit'"
+		[tooltipText]="'Edit Order'">
+	</app-icon-tooltip>
+</a>
+<div *ngIf="!isNullOrUndefined(order) && purposeServiceList.length>0" class="row detail-table" style="margin-top:20px;">
+	<div class="col s12 m6 l3">
+		<span class="label">Order Asset: </span>
+		<p style="margin-top:3px;">
+			{{order.assets}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Setting Instructions: </span>
+		<p style="margin-top:3px;">
+			{{order.notes}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">State: </span>
+		<p style="margin-top:3px;">
+      {{Utils.findNameByIdOnKeyValueList(orderStateList,order.state)}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Date:</span>
+		<p style="margin-top:3px;">
+			{{order.service_date}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Time Frame:</span>
+		<p style="margin-top:3px;">
+			{{order.service_time_frame}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3">
+		<span class="label">Purpose of Service :</span>
+		<p style="margin-top:3px;">
+			{{Utils.findNameByIdOnKeyValueList(purposeServiceList,order.purpose_of_service)}}
+		</p>
+	</div>
+	<div class="col s12 m6 l3" *ngIf="order.has_attachments" >
+		<span class="label">Attachments :</span>
+		<p style="margin-top:3px;" class="order-attachments">
+			<app-icon-tooltip
+				[iconName]="'attachments'"
+				[tooltipText]="'View Attachments'"
+				(click)="viewAttachments(order.id)">
+			</app-icon-tooltip>
+		</p>
+	</div>
+</div>
+
+<!-- problems -->
+
+<div class="row" *ngIf="totalProblems>0">
+
+	<p>Problems</p>
+
+	<div class="col s12">
+	  	<ul class="collapsible" data-collapsible="accordion">
+			<li class="tab-header lead">
+		  		<div class="collapsible-header">
+					<div class="row data-object">
+			  			<div class="col s12 m2 l4">Date:</div>
+			  			<div class="col s12 m1 l2">Status:</div>
+			  			<div class="col s12 m2 l6">Description:</div>
+					</div>
+		  		</div>
+			</li>
+			<li *ngFor="let item of problemsList" class="table">
+				<div class="collapsible-header">
+					<div class="row data-object">
+						<div class="col s12 m2 l4">
+							<div class="tab_label">Date :</div>
+							{{Utils.toAMPM(item.problem_datetime)}}
+							<!--{{item.problem_datetime | date: 'MM/dd/yyyy hh:mm:ss a'}}-->
+						</div>
+						<div class="col s12 m1 l2">
+							<div class="tab_label">Status:</div>
+							{{Utils.findNameByIdOnKeyValueList(problemsStatusList,item.state)}}
+						</div>
+						<div class="col s12 m2 l4">
+							<div class="tab_label">Notes:</div>
+							{{item.description}}
+						</div>
+						<div class="col s12 m2 l2">
+							<p class="secondary-content">
+								<app-icon-tooltip *ngIf="item.has_attachments"
+													[iconName]="'attachments'"
+													[tooltipText]="'View Attachments'"
+													(click)="viewAttachments(item.id)">
+								</app-icon-tooltip>
+								<app-icon-tooltip *ngIf="item.state==1"
+													[iconName]="'build'"
+													[tooltipText]="'Resolve Problem'"
+													(click)="problemSolved(item)">
+								</app-icon-tooltip>
+								<app-icon-tooltip *ngIf="item.state==1"
+													[iconName]="'block'"
+													[tooltipText]="'Fail'"
+													(click)="problemNotSolved(item)">
+								</app-icon-tooltip>
+							</p>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<!-- Error message -->
+<a materialize [materializeParams]="['There was an error performing the action',4000]" [materializeActions]="errorMessage"></a>
+
+<!-- attachments modal -->
+<div id="modal4" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="attachmentsModal">
+	<app-list-attachments *ngIf="!isNullOrUndefined(entityKeyToViewFiles)"  [entityKey]="entityKeyToViewFiles" (onCloseAction)="attachmentsModal.emit({action:'modal',params:['close']});"></app-list-attachments>
+</div>
+
+<!-- modal add new order -->
+<div *ngIf="!isNullOrUndefined(order)" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editOrderModal">
+  <app-save-order [orderToEdit]="order" (afterOrderSaved)="onOrderUpdated()" (onCancelAction)="onEditCancelled()"></app-save-order>
+</div>

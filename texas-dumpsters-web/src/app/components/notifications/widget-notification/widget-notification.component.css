@@ -1,0 +1,48 @@
+.notification-icon{
+    display: inline-block;
+    vertical-align: middle;
+}
+.notification-counter-container{
+    margin-left: -10px;
+}
+.notification-counter{
+    display: inline-block;
+    vertical-align: middle;
+    color: orange;
+}
+
+/* notification pop up */
+.notification-list{
+    position: absolute;
+    top:25px;
+    right: 50px;
+    height: auto;
+    max-width: 50%;
+    max-height: 400px;
+    overflow-y: scroll;
+    
+    background: white;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    z-index: 2;
+}
+
+.notificationItem{
+    color: #000000;
+    border-top: 1px solid #cccccc;
+    font-size: 12px;
+    padding: 0 10px;
+    height: auto;
+    float: none;
+    line-height: 25px;
+    cursor: pointer;
+}
+.notificationItem:hover{
+    background: #cccccc;
+}
+.notificationList-title{
+    color: #8a2d25;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+}

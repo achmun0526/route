@@ -1,0 +1,78 @@
+<a *ngIf="authService.getCurrentUser().hasAdminRole()" class="btn-floating waves-effect waves-light red darken-2" (click)="addCompany()"><i class="material-icons">add</i></a>
+<app-company-modal (reloadData)="getCompanies()"></app-company-modal>
+<div class="row">
+	<div class="col s12">
+		<p>Total Companies {{totalCompanies}}</p>
+	</div>
+	<div class="col s12">
+		<ul class="collapsible" data-collapsible="accordion" *ngIf="companiesList.length > 0">
+			<li class="tab-header lead">
+					<div class="row data-object">
+						<div class="col s12 m6 l3">Company Name :</div>
+						<div class="col s12 m6 l3">Company Domain:</div>
+						<div class="col s12 m6 l3">Company Address:</div>
+						<div class="col s12 m6 l3">Company Status:</div>
+					</div>
+			</li>
+
+			<li *ngFor="let item of companiesList" class="table">
+					<div class="row data-object">
+						<div class="col  s12 m6 l3">
+							<div class="tab_label">Company Name :</div>
+							{{item.name}}
+						</div>
+						<div class="col  s12 m6 l3">
+							<div class="tab_label">Company Domain :</div>
+							{{item.domain}}
+						</div>
+						<div class="col  s12 m6 l3">
+							<div class="tab_label">Company Address :</div>
+							{{item.address}}  {{item.city}}
+						</div>
+						<div class="col  s12 m6 l3">
+							<div class="tab_label">Company Status :</div>
+							{{item.active?'Active':'Inactive'}}
+						</div>
+					</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+															[iconName]="'person_add'"
+															[tooltipText]="'Add User'"
+															(click)="addUserToCompany(item)">
+						</app-icon-tooltip>
+						<app-icon-tooltip
+															[iconName]="'visibility'"
+															[tooltipText]="'View Details'"
+															(click)="goToDetails(item)">
+						</app-icon-tooltip>
+						<app-icon-tooltip
+															[iconName]="'mode_edit'"
+															[tooltipText]="'Edit'"
+															(click)="editCompany(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip *ngIf="item.active"
+															[iconName]="'delete'"
+															[tooltipText]="'Delete'"
+															(click)="inactiveCompany(item)">
+						</app-icon-tooltip>
+					</p>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class="alert-text" *ngIf="companiesList.length == 0">
+	<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+	<h4 class="center">There are no Companies to List</h4>
+</div>
+
+<app-pagination [totalObjects]="totalCompanies" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+<div *ngIf="selectedCompany!=null" id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addUserModal">
+  <app-save-user (afterAddCompleted)="onUserCreated()" [selectedCompany]="selectedCompany" (onCancelAction)="onAddUserCancelled()"></app-save-user>
+</div>
+
+<!-- delate company toasts -->
+<a materialize [materializeParams]="['Company inactivated successfully',4000]" [materializeActions]="deleteCompanyToast"></a>
+<a materialize [materializeParams]="['There was an error inactivating the company',4000]" [materializeActions]="deleteCompanyToastError"></a>

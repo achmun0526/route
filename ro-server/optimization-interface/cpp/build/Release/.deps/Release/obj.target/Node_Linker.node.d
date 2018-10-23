@@ -1,0 +1,1 @@
+cmd_Release/obj.target/Node_Linker.node := g++ -shared -pthread -rdynamic -m64  -Wl,-soname=Node_Linker.node -o Release/obj.target/Node_Linker.node -Wl,--start-group Release/obj.target/Node_Linker/src/Link.o Release/obj.target/Node_Linker/src/Link_Node.o -Wl,--end-group -loptimization-algorithm -lcurl

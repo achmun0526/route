@@ -1,0 +1,199 @@
+<div class="row">
+
+
+	<div class="col s12 m6 l2">
+		<!--	// Red Open Order Modal Button-->
+			<ul>
+				<li class="btn-list">
+					<a class="btn-floating red" (click)="openAddOrderModal()">
+						<app-icon-tooltip
+															[iconName]="'add'"
+															[tooltipText]="'Add Order'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+				<!-- Green add order by CSV Button-->
+				<li class="btn-list">
+					<a class="btn-floating green" (click)="addCVSFile(loadFilteredOrders(false))">
+						<app-icon-tooltip
+															[iconName]="'publish'"
+															[tooltipText]="'Add Orders by CSV'">
+						</app-icon-tooltip>
+					</a>
+				</li>
+			</ul>
+	</div>
+
+<!-- Dropdown that lists customers-->
+	<div class="input-field col s12 m3 l3">
+		<select class="smallDropdown"
+						id="selectedCustomerIndex"
+						name="selectedCustomerIndex"
+						[(ngModel)]="selectedCustomerId"
+						(change)="onCustomerChanged()"
+						materialize="material_select"
+						[materializeSelectOptions]="customersList">
+			<option value="">All customers</option>
+			<option *ngFor="let item of customersList;let i = index;" [value]="item.id">{{item.customer_name}}</option>
+		</select>
+		<label data-error="wrong">Filter by customer</label>
+	</div>
+
+
+	<div  class="input-field col s12 m3 l3">
+		<select class="smallDropdown"
+						id="selectedSiteIndex"
+						name="selectedSiteIndex"
+						[(ngModel)]="selectedSiteId"
+						(change)="onSiteChanged()"
+						materialize="material_select"
+						[materializeSelectOptions]="siteList">
+			<option value="">All Sites</option>
+			<option *ngFor="let item of siteList;let i = index;" [value]="item.id">{{item.site_name}}</option>
+		</select>
+		<label data-error="wrong">Filter by site</label>
+	</div>
+
+
+
+	<div class="col s12 m6 l2">
+		<input class="date" id="date" name="date" materialize="pickadate" type="text"
+					 [ngModelOptions]="{standalone: true}"
+					 [(ngModel)]="date.date"
+					 [min]="date.date"
+					 [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]">
+	</div>
+	<div class="col s12 m3 l2">
+		<a  class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="loadFilteredOrders(true)">Filter</a>
+	</div>
+
+
+</div>
+
+<app-csv-file (reloadData)="loadFilteredOrders()" [entity]="'service_order'"></app-csv-file>
+
+<div class="row">
+	<div class="col s12">
+		<p>Total Orders {{totalOrders}}</p>
+	</div>
+</div>
+
+<div class="row">
+		<!-- <ul class="collapsible" data-collapsible="accordion" *ngIf="ordersList.length > 0 && purposeServiceList.length>0"> -->
+<ul class="collapsible" data-collapsible="accordion">
+			<li class="tab-header lead">
+					<div class="row data-object">
+						<div class="col s12 m6 l1">Size:</div>
+						<div class="col s12 m6 l1">Purpose: </div>
+            <!-- <div class="col s12 m6 l1"> State: </div> -->
+						<div class="col s12 m6 l3">Setting instructions:</div>
+						<div class="col s12 m6 l2">Customer:</div>
+						<div class="col s12 m6 l2">Site:</div>
+						<div class="col s12 m6 l2">Date:</div>
+					</div>
+			</li>
+			<li *ngFor="let item of ordersDisplayList; let j=index" class="table">
+
+
+						<div *ngIf="stateList[j]==4">
+							<div class="row data-object " >
+		            <div class="col s12 m6 l1 blue lighten-3">
+		              {{Utils.findNameByIdOnKeyValueList(assetsSizeList,item.asset_size)}}
+		            </div>
+								<div class="col s12 m6 l1 blue lighten-3">
+									{{Utils.findNameByIdOnKeyValueList(purposeServiceList,item.purpose_of_service)}}
+								</div>
+		            <!-- <div class="col s12 m6 l1">
+		              {{Utils.findNameByIdOnKeyValueList(orderStateList,item.state)}}
+		            </div> -->
+								<div class="col s12 m6 l3 blue lighten-3" title="{{item.notes}}">
+		              {{Utils.trimStringOnLength(item.notes,10,'...')}}
+								</div>
+								<div class="col s12 m6 l2 blue lighten-3" title="{{item.customer.customer_name}}">
+		              {{item.customer.customer_name}}
+								</div>
+								<div class="col s12 m6 l2 blue lighten-3" title="{{item.site.site_name}}">
+		              {{item.site.site_name}}
+								</div>
+								<div class="col s12 m6 l2 blue lighten-3" title="{{item.site.site_name}}">
+									{{item.service_date}}
+								</div>
+							</div>
+						</div>
+						<div *ngIf="stateList[j]!=4">
+							<div class="row data-object" >
+								<div class="col s12 m6 l1">
+		              {{Utils.findNameByIdOnKeyValueList(assetsSizeList,item.asset_size)}}
+		            </div>
+								<div class="col s12 m6 l1">
+									{{Utils.findNameByIdOnKeyValueList(purposeServiceList,item.purpose_of_service)}}
+								</div>
+		            <!-- <div class="col s12 m6 l1">
+		              {{Utils.findNameByIdOnKeyValueList(orderStateList,item.state)}}
+		            </div> -->
+								<div class="col s12 m6 l2" title="{{item.notes}}">
+		              {{Utils.trimStringOnLength(item.notes,10,'...')}}
+								</div>
+								<div class="col s12 m6 l2" title="{{item.customer.customer_name}}">
+		              {{item.customer.customer_name}}
+								</div>
+								<div class="col s12 m6 l2" title="{{item.site.site_name}}">
+		              {{item.site.site_name}}
+								</div>
+								<div class="col s12 m6 l2" title="{{item.site.site_name}}">
+									{{item.service_date}}
+								</div>
+							</div>
+						</div>
+
+					<p class="secondary-content">
+						<app-icon-tooltip
+															[iconName]="'error'"
+															[tooltipText]="'Error'"
+															(click)="openIncidentModal(item)">
+						</app-icon-tooltip>
+						<app-icon-tooltip
+															[iconName]="'mode_edit'"
+															[tooltipText]="'Edit'"
+															(click)="openEditOrderModal(item)">
+						</app-icon-tooltip>
+
+						<app-icon-tooltip
+															[iconName]="'visibility'"
+															[tooltipText]="'Details'"
+															(click)="goToDetails(item)">
+						</app-icon-tooltip>
+
+
+						<app-icon-tooltip
+															[iconName]="'delete'"
+															[tooltipText]="'Delete'"
+															(click)="deleteOrder(item)">
+						</app-icon-tooltip>
+					</p>
+
+				</li>
+		</ul>
+		<div class="alert-text" *ngIf="ordersList.length == 0">
+			<h2 class="center"><i class="material-icons">assignment_late</i></h2>
+			<h4 class="center">There are no Orders to List</h4>
+		</div>
+
+</div>
+
+<app-pagination [totalObjects]="totalOrders" (pageChange)="changePage($event)"></app-pagination>
+<!-- delete customer toasts -->
+<a materialize [materializeParams]="['Order deleted successfully',4000]" [materializeActions]="deleteOrderToast"></a>
+<a materialize [materializeParams]="['There was an error deleting the order',4000]" [materializeActions]="deleteOrderToastError"></a>
+
+<div *ngIf="true" id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addOrderModal">
+  <app-save-order [customer]="selectedCustomer" [site]="selectedSite" (afterOrderSaved)="onOrderCreated()" (onCancelAction)="closeAddOrderModal()"></app-save-order>
+</div>
+
+<div *ngIf="!isNullOrUndefined(selectedOrder)" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editOrderModal">
+  <app-save-order [orderToEdit]="selectedOrder" (afterOrderSaved)="onOrderUpdated()" (onCancelAction)="onEditCancelled()"></app-save-order>
+</div>
+
+<div *ngIf="!isNullOrUndefined(selectedOrder)" id="modal3" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="incidentModal">
+  <app-save-incident [orderToEdit]="selectedOrder" (onCancelAction)="closeIncidentModal()"></app-save-incident>
+</div>
