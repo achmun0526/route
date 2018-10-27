@@ -26,6 +26,8 @@ export class CsvFileComponent implements OnInit {
 
 	private message = "";
 	private errors = "";
+	private errorsClean;
+	private errorsArray = [];
 	private errorModal = new EventEmitter<string|MaterializeAction>();
 
   constructor(private authService:AuthService,private csvService:CsvService) {
@@ -55,6 +57,7 @@ export class CsvFileComponent implements OnInit {
 	saveCsv(){
     console.log("inside saveCsv");
 		this.errors = "";
+    console.log(this.file);
 		this.csvService.addCSVfile(this.file).then(res=>{
 			if(res != null){
 				var ok_rows = res.total_inserted_rows;
@@ -65,7 +68,9 @@ export class CsvFileComponent implements OnInit {
 				}else{
 					this.message = "fail: " + fail_rows + "ok: " + ok_rows;
 					this.errors = res.errors;
+					this.errorsClean = this.errors.replace(/\"/g, "").replace(/\[/g, "").replace(/\}/g, "").replace(/, /g, "").replace(/\]/g, "").replace(/\{/g, "").replace(/\^\:\ /g, "");
 					console.log("CSV errors: ", this.errors);
+					this.errorsArray = this.errorsClean.split("%");
 					this.openErrorModal();
 				}
 				this.showMessageToast();

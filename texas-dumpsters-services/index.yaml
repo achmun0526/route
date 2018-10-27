@@ -343,6 +343,12 @@ indexes:
 - kind: RouteItem
   properties:
   - name: active
+  - name: route_key
+  - name: sort_index
+
+- kind: RouteItem
+  properties:
+  - name: active
   - name: sort_index
 
 - kind: RouteItem

@@ -260,6 +260,41 @@ addRouteItems(route_items):Promise<any>{
 
   }
 
+  getRouteItems(){
+    console.log("inside routes.service.getRoute")
+    super.showSpinner();
+    var params='?company_key='+this.authService.getCurrentSelectedCompany().id;
+
+    return this.http.get(ADD_ROUTES_ITEM_URL + params).toPromise()
+      .then(response => {
+        super.hideSpinner();
+        var res=response.json();
+        console.log(res);
+        console.log(res.response.records);
+        if (res.status===SUCCESS){
+          return res.response.records;
+        }})
+      .catch(err=> console.log("error in routes.services.getRoutesByCompanyOrDriver %s",err));
+  }
+
+  getRouteItemsByRoute(route_key){
+    console.log("inside routes.service.getRoute")
+    super.showSpinner();
+    var params='?company_key='+this.authService.getCurrentSelectedCompany().id +
+    (route_key != null ? '&route_key=' + route_key:'');
+
+    return this.http.get(ADD_ROUTES_ITEM_URL + params).toPromise()
+      .then(response => {
+        super.hideSpinner();
+        var res=response.json();
+        console.log(res);
+        console.log(res.response.records);
+        if (res.status===SUCCESS){
+          return res.response.records;
+        }})
+      .catch(err=> console.log("error in routes.services.getRoutesByCompanyOrDriver %s",err));
+  }
+
   get_routes_from_cache(){
     super.showSpinner();
     var params = '?company_key=' + this.authService.getCurrentSelectedCompany().id;

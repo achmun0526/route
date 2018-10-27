@@ -513,9 +513,9 @@ get_address_from_symbol(symbol) {
   saveRoutes(){
     console.log("compute.component.saveRoutes()");
     let route = { "RouteItems":[
-        {"entity_type": 'serviceorder',"entity_key":'4656169750626304',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":20},
-        {"entity_type": 'serviceorder',"entity_key":'4804966745112576',"latitude":'666',"longitude":'-777',"dist_2_next":97,"time_2_next":89,"sort_index":15},
-        {"entity_type": 'facility',"entity_key":'5150623297175552',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":11},
+        {"entity_type": 'serviceorder',"entity_key":'test_so1',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":20},
+        {"entity_type": 'serviceorder',"entity_key":'test_so2',"latitude":'666',"longitude":'-777',"dist_2_next":97,"time_2_next":89,"sort_index":15},
+        {"entity_type": 'facility',"entity_key":'test_facility',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":11},
       ],"total_distance":25.6,"total_time":30.5
     };
     route["date"]=this.date.date;

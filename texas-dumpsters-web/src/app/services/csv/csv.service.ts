@@ -26,11 +26,11 @@ export class CsvService extends BaseService{
 		super.showSpinner();
     return this.http.post(ADD_CSV_FILE_URL , data).toPromise()
       .then(response => {
-        console.log("csv.service.http.response0");
+        console.log(response);
 				super.hideSpinner();
-        console.log("csv.service.http.response1");
+
         var res=response.json();
-        console.log("csv.service.http.response2");
+        console.log(res);
         if (res.status===SUCCESS){
           var temp = new CSV_response();
           temp.parseServerResponse(res.response);

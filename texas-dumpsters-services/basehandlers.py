@@ -16,6 +16,7 @@ import config
 import inspect
 import time
 
+
 from google.appengine.api import app_identity
 from datetime import datetime, timedelta
 from google.appengine.ext import ndb
@@ -33,7 +34,9 @@ from services import UserService, AuditService
 from models import Role, Audit, AuditActionType
 
 
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.warning('This will get logged to a file')
+logger = logging.getLogger()
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(
@@ -1333,6 +1336,7 @@ class CustomerServiceAddressHandler(BaseHandler):
 class ImportEntityHandler(BaseHandler):
     def post(self):
         try:
+            from models import Company
 
             data = json.loads(self.request.body)
 
@@ -1341,6 +1345,7 @@ class ImportEntityHandler(BaseHandler):
             entity = data.get('entity')
 
             company_key = data.get("company_key")
+
             site_key = data.get("site_key")
             customer_key = data.get("customer_key")
 
@@ -1428,7 +1433,7 @@ class ImportEntityHandler(BaseHandler):
                             customer_account_id = str(row[0])
                             customer_response = CustomerService.CustomerInstance.get_by_company_and_account_id(customer.company_key, customer_account_id)
                             if customer_response is not None:
-                                error_list = error_list + "Customer ID already exists."
+                                error_list = error_list + "    Customer ID already exists: " + customer_account_id + ".%"
                                 raise ValueError("Customer ID already exists.")
                             CustomerService.CustomerInstance.save(customer)
                             index = index + 1
@@ -1445,15 +1450,17 @@ class ImportEntityHandler(BaseHandler):
                             customer = CustomerService.CustomerInstance.get_by_account_id(customer_account_id)
 
                             if customer is None:
-                                error_list = error_list + "Customer Account Not found ID: " + customer_account_id
+                                error_list = error_list + "    Customer Account not found ID: " + customer_account_id + ".%"
                                 customer_company_key = None
+                                customer_key = None
                             else:
                                 customer_company_key = customer.company_key
-                                customer_company = str(customer.company_key.urlsafe())
-                                current_company = str(company_key)
+                                customer_company = customer.company_key.urlsafe()
+                                current_company = company_key
+                                customer_key = customer.key.urlsafe()
 
                             if customer_company != current_company and customer is not None:
-                                error_list = error_list + "Customer Account Not found ID: " + customer_account_id
+                                error_list = error_list + "    Customer Account not found ID: " + customer_account_id + ".%"
 
                             latitude = row[10]
                             longitude = row[11]
@@ -1461,7 +1468,7 @@ class ImportEntityHandler(BaseHandler):
                             latitude_check = float(latitude)
                             if latitude_check == 0 or latitude is None:
                                 #raise ValueError("Latitude Entry cannot be 0")
-                                error_list = error_list + "Latitude Entry cannot be 0"
+                                error_list = error_list + "    Latitude entry cannot be 0.%"
                             #except ValueError:
                                 #raise ValueError("Latitude Entry is not Valid: %s" % latitude)
                                 #error_list = error_list + "Latitude Entry is not Valid: %s" % latitude
@@ -1469,25 +1476,26 @@ class ImportEntityHandler(BaseHandler):
                             longitude_check = float(longitude)
                             if longitude_check == 0 or longitude is None:
                                     #raise ValueError("Longitude Entry cannot be 0")
-                                error_list = error_list + "Longitude Entry cannot be 0"
+                                error_list = error_list + "    Longitude entry cannot be 0.%"
                             #except ValueError:
                                 #raise ValueError("Longitude Entry is not Valid: %s" % longitude)
                                 #error_list = error_list + "Longitude Entry is not Valid: %s" % longitude
                             site_account_id = str(row[1])
-
+                            
                             site_exists = SiteService.SiteInstance.get_by_account_id_and_company_key(site_account_id, customer_company_key)
 
                             if site_exists is not None:
-                                error_list = error_list + "A site with this site ID already exists: " + site_account_id
+                                error_list = error_list + "    A site with this site ID already exists: " + site_account_id + ".%"
 
-                            if error_list != "":
-                                error_list = error_list + "There was an error hohaha."
+
+                            if len(error_list) != 0:
                                 raise ValueError("There was an error.")
-                            error_list = error_list + "before pop"
+
                             site = Site()
                             site.populate(
                                 source_system=source_system,
-                                company_key=customer_company_key,
+                                company_key=ndb.Key(Company,customer_company_key.id()),
+                                customer_key = ndb.Key(urlsafe = customer_key),
                                 customer_account_id=customer_account_id,
                                 site_account_id=row[1],
                                 site_name=row[2],
@@ -1498,13 +1506,15 @@ class ImportEntityHandler(BaseHandler):
                                 contact_name=row[7],
                                 contact_email=row[8],
                                 contact_phone=row[9],
-                                # active=json.loads(row[10].lower()) if row[10] is not None else True,
+                                active=True,
                                 latitude=latitude,
                                 longitude=longitude
                             )
-                            error_list = error_list + "after pop" + str(site.key) + "hello"
-                            what = SiteService.SiteInstance.save(site)
-                            error_list = error_list + "After save" + str(what)
+
+                            SiteService.SiteInstance.save(site)
+
+
+                            index = index + 1
 
                         elif entity == "service_order":
 
@@ -1515,61 +1525,23 @@ class ImportEntityHandler(BaseHandler):
                             customer_account_id = str(row[0])
                             customer = CustomerService.CustomerInstance.get_by_account_id(customer_account_id)
                             if customer is None:
-                                #raise ValueError("Customer Account ID not found: %s" % customer_account_id)
-                                error_list = error_list + "Customer Account ID not found: %s" % customer_account_id
+                                error_list = error_list + "    Customer Account ID not found: " + customer_account_id + ".%"
 
                             '''looking for site'''
                             site_account_id = str(row[1])
                             site = SiteService.SiteInstance.get_by_account_id(site_account_id)
                             if site is None:
-                                #raise ValueError("Site account ID not found: %s" % site_account_id)
-                                error_list = error_list + "Site account ID not found: %s" % site_account_id
+                                error_list = error_list + "    Site account ID not found: " + site_account_id + ".%"
 
 
 
-                            #try:
-                            #    service_date = datetime.strptime(row[3], '%m/%d/%Y %H:%M')
-                            #except Exception:
-                            service_date = datetime.today()
-                            #    error_list = error_list + "time not working"
-                            #    sys.exc_clear()
-                            #    pass
+                            try:
+                               service_date = datetime.strptime(row[3], '%m/%d/%Y %H:%M')
+                            except Exception:
+                                service_date = datetime.today()
 
 
-                            #if purpose_of_service == "Delivery":
-                            #    purpose_of_service = PurposeOfService(1)
-                            #elif (purpose_of_service == "Removal"):
-                            #    purpose_of_service = PurposeOfService(2)
-                            #elif purpose_of_service == "Swap":
-                            #    purpose_of_service = PurposeOfService(3)
-                            #elif purpose_of_service == "Relocate":
-                            #    purpose_of_service = PurposeOfService(4)
-                            #else:
-                            #    purpose_of_service = None
-                                #raise ValueError("ServiceOrder does not specify a Type or Type format is incorrect:  %s" % purpose_of_service)
 
-                                #raise ValueError("error with asset_size.")
-                            #if asset_size == "10":
-                            #    asset_size = AssetSize(1)
-                            #elif asset_size == "11":
-                            #    asset_size = AssetSize(2)
-                            #elif asset_size == "12":
-                            #    asset_size = AssetSize(3)
-                            #elif asset_size == "15":
-                            #    asset_size = AssetSize(4)
-                            #elif asset_size == "18":
-                            #    asset_size = AssetSize(5)
-                            #elif asset_size == "20":
-                            #    asset_size = AssetSize(6)
-                            #elif asset_size == "30":
-                            #    asset_size = AssetSize(7)
-                            #elif asset_size == "40":
-                            #    asset_size = AssetSize(8)
-                            #elif asset_size == "50":
-                            #    asset_size = AssetSize(9)
-                            #else:
-                            #    asset_size=None
-                            #    raise ValueError("ServiceOrder does not specify a size")
                             purpose_of_service = row[5]
                             purpose_valid = False
                             for Purpose in PurposeOfService:
@@ -1578,21 +1550,31 @@ class ImportEntityHandler(BaseHandler):
                                     purpose_of_service = PurposeOfService(purpose_name)
                                     purpose_valid = True
                             if(not purpose_valid):
-                                error_list = error_list + "ServiceOrder does not specify a Type or Type format is incorrect."
+                                error_list = error_list + "    ServiceOrder does not specify a Type or Type format is incorrect.%"
+
 
                             asset_size = row[6]
+
+
+                            asset_size_check = 0
+                            asset_size_value = 0
                             for Asset in AssetSize:
-                                asset_name = Asset.name[:]
-                                asset_valid = asset_size in asset_name
-                                if(asset_valid and int(asset_size) > 9):
-                                    asset_size = AssetSize(asset_name)
-                            if(asset_size == row[6]):
-                                error_list = error_list + "ServiceOrder does not specify a size."
-                                asset_size = None
-                            error_list = error_list + "after asset size"
+                                asset_name = Asset.name[3:5]
+                                if(asset_name == asset_size):
+                                    asset_size_check = 1
+                                    break
+                                else:
+                                    asset_size_value = asset_size_value+1
+
+
+                            if(asset_size_check != 1):
+                                error_list = error_list + "after asset size"
 
                             service_order = ServiceOrder()
-                            error_list = error_list + "after service order object"
+
+                            customer_key = customer.key.urlsafe()
+                            company_key = customer.company_key.urlsafe()
+                            site_key = site.key.urlsafe()
 
                             service_order.populate(
                                 customer_account_id = row[0],
@@ -1601,24 +1583,21 @@ class ImportEntityHandler(BaseHandler):
                                 service_date=service_date,
                                 service_time_frame=row[4],
                                 purpose_of_service=purpose_of_service,
-                                asset_size=asset_size,
+                                asset_size=AssetSize(asset_size_value),
                                 notes=row[7],
                                 source_system=source_system,
-                                customer_key=customer.key,
-                                site_key=site.key
-
-                                # active=json.loads(row[8].lower()) if row[8] is not None else True,
-
+                                customer_key=ndb.Key(urlsafe = customer_key),
+                                site_key=ndb.Key(urlsafe = site_key),
+                                company_key = ndb.Key(urlsafe = company_key),
+                                active = True,
                             )
-                            error_list = error_list + "after populate"
+
                             service_ticket_id = row[2]
-                            error_list = error_list + "before service id" + service_ticket_id
-                            service_ticket_id_exists = ServiceOrderService.ServiceOrderInstance.get_by_service_ticket_id(str(service_ticket_id))
-                            error_list = error_list + "after service id"
+                            service_ticket_id_exists = ServiceOrderService.ServiceOrderInstance.get_by_service_ticket_id_and_company(customer.company_key,str(service_ticket_id))
                             if service_ticket_id_exists is not None:
-                                error_list = error_list + "Service Ticket ID is not unique."
-                            error_list = error_list + "before error check"
-                            if error_list != "":
+                                error_list = error_list + "    Service Ticket ID is not unique: " + str(service_ticket_id) + ".%"
+
+                            if len(error_list) != 0:
                                 raise ValueError("Error in uploading service orders.")
 
                             ServiceOrderService.ServiceOrderInstance.save(service_order)
@@ -1685,10 +1664,10 @@ class ImportEntityHandler(BaseHandler):
 
                             if driver is None:
                                 raise ValueError("Driver with email %s not found" % email)
-                                error_list = error_list + "Driver with email %s not found" % email
+                                error_list = error_list + "    Driver with email %s not found" % email
                             if driver.has_role('DRIVER') == False:
                                 raise ValueError("User exists but he/she does not have role Driver")
-                                error_list = error_list + "User exists but he/she does not have role Driver"
+                                error_list = error_list + "    User exists but he/she does not have role Driver"
                             vehicle = Vehicle()
 
                             vehicle.populate(
@@ -1710,7 +1689,12 @@ class ImportEntityHandler(BaseHandler):
                         total_inserted_rows = total_inserted_rows + 1
                     #This is where the errors for each row are logged.
                     except Exception, e:
-                        errors.append({"row": (index + 1), "error": error_list})
+                        errors.append({"The following error(s) occured in row": (index + 1)})
+                        errors.append({"%^":error_list})
+                        print("logging the exception")
+                        print(e)
+                        print("\n")
+                        print(errors)
                         total_errors_rows = total_errors_rows + 1
                         error_list = ""
                         index = index + 1
@@ -2950,7 +2934,7 @@ class RouteItemHandler(BaseHandler):
                 if entity_type not in entity_types:
                     raise ValueError("Entity Type not allowed")
 
-                logging.warning("about to populate")
+
 
                 route_item.populate(
                     route_key=ndb.Key(urlsafe = route_key),
@@ -2963,12 +2947,12 @@ class RouteItemHandler(BaseHandler):
                     longitude=longitude
                 )
 
-                logging.warning("past the populate")
+
 
                 if id is not None:
                     route_item.key = ndb.Key(urlsafe=id)
 
-                logging.warning("past key assignment")
+
                 route_item = RouteItemService.RouteItemInstance.save(route_item)
 
         except Exception, e:
@@ -3001,6 +2985,8 @@ class RouteItemHandler(BaseHandler):
             filters["route_key"] = self.request.get('route_key')
 
             entities, total = RouteItemService.RouteItemInstance.get_all(page, page_size, filters)
+
+            print("total route items: %s"%total)
 
             response = {
                 "total":  total,

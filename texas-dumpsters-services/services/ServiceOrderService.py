@@ -32,6 +32,13 @@ class ServiceOrderInstance:
     @staticmethod
     def get(id):
         return ServiceOrder.get(id)
+    @staticmethod
+    def get_by_service_ticket_id(service_ticket_id):
+        return ServiceOrder.get_by_service_ticket_id(service_ticket_id)
+    @staticmethod
+    def get_by_service_ticket_id_and_company(company_key,service_ticket_id):
+        return ServiceOrder.get_by_service_ticket_id_and_company(company_key, service_ticket_id)
+
 
     @staticmethod
     def get_all(page, page_size, filters):

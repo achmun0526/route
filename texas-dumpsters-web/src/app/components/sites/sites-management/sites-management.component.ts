@@ -60,16 +60,20 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 
 
   getSitesByCustomer(overwrite){
-    	var custID;
+			console.log(overwrite);
+			var custID;
     	if(this.customerSelectedId == "" || isNullOrUndefined(this.customerSelectedId)){
     		custID = null;
     	}else{
     		custID = this.customerSelectedId
-    	}
+			}
+		console.log("component call to get sites");
     this.sitesService.getSitesByCustomer(overwrite,custID,null).then(res =>{
-         this.siteList = JSON.parse(res);
+				 console.log(res);
+				 this.siteList = JSON.parse(res);
          this.totalSites=this.siteList.length;
-         this.siteDisplayList=this.siteList.slice(0,10);
+				 this.siteDisplayList=this.siteList.slice(0,10);
+				 console.log("total sites: " + this.totalSites);
        });
 
 

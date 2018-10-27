@@ -141,7 +141,7 @@
 		</div>
 
 
-
+<div id="routes" *ngIf="totalRoutes>0">
 		<ul *ngFor= "let route of routesList; let j= index" >
 			<ul class="collapsible" >
 				<li class="tab-header lead">
@@ -149,43 +149,43 @@
 	            <div class="col s12 m12 l4">Route {{j+1}}</div>
 	            <div class="col s12 m12 l4">Hours: {{route.total_time}}</div>
 	            <div class="col s12 m12 l4">Miles: {{route.total_distance}}</div>
-	        </div>
-					<div class="col s12 m2 l1">
-						<a  *ngIf="route.display==false" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="view_route(route)">View</a>
-						<a  *ngIf="route.display==true" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="close_view_route(route)">Close</a>
-					</div>
+	        	</div>
+						<div class="col s12 m2 l1">
+							<a  *ngIf="route.display==false" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="view_route(route,j)">View</a>
+							<a  *ngIf="route.display==true" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="close_view_route(route)">Close</a>
+						</div>
 					<div class="row data-object">
-						<div *ngIf="number.display">
-							<div  class="col s12 m10 l10 map" style="padding: 0;">
+						<div *ngIf="route.display">
+							<!-- <div  class="col s12 m10 l10 map" style="padding: 0;">
 								<app-map-handler [service_route]="service_routes[j]" (marker_clicked)="show_event_data($event)"> </app-map-handler>
-							</div>
-							<!-- <div class="col s12 m2 l2 scrollable">
-								<li *ngFor="let item of route_object_list_arr[j]; let i = index">
+							</div> -->
+							<div class="col s12 m2 l2 scrollable">
+								<li *ngFor="let item of routeItemsList[j]; let i = index">
 
 
-										<div  *ngIf="item.type=='facility'">
+										<div  *ngIf="item.entity_type=='facility'">
 											<div *ngIf="item.display==false" class="facility_info" (click)="server_entity_view(item,i,j)">Facility</div>
 											<div *ngIf="item.display==true" class="facility_info_close" (click)="close_server_entity_view(item,i,j)">Facility</div>
 											<div class="route_item_seperator"></div>
 										</div>
-										<div  *ngIf="item.type=='serviceorder'">
-											<div *ngIf="item.display==false" class="serviceorder_info" (click)="server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
-											<div *ngIf="item.display==true" class="serviceorder_info_close" (click)="close_server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
+										<div  *ngIf="item.entity_type=='serviceorder'">
+											<div *ngIf="item.display==false" class="serviceorder_info" (click)="server_entity_view(item,i,j)">{{item.size.name + " " + item.order_type.name}}</div>
+											<div *ngIf="item.display==true" class="serviceorder_info_close" (click)="close_server_entity_view(item,i,j)">{{item.size.name + " " + item.order_type.name}}</div>
 											<div class="route_item_seperator"></div>
 										</div>
-										<div  *ngIf="item.type=='yard'">
+										<div  *ngIf="item.entity_type=='yard'">
 											<div *ngIf="item.display==false" class="yard_info" (click)="server_entity_view(item,i,j)">Landfill</div>
 											<div *ngIf="item.display==true" class="yard_info_close" (click)="close_server_entity_view(item,i,j)">Landfill</div>
 											<div class="route_item_seperator"></div>
 										</div>
 								</li>
-							</div> -->
+							</div>
 						</div>
 					</div>
 				</li>
 			</ul>
 	  </ul>
-
+</div>
 <!-- Map -->
 <!-- <div class="col s10 map" style="padding: 0;">
 	<app-map-handler> </app-map-handler>

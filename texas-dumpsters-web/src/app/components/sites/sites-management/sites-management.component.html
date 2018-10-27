@@ -10,7 +10,7 @@
 				</a>
 			</li>
 			<li class="btn-list">
-				<a class="btn-floating green" (click)="addCVSfile()">
+				<a class="btn-floating green" (click)="addCVSfile(getSitesByCustomer())">
 					<app-icon-tooltip
 						[iconName]="'publish'"
 						[tooltipText]="'CSV Sites'">
@@ -34,7 +34,7 @@
 	</div>
 </div>
 
-<app-csv-file [entity]="'site'" (reloadData)="getSitesByCustomer()"></app-csv-file>
+<app-csv-file [entity]="'site'" (reloadData)="getSitesByCustomer(true)"></app-csv-file>
 
 <div class="row">
 	<div class="col s12">

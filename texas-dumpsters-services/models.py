@@ -895,8 +895,8 @@ class Site(BaseModel):
     source_system = ndb.StringProperty()
     customer_key = ndb.KeyProperty(kind=Customer, required=True)
     company_key = ndb.KeyProperty(kind=Company, required=True)
-    customer_account_id=ndb.StringProperty()
-    site_account_id=ndb.StringProperty()
+    customer_account_id = ndb.StringProperty()
+    site_account_id = ndb.StringProperty()
     site_name = ndb.StringProperty()
     site_address = ndb.StringProperty()
     site_zipcode = ndb.StringProperty()
@@ -913,21 +913,20 @@ class Site(BaseModel):
         action_type = AuditActionType.Created
         if self.key is not None:
             action_type = AuditActionType.Updated
-        return self
-        #key = self.put()
 
-        
-        #if key is not None:
-        #    audit = Audit()
-        #    audit.populate(
-        #        entity_name=self.__class__.__name__,
-        #        entity_key=key,
-        #        action=action_type,
-        #        user_email=users.get_current_user().email() if users.get_current_user() is not None else ''
-        #    )
-        #    audit.save()
-        #
-        #return self.get(key.urlsafe())
+        key = self.put()
+
+        if key is not None:
+           audit = Audit()
+           audit.populate(
+               entity_name=self.__class__.__name__,
+               entity_key=key,
+               action=action_type,
+               user_email=users.get_current_user().email() if users.get_current_user() is not None else ''
+           )
+           audit.save()
+
+        return self.get(key.urlsafe())
 
     @classmethod
     def get_all(cls, page, page_size, filters):
@@ -999,6 +998,7 @@ class Site(BaseModel):
             source_system_id = self.source_system_id,
             source_system = self.source_system,
             customer_key = self.customer_key.urlsafe(),
+            company_key = self.company_key.urlsafe(),
             customer = self.customer_key.get().to_dict(),
             site_name = self.site_name,
             site_account_id = self.site_account_id,
@@ -1041,6 +1041,10 @@ class AssetSize(messages.Enum):
     Yrd30 = 7
     Yrd40 = 8
     Yrd50 = 9
+
+
+
+
 
 
 class ServiceOrderFailureReason(messages.Enum):
@@ -1180,6 +1184,10 @@ class ServiceOrder(BaseModel):
     @classmethod
     def get_by_service_ticket_id(cls, service_ticket_id):
         return cls.query().filter(cls.service_ticket_id == service_ticket_id).get()
+    @classmethod
+    def get_by_service_ticket_id_and_company(cls, company_key, service_ticket_id):
+        entity = cls.query(ndb.AND(cls.company_key == company_key, ndb.AND(cls.service_ticket_id == service_ticket_id))).get()
+        return entity
 
     @classmethod
     def get(cls, id):
@@ -1998,8 +2006,26 @@ class RouteItem(BaseModel):
         return entity
 
     def to_dict(self):
+        print("=============================================")
+        entity = self.key.get()
+        print(entity)
+        print("\n")
 
-        entity = self.entity_key.get()
+        print(self.entity_type)
+        print("\n")
+
+        if self.entity_type == "serviceorder":
+            item_entity = self.serviceorder_key.get()
+            item = item_entity.to_dict() if self.serviceorder_key is not None else None
+        elif self.entity_type == "facility":
+            item_entity = self.facility_key.get()
+            item = item_entity.to_dict() if self.facility_key is not None else None
+        else:
+            item_entity = self.yard_key.get()
+            item = item_entity.to_dict() if self.yard_key is not None else None
+
+
+        print(item_entity)
 
         return dict(
             id = self.key.urlsafe(),
@@ -2007,8 +2033,8 @@ class RouteItem(BaseModel):
             dist_2_next = self.dist_2_next,
             time_2_next = self.time_2_next,
             entity_type = self.entity_type,
-            entity_key = self.entity_key.urlsafe(),
-            entity = entity.to_dict() if entity is not None else None,
+            entity_key = self.key.urlsafe(),
+            item = item,
             sort_index = self.sort_index,
             active = self.active,
             latitude = self.latitude,
@@ -2591,13 +2617,3 @@ class RoutePositionHistory(BaseModel):
             modified_at=self.modified_at.isoformat(),
             modified_by=self.modified_by
         )
-
-test_user = User(id="test_user",email="forestschwrtz@gmail.com",password="5da728aa656a492268baf802c5e6d4ee63d3e9e7$sha1$tLFs0HK4gf6C",first_name="forest",last_name="schwartz",contact_phone_mobile="404-617-9402",contact_phone_desk="404-617-9402",verified=True,device_id="place_holder")
-test_company = Company(id="test_company",active=True,address="9346 TX-106 Loop",name="South Texas 6-29")
-test_userXcompany = UserXCompany(company=ndb.Key(Company,"test_company"),user=ndb.Key(User,"test_user"))
-test_role = Role(parent=ndb.Key(User, "test_user"),name="ADMIN",user=ndb.Key(User, "test_user"))
-
-test_user.put()
-test_company.put()
-test_userXcompany.put()
-test_role.put()

@@ -18,7 +18,7 @@ export const ROLES=[
 	{role_name:ROLE_NAMES.MANAGER, 			options_ids:[2,201,202,203,208]},
 	{role_name:ROLE_NAMES.DISPATCHER, 		options_ids:[1,2,3,104,105,106,107,201,202,208,301,302,303,304]},
 	{role_name:ROLE_NAMES.OFFICE_ADMIN_CSR,	options_ids:[2,201,202,203,208]},
-	{role_name:ROLE_NAMES.DRIVER, 			options_ids:[2,208]}
+	{role_name:ROLE_NAMES.DRIVER, 			options_ids:[1,107]}
 ];
 
 export const PURPOSE_OF_SERVICE_LIST = [

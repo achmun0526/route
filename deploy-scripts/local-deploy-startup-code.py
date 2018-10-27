@@ -1737,7 +1737,7 @@ class Route(BaseModel):
 
     company_key = ndb.KeyProperty(kind=Company, required=True)
     date = ndb.DateTimeProperty(required=True)
-    driver_key = ndb.KeyProperty(kind=User)
+    driver_key = ndb.KeyProperty(kind=Driver)
     total_distance = ndb.FloatProperty()
     total_time = ndb.FloatProperty()
     num_of_stops = ndb.IntegerProperty()
@@ -2593,26 +2593,87 @@ class RoutePositionHistory(BaseModel):
 
 
 test_facility = Facility(id="test_facility",company_key = ndb.Key(Company,"test_company"),contact_name="forest schwartz",contact_phone="456-895-4865",facility_address = "1100 waterfall drive", latitude="33.1903204",longitude="-96.7147663",facility_zipcode="75070")
-test_user = User(id="test_user",email="test@gmail.com",password="check123",first_name="forest",last_name="schwartz",contact_phone_mobile="404-617-9402",contact_phone_desk="404-617-9402",verified=True,device_id="place_holder")
-test_company = Company(id="test_company",active=True,address="9346 TX-106 Loop",name="South Texas 6-29")
-test_userXcompany = UserXCompany(company=ndb.Key(Company,"test_company"),user=ndb.Key(User,"test_user"))
-test_role = Role(parent=ndb.Key(User, "test_user"),name="ADMIN",user=ndb.Key(User, "test_user"))
-test_site1 = Site(id ="test_site1",active=True,contact_name="Luis",contact_email = "lluisitu@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.409",longitude = "-98.4665",site_address = "918 Piedmont Ave",site_city = "San Antonio",site_name = "LBF Investments",company_key = ndb.Key(Company,"test_company") )
 
-test_site2 = Site(id ="test_site2",active=True,contact_name="Bill",contact_email = "lluisitu@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.409",longitude = "-98.4665",site_address = "918 Piedmont Ave",site_city = "San Antonio",site_name = "LBF Investments",company_key = ndb.Key(Company,"test_company") )
+test_yard = Yard(id="test_yard",company_key = ndb.Key(Company,"test_company"),contact_name="marc segel",contact_phone="456-895-8569",yard_address = "3131 Bolton Rd", latitude="29.503460",longitude="-98.183840",yard_zipcode="78124")
+
+test_user = User(id="test_user",email="test@gmail.com",password="check123",first_name="forest",last_name="schwartz",contact_phone_mobile="404-617-9402",contact_phone_desk="404-617-9402",verified=True,device_id="place_holder")
+
+test_company = Company(id="test_company",active=True,address="9346 TX-106 Loop",name="South Texas 6-29")
+
+test_userXcompany = UserXCompany(company=ndb.Key(Company,"test_company"),user=ndb.Key(User,"test_user"))
+
+test_role = Role(parent=ndb.Key(User, "test_user"),name="ADMIN",user=ndb.Key(User, "test_user"))
+
+test_site1 = Site(id ="test_site1",active=True,contact_name="Luis",contact_email = "lluisitu@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.352650",longitude = "-98.296510",site_address = "7173 FM1618",site_city = "San Antonio",site_name = "East Central High School",company_key = ndb.Key(Company,"test_company") )
+test_site2 = Site(id ="test_site2",active=True,contact_name="Bill",contact_email = "bill@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.394150",longitude = "-98.281070",site_address = "2850 Stuart Rd",site_city = "Adkins",site_name = "Meals Made Easy",company_key = ndb.Key(Company,"test_company") )
+test_site3 = Site(id ="test_site3",active=True,contact_name="John",contact_email = "john@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.532430",longitude = "-98.523190",site_address = "6915 West Ave",site_city = "Castle Hills,",site_name = "CVS",company_key = ndb.Key(Company,"test_company") )
+test_site4 = Site(id ="test_site4",active=True,contact_name="Franky",contact_email = "franky@gmail.com",customer_key = ndb.Key(Customer,"test_customer"),latitude = "29.235220",longitude = "-98.659860",site_address = "15204 E Loop 1604 S",site_city = "San Antonio",site_name = "Terror Land",company_key = ndb.Key(Company,"test_company") )
 
 test_so1 = ServiceOrder(id ="test_so1",active=True,asset_size= AssetSize(4),customer_key=ndb.Key(Customer,"test_customer"),purpose_of_service=PurposeOfService(2),site_key=ndb.Key(Site,'test_site1'),company_key = ndb.Key(Company,"test_company"))
-test_so2 = ServiceOrder(id="test_so2",active=True,asset_size=AssetSize(4),customer_key=ndb.Key(Customer,"test_customer"),purpose_of_service=PurposeOfService(2),site_key=ndb.Key(Site,'test_site2'),company_key = ndb.Key(Company,"test_company"))
+test_so2 = ServiceOrder(id="test_so2",active=True,asset_size=AssetSize(2),customer_key=ndb.Key(Customer,"test_customer"),purpose_of_service=PurposeOfService(3),site_key=ndb.Key(Site,'test_site2'),company_key = ndb.Key(Company,"test_company"))
+test_so3 = ServiceOrder(id="test_so3",active=True,asset_size=AssetSize(3),customer_key=ndb.Key(Customer,"test_customer"),purpose_of_service=PurposeOfService(1),site_key=ndb.Key(Site,'test_site3'),company_key = ndb.Key(Company,"test_company"))
+test_so4 = ServiceOrder(id="test_so4",active=True,asset_size=AssetSize(2),customer_key=ndb.Key(Customer,"test_customer"),purpose_of_service=PurposeOfService(2),site_key=ndb.Key(Site,'test_site4'),company_key = ndb.Key(Company,"test_company"))
+
 test_customer = Customer(id = "test_customer",company_key = ndb.Key(Company,"test_company"),contact_email = "f.schwartz@txdumpsers.com",customer_name = "john ranquist",contact_phone="404-295-8469")
 
+test_driver1 = Driver(id="test_driver1",company_key = ndb.Key(Company,"test_company"),driver_email="driver1@gmail.com",driver_id="123",driver_name="Saber Tooth",driver_phone="486-984-5135")
+test_driver2 = Driver(id="test_driver2",company_key = ndb.Key(Company,"test_company"),driver_email="driver2@gmail.com",driver_id="456",driver_name="Professor X",driver_phone="486-984-7777")
+
+test_route1 = Route(id="test_route1",company_key =  ndb.Key(Company,"test_company"),driver_key = ndb.Key(Driver,"test_driver1"),notes="all routes going good", status = RouteStatus(1),date = datetime.today())
+test_route2 = Route(id="test_route2",company_key =  ndb.Key(Company,"test_company"),driver_key = ndb.Key(Driver,"test_driver2"),notes="", status = RouteStatus(1),date = datetime.today())
+
+test_route_item1 = RouteItem(id="test_route_item1",dist_2_next=12.5,time_2_next=0.25,entity_type="facility",item_key="test_facility",route_key = ndb.Key(Route,"test_route1"))
+test_route_item2 = RouteItem(id="test_route_item2",dist_2_next=3.0,time_2_next=0.1,entity_type="serviceorder",item_key="test_so3",route_key = ndb.Key(Route,"test_route1"))
+test_route_item3 = RouteItem(id="test_route_item3",dist_2_next=30,time_2_next=0.5,entity_type="serviceorder",item_key="test_so4",route_key = ndb.Key(Route,"test_route1"))
+test_route_item4 = RouteItem(id="test_route_item4",dist_2_next=16.25,time_2_next=0.18,entity_type="yard",item_key="test_yard",route_key = ndb.Key(Route,"test_route1"))
+test_route_item5 = RouteItem(id="test_route_item5",dist_2_next=36,time_2_next=0.6,entity_type="facility",item_key="test_facility",route_key = ndb.Key(Route,"test_route1"))
+
+test_route_item6 = RouteItem(id="test_route_item6",dist_2_next=11.2,time_2_next=0.15,entity_type="facility",item_key="test_facility",route_key = ndb.Key(Route,"test_route2"))
+test_route_item7 = RouteItem(id="test_route_item7",dist_2_next=45,time_2_next=0.75,entity_type="serviceorder",item_key="test_so2",route_key = ndb.Key(Route,"test_route2"))
+test_route_item8 = RouteItem(id="test_route_item8",dist_2_next=14.3,time_2_next=0.118,entity_type="yard",item_key="test_yard",route_key = ndb.Key(Route,"test_route2"))
+test_route_item9 = RouteItem(id="test_route_item9",dist_2_next=36,time_2_next=0.45,entity_type="serviceorder",item_key="test_so1",route_key = ndb.Key(Route,"test_route2"))
+test_route_item10 = RouteItem(id="test_route_item10",dist_2_next=13.1,time_2_next=0.12,entity_type="yard",item_key="test_yard",route_key = ndb.Key(Route,"test_route2"))
+test_route_item11 = RouteItem(id="test_route_item11",dist_2_next=18,time_2_next=0.23,entity_type="facility",item_key="test_facility",route_key = ndb.Key(Route,"test_route2"))
+
+
+test_facility.put()
+
+test_yard.put()
 
 test_user.put()
+
 test_company.put()
+
 test_userXcompany.put()
+
 test_role.put()
+
 test_so1.put()
 test_so2.put()
+test_so3.put()
+test_so4.put()
+
 test_site1.put()
 test_site2.put()
+test_site3.put()
+test_site4.put()
+
 test_customer.put()
-test_facility.put()
+
+test_driver1.put()
+test_driver2.put()
+
+test_route1.put()
+test_route2.put()
+
+test_route_item1.put()
+test_route_item2.put()
+test_route_item3.put()
+test_route_item4.put()
+test_route_item5.put()
+test_route_item6.put()
+test_route_item7.put()
+test_route_item8.put()
+test_route_item9.put()
+test_route_item10.put()
+test_route_item11.put()

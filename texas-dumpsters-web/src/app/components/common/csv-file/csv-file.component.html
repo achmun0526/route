@@ -32,8 +32,10 @@
 <!-- Modal Structure -->
 <div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
 	<div class="modal-content">
-      <h4>Oops something went wrong!</h4>
-      <p>{{errors}}</p>
+	  <h4><b>Oops something went wrong!</b></h4>
+	  	<div *ngFor = "let error of errorsArray">
+				<strong>{{error}}</strong><br/>
+			</div>
     </div>
   <div class="modal-footer">
     <a class="modal-action modal-close waves-effect waves-green btn-flat" name="closeErrorModal()">Try Again</a>
@@ -43,5 +45,5 @@
 
 <!-- add CSV File toasts -->
 <!--<a materialize [materializeParams]="['CSV file Added Successfully',4000]" [materializeActions]="addCsvToast"></a>-->
-<a materialize [materializeParams]="[message, 4000]" [materializeActions]="addCsvToast"><span style="color:red; margin-top: 20px;">{{errors}}</span></a>
+<a materialize [materializeParams]="[message, 4000]" [materializeActions]="addCsvToast"><span style="color:red; margin-top: 20px;" *ngFor = "let error of errorsArray"><strong>{{error}}</strong><br/></span></a>
 <a materialize [materializeParams]="['There Was an Error Adding a CSV File',4000]" [materializeActions]="addCsvToastError"></a>

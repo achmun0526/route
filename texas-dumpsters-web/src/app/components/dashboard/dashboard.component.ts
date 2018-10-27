@@ -1,6 +1,6 @@
 // Core
 import {MaterializeDirective, MaterializeAction} from 'angular2-materialize';
-import {PAGE_SIZE, ROLE_NAMES, ASSETS_URL} from '../../common/app-conf';
+import {PAGE_SIZE, ROLE_NAMES, ASSETS_URL,ASSET_SIZE_LIST,PURPOSE_OF_SERVICE_LIST} from '../../common/app-conf';
 import {Component, OnInit, EventEmitter, ViewChild} from '@angular/core';
 import {Router, ActivatedRoute, Route} from '@angular/router';
 import {Utils} from '../../common/utils';
@@ -46,6 +46,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   protected driverList = [];
   protected vehicleList = [];
 
+
   protected selectedCompany: any;
   private selectedCompany_before = [];
 
@@ -58,6 +59,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   public startDate: any;
   public endDate: any;
 
+  protected routeItemsList = [];
   protected routesList = [];
   protected ordersList = [];
   protected totalRoutes = 0;
@@ -235,21 +237,10 @@ export class DashboardComponent extends BaseComponent implements OnInit {
           this.routesList[i]["display"]=false;
         }
         console.log(this.routesList);
-        this.loadRouteItems();
     });
   }
 
-  loadRouteItems(){
-    // this.routesService.getRoutesByCompanyOrDriverOrVehicle(null, f_company, f_driver, f_vehicle, f_startDate, f_endDate).then(res => {
-    //     this.routesList = res;
-    //     this.totalRoutes = this.routesList.length;
-    //     for(let i=0;i<this.totalRoutes;i++){
-    //       this.routesList[i]["display"]=false;
-    //     }
-    //     console.log(this.routesList);
-    //     this.loadRouteItems();
-    // });
-  }
+
 
   /** Go to details of the routes **/
   goToRouteDetails(data) {
@@ -346,12 +337,50 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     }
   }
 
-  view_route(route) {
+  view_route(route,j) {
     route.display = true;
+    console.log(route);
+    this.loadRouteItemsByRoute(route.id,j);
   }
 
   close_view_route(route) {
     route.display = false;
+  }
+
+  server_entity_view(item,route_number,server_route_number){
+    item.display=true;
+    // this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number]);
+  }
+  close_server_entity_view(item,route_number,server_route_number){
+    item.display=false;
+    // this.mapHandler.remove_waypt(route_number,this.service_routes[server_route_number]);
+  }
+
+  loadRouteItems(){
+    console.log("inside dashboard.component.loadRouteitems()")
+    this.routesService.getRouteItems().then(res => {
+        console.log(res);
+    });
+  }
+
+  loadRouteItemsByRoute(route_key,route_index){
+    console.log("inside dashboard.component.loadRouteitems()")
+    console.log(route_key);
+    this.routesService.getRouteItemsByRoute(route_key).then(res => {
+        let route_item_info = []
+        for(let i=0;i<res.length;i++){
+          var info={};
+          info["display"]=false;
+          info["entity_type"]=res[i].entity_type;
+          if(res[i].entity_type="serviceorder"){
+            info["size"] =ASSET_SIZE_LIST[res[i].item.asset_size]
+            info["order_type"] =PURPOSE_OF_SERVICE_LIST[res[i].item.purpose_of_service]
+          }
+          route_item_info[i]=info;
+        }
+        this.routeItemsList[route_index]=route_item_info;
+        console.log(this.routeItemsList);
+    });
   }
 
 }
