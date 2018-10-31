@@ -46,8 +46,10 @@ class SiteInstance:
         if(entity is None):
             raise ValueError("Site does not exists")
         else:
-            entity.active = False
-            Site.save(entity)
+            #Code for making entity disappear only on website.
+            #entity.active = False
+            #Site.save(entity)
+            entity.key.delete()
 
     @staticmethod
     def get_by_name(name):

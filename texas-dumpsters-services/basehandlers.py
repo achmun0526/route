@@ -365,10 +365,33 @@ class SignupHandler(BaseHandler):
 
                 unique_properties = ['email']
 
-                user_data = self.user_model.create_user(
-                    email,
-                    unique_properties,
-                    email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk, contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password, verified=False)
+				# Creating Driver Entity for Role Driver
+                if role is not None and role.upper()== Role.DRIVER:
+                    from services import DriverService
+                    from models import Driver
+                    driver = Driver()
+                    driver.populate(
+                        company_key=ndb.key(urlsafe=companey_key),
+                        driver_email=email,
+                        driver_name='{} {}'.format(first_name, last_name),
+                        driver_phone=contact_phone_mobile or contact_phone_desk,
+                    )
+                    entity = DriverService.DriverInstance.save(driver)
+                    user_data = self.user_model.create_user(
+                        email,
+                        unique_properties,
+                        driver_key=entity.key,
+                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
+                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
+                        verified=False)
+
+                else:
+                    user_data = self.user_model.create_user(
+                        email,
+                        unique_properties,
+                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk, 
+                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password, 
+                        verified=False)
 
                 if not user_data[0]: #user_data is a tuple
                     errors = ['Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1])]
@@ -1537,7 +1560,8 @@ class ImportEntityHandler(BaseHandler):
 
                             try:
                                service_date = datetime.strptime(row[3], '%m/%d/%Y %H:%M')
-                            except Exception:
+                            except Exception, e:
+                                print(e)
                                 service_date = datetime.today()
 
 

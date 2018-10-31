@@ -127,5 +127,7 @@ class ServiceOrderInstance:
         if(entity is None):
             raise ValueError("service order does not exists")
         else:
-            entity.active = False
-            ServiceOrder.save(entity)
+            #Code for deleting entity from website, not datastore
+            #entity.active = False
+            #ServiceOrder.save(entity)
+            entity.key.delete()

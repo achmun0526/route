@@ -69,8 +69,10 @@ class CustomerInstance:
         if(entity is None):
             raise ValueError("Customer does not exists")
         else:
-            entity.active = False
-            Customer.save(entity)
+            #Code for deleting entity from website, not datastore
+            #entity.active = False
+            #Customer.save(entity)
+            entity.key.delete()
 
     @staticmethod
     def get_by_name(name):

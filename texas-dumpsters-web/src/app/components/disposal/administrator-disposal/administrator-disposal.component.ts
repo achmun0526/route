@@ -33,11 +33,11 @@ export class AdministratorDisposalComponent extends BaseComponent  implements On
 		this.csv = {};
 	}
 
-  ngOnInit() {
+ 	 ngOnInit() {
 		super.ngOnInit();
 		this.getDisposals();
 		this.selectCompany = this.authService.getCurrentSelectedCompany();
-  }
+  	}
 
 		/** Go to details of the vehicle **/
 	detailsDisposals(data){

@@ -20,5 +20,7 @@ class UserInstance:
         if(entity is None):
             raise ValueError("User does not exists")
         else:
-            entity.activated = False
-            User.save(entity)
+            #Code for deleting entity from website, not datastore
+            #entity.activated = False
+            #User.save(entity)
+            entity.key.delete()
