@@ -31,7 +31,7 @@ export class AuthService extends BaseService {
    * to update the user profile
    * */
   getUserProfile():Promise<User>{
-    debugger;
+    // debugger;
     console.log("in getUserProfile");
 		super.showSpinner();
     return this.http.get(PROFILE_URL).toPromise()

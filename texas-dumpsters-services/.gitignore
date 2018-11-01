@@ -1,3 +1,4 @@
 *.pyc
 /static
 /lib
+venv

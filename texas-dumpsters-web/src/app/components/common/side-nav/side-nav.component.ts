@@ -22,7 +22,7 @@ export class SideNavComponent extends BaseComponent implements OnInit {
 
   ngOnInit() {
     console.log("starting up the side nave");
-    debugger;
+    // debugger;
 		$(".button-collapse").sideNav();
     this.authService.getUserProfile().then(user =>{
       this.lateralmenu = this.authService.getUserMenu();
