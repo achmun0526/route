@@ -2,3 +2,4 @@ pytz==2013b
 twilio==5.7.0
 google-endpoints
 google-endpoints-api-management
+GoogleAppEngineCloudStorageClient==1.9.22.1

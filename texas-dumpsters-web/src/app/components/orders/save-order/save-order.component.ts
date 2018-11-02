@@ -191,7 +191,7 @@ export class SaveOrderComponent implements OnInit {
       console.log(this.order);
   		this.ordersService.saveOrder(this.order).then(res =>{
   			if(res != null){
-          debugger;
+          // debugger;
   					this.addOrderToast.emit('toast');
   					this.afterOrderSaved.emit();
   			}else{

@@ -29,7 +29,7 @@ export class BaseService {
    *
    * */
   protected handleError(error: any): Promise<any> {
-    window.alert(error.message || error);
+    console.log(error);
     //this.hideSpinner();
     $('#load-screen').fadeOut( "slow" );
     return Promise.reject(error.message || error);

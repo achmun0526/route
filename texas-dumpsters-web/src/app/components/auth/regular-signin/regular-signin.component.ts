@@ -54,14 +54,14 @@ export class RegularSigninComponent extends BaseComponent implements OnInit {
     3. Processing the request and update the UI
   */
   signIn(form){
-  debugger;
+  // debugger;
   console.log("doing sign in");
   this.doSignIn(form.value.email,form.value.password);
   }
 
 
   private doSignIn(email:string,password:string){
-    debugger;
+    // debugger;
     console.log("doing the sign in");
     this.authService.signIn(email,password).then(signedIn => {
       if (signedIn){

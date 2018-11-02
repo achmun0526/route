@@ -25,6 +25,9 @@ handlers:
   script: main.app
   secure: always
 
+- url: /blobstore.*
+  script: blobstore.app
+
 # re-direct to index.html if no path is give
 - url: /
   static_files: static/index.html
