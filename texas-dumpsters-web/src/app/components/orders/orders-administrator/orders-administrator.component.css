@@ -1,8 +1,8 @@
 .canceled_order{
   background-color: #e88888
 }
-.date_{
-  margin: 0;
+#date-input{
+  margin-bottom: 0px !important;
 }
 .filter-row{
   display: flex;
@@ -10,5 +10,9 @@
 .button_container {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-end
+}
+.date-container {
+	display: flex;
+	align-items: flex-end;
 }

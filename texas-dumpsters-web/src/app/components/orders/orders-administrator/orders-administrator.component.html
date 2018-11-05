@@ -56,8 +56,8 @@
 
 
 
-	<div class="col s12 m6 l2">
-		<input class="date" id="date" name="date" materialize="pickadate" type="text"
+	<div class="col s12 m6 l2 date-container">
+		<input name="date" materialize="pickadate" type="text" id="date-input"
 					 [ngModelOptions]="{standalone: true}"
 					 [(ngModel)]="date.date"
 					 [min]="date.date"
