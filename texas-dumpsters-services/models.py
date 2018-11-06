@@ -1224,7 +1224,8 @@ class ServiceOrder(BaseModel):
             quantity = self.quantity,
             finalized_notes = self.finalized_notes,
             finalized_datetime = self.finalized_datetime.strftime("%Y-%m-%d %H:%M") if self.finalized_datetime is not None else None,
-            asset_size = int(self.asset_size) if self.asset_size is not None else None
+            asset_size = int(self.asset_size) if self.asset_size is not None else None,
+            company_key = self.company_key.urlsafe()
         )
 
 class ServiceOrderProblemState(messages.Enum):
@@ -1789,17 +1790,17 @@ class Route(BaseModel):
         if str(filters["status"]):
             query = query.filter(cls.status == RouteStatus(int(filters["status"])))
 
-        if str(filters["vehicle_key"]):
-            keys = str(filters["vehicle_key"]).split(',')
-            vehicles_keys = []
-            for key in keys:
-                vehicles_keys.append(ndb.Key(urlsafe=key))
-            if len(vehicles_keys) > 0:
-                query = query.filter(cls.vehicle_key.IN(vehicles_keys))
-            else:
-                #Here we need to put a condition, which will never be given.
-                fictional_date = datetime.strptime("02/01/1970", "%m/%d/%Y")
-                query = query.filter(cls.date == fictional_date)
+        # if str(filters["vehicle_key"]):
+        #     keys = str(filters["vehicle_key"]).split(',')
+        #     vehicles_keys = []
+        #     for key in keys:
+        #         vehicles_keys.append(ndb.Key(urlsafe=key))
+        #     if len(vehicles_keys) > 0:
+        #         query = query.filter(cls.vehicle_key.IN(vehicles_keys))
+        #     else:
+        #         #Here we need to put a condition, which will never be given.
+        #         fictional_date = datetime.strptime("02/01/1970", "%m/%d/%Y")
+        #         query = query.filter(cls.date == fictional_date)
 
         if str(filters["driver_key"]):
             keys = str(filters["driver_key"]).split(',')
@@ -1879,11 +1880,9 @@ class Route(BaseModel):
         return dict(
             id = self.key.urlsafe(),
             date = self.date.strftime("%Y-%m-%d %H:%M:%S"),
-            driver_key = self.driver_key.urlsafe(),
-            driver = self.driver_key.get().to_dict(),
+            driver_key = self.driver_key.urlsafe() if self.driver_key is not None else None,
+            driver = self.driver_key.get().to_dict() if self.driver_key is not None else None,
             company_key = self.company_key.urlsafe(),
-            vehicle_key = self.vehicle_key.urlsafe(),
-            vehicle = self.vehicle_key.get().to_dict(),
             notes = self.notes,
             active = self.active,
             status = int(self.status) if self.status is not None else None
@@ -2067,7 +2066,7 @@ class RouteIncident(BaseModel):
     # incident_type = msgprop.EnumProperty(RouteIncidentType)
     # status = msgprop.EnumProperty(RouteIncidentStatus, default=RouteIncidentStatus.Reported)
     incident_notes = ndb.StringProperty()
-    report_datetime = ndb.DateTimeProperty()
+    report_datetime = ndb.DateTimeProperty(auto_now=True)
 
     def save(self):
         action_type = AuditActionType.Created

@@ -23,12 +23,14 @@ export class User extends ServerEntity{
 
   public parseServerResponse(serverResponseObject){
     super.parseServerResponse(serverResponseObject);
-    this.roles=serverResponseObject.roles;
-    if (!isNullOrUndefined(serverResponseObject.company)){
-      var company:Company=new Company();
-      company.parseServerResponse(serverResponseObject.company);
-      this.company=company;
-    }
+    if (serverResponseObject) {
+      this.roles=serverResponseObject.roles;
+      if (!isNullOrUndefined(serverResponseObject.company)){
+        var company:Company=new Company();
+        company.parseServerResponse(serverResponseObject.company);
+        this.company=company;
+      }
+    } 
   }
 
   public getUserRole():String{
