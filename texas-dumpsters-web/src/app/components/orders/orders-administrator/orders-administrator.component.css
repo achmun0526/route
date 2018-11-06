@@ -1,3 +1,14 @@
 .canceled_order{
   background-color: #e88888
 }
+.date_{
+  margin: 0;
+}
+.filter-row{
+  display: flex;
+}
+.button_container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
