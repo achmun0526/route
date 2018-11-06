@@ -191,7 +191,7 @@ export class SaveOrderComponent implements OnInit, OnChanges {
 		this.order.customer_key = this.selectedCustomerId;
 		this.order.site_key = this.selectedSiteId;
     if(this.order.customer_key == null || this.order.customer_key == ""){
-      console.log("toast error");
+      //console.log("toast error");
       this.addOrderToastError.emit('toast');
     }else{
   		this.joinDateToTime();

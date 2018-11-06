@@ -280,7 +280,7 @@ class SignupHandler(BaseHandler):
 
             email, first_name, last_name, contact_phone_desk, contact_phone_mobile, device_id, password, role, company_key, user_key = self.get_request_values("email", "first_name", "last_name", "contact_phone_desk", "contact_phone_mobile", "device_id", "password", "role", "company_key", "user_key")
             user_name, user_domain = email.split('@')
-
+            logging.warning(self.get_request_values("email", "first_name", "last_name", "contact_phone_desk", "contact_phone_mobile", "device_id", "password", "role", "company_key", "user_key"))
             user = User()
 
             email = email.lower()
@@ -305,7 +305,6 @@ class SignupHandler(BaseHandler):
                 )
 
                 user = user.save()
-
                 if role is not None and role:
 
                     ndb.Key(Role, Role.ADMIN, parent=user.key).delete()
@@ -314,7 +313,6 @@ class SignupHandler(BaseHandler):
                     ndb.Key(Role, Role.DISPATCHER, parent=user.key).delete()
                     ndb.Key(Role, Role.MANAGER, parent=user.key).delete()
                     ndb.Key(Role, Role.OFFICE_ADMIN_CSR, parent=user.key).delete()
-
                     if role.upper() == Role.ADMIN:
                         Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
                     elif role.upper() == Role.COMPANY_ADMIN:
@@ -364,17 +362,24 @@ class SignupHandler(BaseHandler):
                     return self.json_data(resp)
 
                 unique_properties = ['email']
-
+                #logging.warning(Role)
+                #logging.warning(Role.DRIVER)
 				# Creating Driver Entity for Role Driver
                 if role is not None and role.upper()== Role.DRIVER:
                     from services import DriverService
                     from models import Driver
                     driver = Driver()
+                    # driver.populate(
+                    #     company_key=ndb.key(urlsafe=company_key),
+                    #     driver_email=email,
+                    #     driver_name='{} {}'.format(first_name, last_name),
+                    #     driver_phone=contact_phone_mobile or contact_phone_desk,
+                    # )
                     driver.populate(
-                        company_key=ndb.key(urlsafe=companey_key),
-                        driver_email=email,
-                        driver_name='{} {}'.format(first_name, last_name),
-                        driver_phone=contact_phone_mobile or contact_phone_desk,
+                        company_key=ndb.Key(urlsafe=company_key),
+                        driver_email = email,
+                        driver_name = '{} {}'.format(first_name, last_name),
+                        driver_phone = contact_phone_mobile or contact_phone_desk
                     )
                     entity = DriverService.DriverInstance.save(driver)
                     user_data = self.user_model.create_user(
@@ -397,6 +402,13 @@ class SignupHandler(BaseHandler):
                     errors = ['Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1])]
                     resp = get_fail_response(errors=errors)
                     return self.json_data(resp)
+                    # kwargs_temp =  errors
+                    # kwargs_temp.update(
+                    #     dict(
+                    #         status=FAIL,
+                    #     )
+                    # )
+                    # return kwargs_temp
 
                 # Push queue to send email verification url
                 user = user_data[1]
@@ -2397,7 +2409,7 @@ class DriverHandler(BaseHandler):
         try:
             from services import DriverService
             from models import Driver
-
+            print "driver---------------"
 
             data = json.loads(self.request.body)
 
@@ -2725,7 +2737,6 @@ class VehicleHandler(BaseHandler):
             filters["vehicle_key"] = self.request.get('vehicle_key')
             filters["driver_key"] = self.request.get('driver_key')
             filters["company_key"] = self.request.get('company_key')
-
             entities, total = VehicleService.VehicleInstance.get_all(page, page_size, filters)
 
             response = {
