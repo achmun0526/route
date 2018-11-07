@@ -32,6 +32,8 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 	private addSiteToast		 	= new EventEmitter<string|MaterializeAction>();
 	private addSiteToastError 		= new EventEmitter<string|MaterializeAction>();
 	private customerToastError 		= new EventEmitter<string|MaterializeAction>();
+	private latitudeError           = new EventEmitter<string|MaterializeAction>();
+	private longtitudeError         = new EventEmitter<string|MaterializeAction>();
 
 	//delete site toasts
 	private deleteSiteToast 		= new EventEmitter<string|MaterializeAction>();
@@ -78,6 +80,10 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 	saveSite(){
 		if(this.site.customer_key == null || this.site.customer_key == ""){
 			this.customerToastError.emit('toast');
+		}else if(this.site.latitude == null || this.site.latitude == 0) {
+			this.latitudeError.emit('toast');
+		}else if(this.site.longitude == null || this.site.longitude == 0) {
+			this.longtitudeError.emit('toast');
 		}else{
 			console.log("in saveSite()");
       this.sitesService.saveSite(this.site).then(res =>{
