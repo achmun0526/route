@@ -832,7 +832,8 @@ class UsersHandler(BaseHandler):
             all_users = User.get_by_roles(roles_joined.upper())
             keys = []
             for user in all_users:
-                keys.append(user.key)
+            	if user!=None:
+                	keys.append(user.key)
 
             if not keys:
                 qry = qry.filter(User.email == None)
@@ -1904,6 +1905,8 @@ class ServiceOrderHandler(BaseHandler):
 
             data = json.loads(self.request.body)
 
+            logging.warning(data)
+
             id = data.get('id')
             source_system= data.get('source_system_id')
             customer_key = data.get('customer_key')
@@ -1975,6 +1978,8 @@ class ServiceOrderHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=service_order.to_dict()))
 
         except Exception, e:
+
+            logging.warning(e)
             errors = [str(e)]
 
             message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
@@ -3406,8 +3411,9 @@ class RouteIncidentHandler(BaseHandler):
     def post(self):
         try:
 
-            from services import RouteIncidentService
+            from services import RouteIncidentService,ServiceOrderService
             from models import RouteIncident, RouteIncidentStatus
+            
 
             data = json.loads(self.request.body)
 
@@ -3437,10 +3443,8 @@ class RouteIncidentHandler(BaseHandler):
                 incident_notes=incident_notes,
             )
 
-            # if status is None:
-            #     route_incident.status = RouteIncidentStatus.Reported
-            # else:
-            #     route_incident.status = RouteIncidentStatus(int(status))
+            if order_canceled:
+                ServiceOrderService.ServiceOrderInstance.delete(order_key)
 
 
             # The line below is where the error is occuring. acting as if the incident has an id when it does not
