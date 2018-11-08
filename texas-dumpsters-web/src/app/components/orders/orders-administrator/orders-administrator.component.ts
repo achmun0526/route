@@ -19,7 +19,6 @@ import { Customer } from "../../../model/customer";
 import { CustomerService } from '../../../services/customer/customer.service';
 import { SitesService } from '../../../services/sites/sites.service';
 import { OrdersService } from '../../../services/orders/orders.service';
-import { SaveIncidentComponent } from '../../incidents/save-incident/save-incident.component';
 
 @Component({
   selector: 'app-orders-administrator',
@@ -66,8 +65,6 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
   private pageInfo = {page:1,page_size:PAGE_SIZE};
 	// CSV modal
   @ViewChild(CsvFileComponent) csvModal:CsvFileComponent;
-
-  @ViewChild(SaveIncidentComponent) saveIncidentComponent: SaveIncidentComponent;
 
   private siteDDenabled = false;
 
@@ -265,7 +262,6 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
     this.incidentModal.emit({action:'modal',params:['close']});
     // Update this to only update the order display if something was changed
     this.loadFilteredOrders(true);
-    this.saveIncidentComponent.clearIncident();
   }
 
 }

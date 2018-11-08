@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, Input, OnChanges, SimpleChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
 import { MaterializeDirective, MaterializeAction} from "angular2-materialize";
 
 import {FormControl} from '@angular/forms';
@@ -33,7 +33,7 @@ declare var $: any;
   styleUrls: ['./save-order.component.css']
 })
 
-export class SaveOrderComponent implements OnInit, OnChanges {
+export class SaveOrderComponent implements OnInit {
 
   @Output() afterOrderSaved = new EventEmitter();
 	@Output() onCancelAction = new EventEmitter();
@@ -71,7 +71,7 @@ export class SaveOrderComponent implements OnInit, OnChanges {
 
 	//add Order toasts
 	private addOrderToast = new EventEmitter<string|MaterializeAction>();
-  private addOrderToastError = new EventEmitter<string|MaterializeAction>();
+  	private addOrderToastError = new EventEmitter<string|MaterializeAction>();
 
 	private validations={customer_valid: true, site_valid: true, type_valid:true, asset_size_valid:true};
 
@@ -99,9 +99,9 @@ export class SaveOrderComponent implements OnInit, OnChanges {
 		});
 
 	  	if (!isNullOrUndefined(this.orderToEdit)){
-      	this.setupEdit();
+      		this.setupEdit();
     	}else{
-			  this.setupCreate();
+			this.setupCreate();
 		}
 
 		this.setupCollapsibles();
@@ -109,18 +109,11 @@ export class SaveOrderComponent implements OnInit, OnChanges {
 
 	}
 
-  ngOnChanges(changes: SimpleChanges) {
-    const currentOrderToEdit: SimpleChange = changes.orderToEdit;
-    if(currentOrderToEdit.currentValue){
-      this.order = currentOrderToEdit.currentValue;
-    }
-	}
-	
   getAutocompleteParams(){
   return this.autoCompleteParams;
-  }
+}
 
-	setupCreate(){
+  	setupCreate(){
 		this.order = {};
 		this.order.service_time_frame = 'AM';
 		//this.order.customer_key = this.customer.id;
@@ -139,49 +132,46 @@ export class SaveOrderComponent implements OnInit, OnChanges {
 		this.date.minutes = 0;
 	}
 
-  /**
-	 *
-	 * */
-	setupEdit(){
-		this.selectedCustomerId = this.order.customer_key;
-		this.getSitesForCustomer();
-		this.selectedSiteId = this.order.site_key;
+	/**
+  	 *
+   	* */
+  	setupEdit(){
+		this.selectedCustomerId = this.orderToEdit.customer_key;
+    this.getSitesForCustomer();
+		this.selectedSiteId = this.orderToEdit.site_key;
 		this.isOnEditMode=true;
 		this.title = "Edit Order";
 
-		console.log("logging the order in edit to see what is missing");
-		console.log(this.order);
+    this.order = this.orderToEdit;
+    console.log("logging the order in edit to see what is missing");
+    console.log(this.order);
 		var dateArray = this.order.service_date.split(" ");
-
 		var date = dateArray[0];
-		if (date) {
-			date = date.split("-");
-			var y = date[0];
-			var m = date[1];
-			var d = date[2];
-			this.date.date = "" + m + "/" + d + "/" + y;
-		}
+		date = date.split("-");
+		var y = date[0];
+		var m = date[1];
+		var d = date[2];
+		this.date.date = "" + m + "/" + d + "/" + y;
 
 		var time = dateArray[1];
-		if (time) {
-			time = time.split(':');
-			this.date.hour = parseInt(time[0]);
-			this.date.minutes = parseInt(time[1]);
+		time = time.split(':');
+		this.date.hour = parseInt(time[0]);
+		this.date.minutes = parseInt(time[1]);
 
-			if(this.date.hour == 0){ //12 AM
-				this.date.hour = 12;
-				this.date.hour_type = 1;
-			}else if(this.date.hour > 0 && this.date.hour < 12){
-				this.date.hour_type = 1;
-			}else if(this.date.hour == 12){ //12 PM
-				this.date.hour_type = 2;
-			}else if(this.date.hour > 12 && this.date.hour < 24){
-				this.date.hour = this.date.hour - 12;
-				this.date.hour_type = 2;
-			}
+		if(this.date.hour == 0){ //12 AM
+			this.date.hour = 12;
+			this.date.hour_type = 1;
+		}else if(this.date.hour > 0 && this.date.hour < 12){
+			this.date.hour_type = 1;
+		}else if(this.date.hour == 12){ //12 PM
+			this.date.hour_type = 2;
+		}else if(this.date.hour > 12 && this.date.hour < 24){
+			this.date.hour = this.date.hour - 12;
+			this.date.hour_type = 2;
 		}
-	this.displayed = true;
-	}
+
+		this.displayed = true;
+ 	}
 
 	/**
    *

@@ -187,7 +187,7 @@
 <a materialize [materializeParams]="['There was an error deleting the order',4000]" [materializeActions]="deleteOrderToastError"></a>
 
 <div *ngIf="true" id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addOrderModal">
-  <app-save-order [orderToEdit]="null" [customer]="selectedCustomer" [site]="selectedSite" (afterOrderSaved)="onOrderCreated()" (onCancelAction)="closeAddOrderModal()"></app-save-order>
+  <app-save-order [customer]="selectedCustomer" [site]="selectedSite" (afterOrderSaved)="onOrderCreated()" (onCancelAction)="closeAddOrderModal()"></app-save-order>
 </div>
 
 <div *ngIf="!isNullOrUndefined(selectedOrder)" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editOrderModal">

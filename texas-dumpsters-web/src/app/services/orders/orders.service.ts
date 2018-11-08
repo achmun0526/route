@@ -205,6 +205,7 @@ export class OrdersService extends BaseService {
     return this.http.get(SERVICE_ORDER_URL + params).toPromise()
       .then(response => {
           super.hideSpinner();
+          console.log(res);
           var res = response.json();
           var main_response= super.parsePaginationResponse(res, Order);
           sessionStorage.setItem(key,JSON.stringify(main_response.records));
