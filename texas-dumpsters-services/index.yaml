@@ -403,6 +403,12 @@ indexes:
   - name: active
   - name: customer_key
   - name: service_date
+
+- kind: ServiceOrder
+  properties:
+  - name: active
+  - name: customer_key
+  - name: service_date
     direction: desc
 
 - kind: ServiceOrder

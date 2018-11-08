@@ -158,8 +158,14 @@ class User(webapp2_extras.appengine.auth.models.User):
         role_reg = {}
         for role in roles:
             role_reg.setdefault(role.user.urlsafe(), []).append(role)
+        logging.warning("user-------------------------------------------------------")
+        logging.warning(all_users)
+        
         for user in all_users:
-            user._roles = role_reg[user.key.urlsafe()]
+            if user!=None:
+                logging.warning("user-------------------------------------------------------")
+                logging.warning(user)
+                user._roles = role_reg[user.key.urlsafe()]
         return all_users
 
     @classmethod
