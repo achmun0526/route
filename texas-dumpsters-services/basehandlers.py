@@ -1900,11 +1900,11 @@ class SiteHandler(BaseHandler):
 class ServiceOrderHandler(BaseHandler):
     def post(self):
         try:
-
             from services import ServiceOrderService
             from models import ServiceOrder, ServiceOrderState, PurposeOfService, AssetType, AssetSize, ServiceOrderFailureReason
 
             data = json.loads(self.request.body)
+
             logging.warning(data)
 
             id = data.get('id')
@@ -1968,7 +1968,6 @@ class ServiceOrderHandler(BaseHandler):
                 # active=json.loads(row[8].lower()) if row[8] is not None else True,
             )
 
-
             if id is not None:
                 service_order.key = ndb.Key(urlsafe=id)
 
@@ -2027,6 +2026,7 @@ class ServiceOrderHandler(BaseHandler):
                 "total":  total,
                 "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
+
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
@@ -2873,7 +2873,7 @@ class RouteHandler(BaseHandler):
             filters = {}
             filters["active"] = self.request.get('active')
             filters["route_key"] = self.request.get('route_key')
-            filters["vehicle_key"] = self.request.get('vehicle_key')
+            # filters["vehicle_key"] = self.request.get('vehicle_key')
             filters["company_key"] = self.request.get('company_key')
             filters["driver_key"] = self.request.get('driver_key')
             filters["start_date"] = self.request.get('start_date')
@@ -2888,12 +2888,12 @@ class RouteHandler(BaseHandler):
                     "total":  total,
                     "records":  json.loads(json.dumps([entity.to_dict_optimized() for entity in entities]))
                 }
+
             else:
                 response = {
                     "total":  total,
                     "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
                 }
-
 
             return self.json_data(get_success_reponse(response=response))
 
@@ -3425,9 +3425,9 @@ class RouteIncidentHandler(BaseHandler):
             # incident_type = data.get("incident_type")
             order_canceled=data.get('order_canceled')
             # status = data.get("status")
-            report_datetime = data.get('report_datetime')
-            if report_datetime is not None:
-                report_datetime = datetime.strptime(report_datetime, "%m/%d/%Y %H:%M:%S")
+            # report_datetime = data.get('report_datetime')
+            # if report_datetime is not None:
+            #     report_datetime = datetime.strptime(report_datetime, "%m/%d/%Y %H:%M:%S")
 
             incident_notes = data.get("incident_notes")
 
@@ -3436,7 +3436,7 @@ class RouteIncidentHandler(BaseHandler):
             route_incident.populate(
                 # driver_key=ndb.Key(urlsafe=driver_key),
                 order_key=ndb.Key(urlsafe=order_key),
-                report_datetime = report_datetime,
+                # report_datetime = report_datetime,
                 service_ticket_id = service_ticket_id,
                 order_canceled = order_canceled,
                 # incident_type=incident_type,
