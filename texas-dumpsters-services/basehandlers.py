@@ -165,6 +165,8 @@ class BaseHandler(webapp2.RequestHandler):
     @webapp2.cached_property
     def auth(self):
         """Shortcut to access the auth instance as a property"""
+        logging.warning("---------------get auth--------------------------------")
+    	logging.warning(auth.get_auth())
         return auth.get_auth()
 
     @webapp2.cached_property
@@ -178,6 +180,8 @@ class BaseHandler(webapp2.RequestHandler):
 
     @webapp2.cached_property
     def user_model(self):
+    	logging.warning("-----------------------------------------------")
+    	logging.warning(self.auth.store.user_model)
         return self.auth.store.user_model
 
     @webapp2.cached_property
@@ -889,12 +893,23 @@ class UsersHandler(BaseHandler):
 
     def delete(self):
         try:
-            from services import UserService
-
+            from services import UserService,UserXCompanyService
+            from models import UserXCompany
             id = self.request.get('id')
+            # logging.warning(self.auth.unset_session())
+            companydelete  = UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(id)
+            #deletetoken = self.token_model.get_key(id, 'resend-activation-mail').delete()
+            # logging.warning("------delete role-----------")
+            parentId = ndb.Key(urlsafe=id)
+            ndb.Key(Role, Role.ADMIN, parent=parentId).delete()
+            ndb.Key(Role, Role.COMPANY_ADMIN, parent=parentId).delete()
+            ndb.Key(Role, Role.DRIVER, parent=parentId).delete()
+            ndb.Key(Role, Role.DISPATCHER, parent=parentId).delete()
+            ndb.Key(Role, Role.MANAGER, parent=parentId).delete()
+            ndb.Key(Role, Role.OFFICE_ADMIN_CSR, parent=parentId).delete()
 
             UserService.UserInstance.delete(id)
-
+            time.sleep(0.5)
             return self.json_data(get_success_reponse())
 
         except Exception, e:
