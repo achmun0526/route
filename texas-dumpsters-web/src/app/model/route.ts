@@ -35,16 +35,18 @@ export class ServiceRoute extends ServerEntity{
     super.parseServerResponse(response);
     console.log("in parseserverresponse");
     console.log("response.route_items");
-    console.log(response.route_items);
-    if (response.route_items) {
+    console.log(response.response.records);
+    if (response.response.records) {
       console.log("in if response");
       this.route_items = [];
-      for (let item of response.route_items) {
+      for (let item of response.response.records) {
         var routeItem = new RouteItem();
         routeItem.parseServerResponse(item);
         this.route_items.push(routeItem);
       }
     }
+    console.log("in parse server response before route items");
+    console.log(this.route_items);
     var temp:User=new User();
     temp.parseServerResponse(response.driver)
     this.driver=temp;

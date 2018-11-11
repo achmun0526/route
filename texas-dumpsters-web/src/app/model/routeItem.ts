@@ -112,7 +112,7 @@ export class RouteItem extends ServerEntity{
 
   getMarkerObjectForEntity(){
     var obj=null;
-    if (this.entity instanceof Facility){
+    if (this.entity_type == "facility"){
       obj ={
         latitude: parseFloat(this.entity.latitude),
         longitude: parseFloat(this.entity.longitude),
@@ -130,7 +130,7 @@ export class RouteItem extends ServerEntity{
         latitude_temp: null,
         longitude_temp: null
       }
-    }else if (this.entity instanceof Yard){
+    }else if (this.entity_type == "yard"){
       obj ={
         latitude: parseFloat(this.entity.latitude),
         longitude: parseFloat(this.entity.longitude),

@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) [2018], Forest Schwartz. All rights reserved
+ *
+ * Duplication or reproduction of this code is strictly forbidden without the written and signed consent of the Author.
+ */
+
+/*
+ * File:   map-handler.component.ts
+ * Author: forest schwartz
+ *
+ * Created on December 12, 2017, 7:09 PM
+ */
 import {AfterViewInit, Component, Input, Output, EventEmitter, OnInit, ViewChild, ViewChildren, ChangeDetectorRef, ViewEncapsulation} from '@angular/core';
 import { NguiMapComponent, DirectionsRenderer, Marker} from '@ngui/map';
 import {isNullOrUndefined} from 'util';
@@ -102,7 +114,7 @@ showRoute(route_items) {
 
 
 
-  add_waypt(destination_number, route_number, route_items){
+  add_waypt(destination_number, route_items){
     console.log("///////////////ADDING WAYPT/////////////////");
     let destination_number_int = parseInt(destination_number);
     this.destination_number_index.push(destination_number_int);
@@ -118,6 +130,7 @@ showRoute(route_items) {
     for(let i=0;i<number_of_destinations;i++){
       console.log("before waypts push");
       let index = this.destination_number_index[i]
+      console.log(index);
       let route_item = route_items[index]
       let latitude = 0;
       let longitude = 0;
@@ -140,30 +153,39 @@ showRoute(route_items) {
     this.showRoute(route_items);
   }
 
-  remove_waypt(route_number,route){
+  remove_waypt(destination_number,route_items){
     console.log("///////////////REMOVING WAYPT/////////////////");
     console.log("logging the sorted route number index before removal");
     console.log(this.destination_number_index);
-    let destination_number_int = parseInt(route_number);
-    var index_of_removal = this.destination_number_index.indexOf(destination_number_int);
+    var index_of_removal = this.destination_number_index.indexOf(destination_number);
     if (index_of_removal > -1) {
       this.destination_number_index.splice(index_of_removal, 1);
     }
+    debugger
     console.log("logging the sorted route number index after removal");
     console.log(this.destination_number_index);
     var number_of_locations = this.destination_number_index.length;
       this.waypts=[];
     for(var i=0;i<number_of_locations;i++){
       let index = this.destination_number_index[i];
+      let route_item = route_items[index]
+      let latitude = 0;
+      let longitude = 0;
+      if(route_item.entity_type=="serviceorder"){
+        latitude = route_item['entity']['site'].latitude;
+        longitude = route_item['entity']['site'].longitude;
+      }else{
+        latitude = route_item['entity'].latitude;
+        longitude = route_item['entity'].longitude;
+      }
       this.waypts.push({
-          location: route.route_items[index].getLatLng(),
+          location: latitude + "," + longitude,
           stopover: true
       });
     }
     console.log("logging the waypts");
     console.log(this.waypts);
-
-    this.showRoute(route);
+    this.showRoute(route_items);
   }
 
 }

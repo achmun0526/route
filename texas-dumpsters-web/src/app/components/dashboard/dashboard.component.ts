@@ -59,13 +59,12 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   public startDate: any;
   public endDate: any;
 
-  protected routesTest: ServiceRoute = new ServiceRoute;
   protected routeItemsList = [];
   protected routesList = [];
   protected ordersList = [];
   protected totalRoutes = 0;
-  protected rawRouteItems = new RouteItem;
-  protected rawRoute = new ServiceRoute;
+  protected rawRouteList = []; 
+  protected dest_num = 0;
 
   driver: string;
   vehicle: string;
@@ -235,16 +234,30 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     // let f_vehicle = Utils.setParameter(this.selectedVehicle);
 
     this.routesService.getRoutesByCompanyOrDriverOrVehicle(null, f_company, f_driver, f_vehicle, f_startDate, f_endDate).then(res => {
+      console.log("before loadroutes res");  
         this.routesList = res;
+      console.log(res);
         this.totalRoutes = this.routesList.length;
         for(let i=0;i<this.totalRoutes;i++){
           this.routesList[i]["display"]=false;
+          console.log(this.routesList[i]);
+          this.rawRouteList[i] = new ServiceRoute;
+          this.rawRouteList[i].id = this.routesList[i].id;
+          this.rawRouteList[i].company_key = this.routesList[i].company_key;
+          this.rawRouteList[i].driver_key = this.routesList[i].driver_key;
+          this.rawRouteList[i].date = this.routesList[i].date;
+          this.rawRouteList[i].distance = this.routesList[i].total_distance;
+          this.rawRouteList[i].time = this.routesList[i].total_time;
+          this.rawRouteList[i].notes = this.routesList[i].notes;
+
           //console.log("before routesTest");
           //this.routesTest.parseServerResponse(res);
           //console.log("after routes test");
           //console.log(this.routesTest);
         }
+        console.log("after loadROutes shit");
         console.log(this.routesList);
+        console.log(this.rawRouteList);
     });
   }
 
@@ -356,19 +369,11 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   //server_entity_view(item,route_number,server_route_number){
-  server_entity_view(item,route_number){
+  server_entity_view(item,route_number, destination_number){
     item.display=true;
-    // this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number]);
     console.log("before route in server_entity_view");
-    console.log(route_number);
-    console.log("before serverroute instance");
-    this.routesService.saveRoutes(this.routesList[route_number]);
-    console.log("after routesservice saveroutes")
-    console.log(this.routesList[route_number]);
-    console.log(this.routeItemsList[route_number]);
-    console.log(this.rawRouteItems);
-    console.log(this.rawRouteItems.getEntityType());
-    this.mapHandler.add_waypt(route_number, this.routesList[route_number], this.rawRouteItems);
+    this.mapHandler.add_waypt(this.dest_num, route_number, this.rawRouteList[route_number].route_items);
+    this.dest_num += 1;
   }
   //close_server_entity_view(item,route_number,server_route_number){
   close_server_entity_view(item,route_number){
@@ -391,7 +396,11 @@ export class DashboardComponent extends BaseComponent implements OnInit {
         let route_item_info = []
         for(let i=0;i<res.length;i++){
           var info={};
-          //this.rawRouteItems = res;
+          let temp = new RouteItem;
+          temp.populate(res[i].entity_type, res[i].entity_key, res[i].sort_index, res[i].item, res[i].dist_2_next, res[i].time_2_next, route_index);
+          this.rawRouteList[route_index].populate_route_items(temp);
+          //for some reason below is necessary because populate doesn't work for item.
+          this.rawRouteList[route_index].entity = res[i].item;
           info["display"]=false;
           info["entity_type"]=res[i].entity_type;
           if(res[i].entity_type="serviceorder"){
@@ -400,10 +409,12 @@ export class DashboardComponent extends BaseComponent implements OnInit {
           }
           route_item_info[i]=info;
         }
+        console.log("before rawRouteList");
+        console.log(this.rawRouteList);
         this.routeItemsList[route_index]=route_item_info;
-        console.log("before this.routeItemsList")
+        console.log("before this.routeItemsList");
         console.log(this.routeItemsList);
-        console.log(typeof this.rawRouteItems);
+        
        
     });
   }

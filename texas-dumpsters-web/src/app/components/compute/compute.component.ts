@@ -5,7 +5,7 @@
  */
 
 /*
- * File:   main.cpp
+ * File:   compute.component.ts
  * Author: forest schwartz
  *
  * Created on December 12, 2017, 7:09 PM
@@ -548,11 +548,14 @@ get_address_from_symbol(symbol) {
     item.display=true;
     let route_items = this.service_routes[route_number]['route_items'];
     console.log(route_items)
-    this.mapHandler.add_waypt(destination_number,route_number, route_items);
+    this.mapHandler.add_waypt(destination_number,route_items);
   }
-  close_server_entity_view(item,route_number,server_route_number){
+
+  close_server_entity_view(item,destination_number,route_number){
+    debugger
     item.display=false;
-    this.mapHandler.remove_waypt(route_number,this.service_routes[server_route_number]);
+    let route_items = this.service_routes[route_number]['route_items'];
+    this.mapHandler.remove_waypt(destination_number,route_items);
   }
 
   show_event_data(event_data){
