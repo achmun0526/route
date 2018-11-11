@@ -166,8 +166,6 @@ class BaseHandler(webapp2.RequestHandler):
     @webapp2.cached_property
     def auth(self):
         """Shortcut to access the auth instance as a property"""
-        logging.warning("---------------get auth--------------------------------")
-    	logging.warning(auth.get_auth())
         return auth.get_auth()
 
     @webapp2.cached_property
@@ -181,8 +179,6 @@ class BaseHandler(webapp2.RequestHandler):
 
     @webapp2.cached_property
     def user_model(self):
-    	logging.warning("-----------------------------------------------")
-    	logging.warning(self.auth.store.user_model)
         return self.auth.store.user_model
 
     @webapp2.cached_property
@@ -1925,7 +1921,7 @@ class ServiceOrderHandler(BaseHandler):
             from models import ServiceOrder, ServiceOrderState, PurposeOfService, AssetType, AssetSize, ServiceOrderFailureReason
 
             data = json.loads(self.request.body)
-            logging.warning(data)
+            #logging.warning(data)
 
             id = data.get('id')
             source_system= data.get('source_system_id')
@@ -3465,7 +3461,8 @@ class RouteIncidentHandler(BaseHandler):
             )
 
             if order_canceled:
-                ServiceOrderService.ServiceOrderInstance.delete(order_key)
+                #ServiceOrderService.ServiceOrderInstance.delete(order_key)
+                ServiceOrderService.ServiceOrderInstance.activedactive(order_key,False)
 
 
             # The line below is where the error is occuring. acting as if the incident has an id when it does not
@@ -3507,7 +3504,8 @@ class RouteIncidentHandler(BaseHandler):
             filters["order_key"] = self.request.get('order_key')
             filters["start_date"] = self.request.get('start_date')
             filters["end_date"] = self.request.get('end_date')
-
+            filters["company_key"] = self.request.get('company_key')
+            logging.warning("get incident list starts here")
             entities, total = RouteIncidentService.RouteIncidentInstance.get_all(page, page_size, filters)
 
             response = {

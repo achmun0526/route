@@ -33,7 +33,7 @@ export class IncidentsService extends BaseService{
     if(overwrite){
       sessionStorage.clear();
     }
-    if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
+  /*  if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){*/
       return this.http.get(INCIDENTS_URL + params).toPromise()
         .then(response => {
           super.hideSpinner();
@@ -43,11 +43,11 @@ export class IncidentsService extends BaseService{
           return Promise.resolve(JSON.stringify(main_response.records));
          })
       .catch(this.handleError);
-    }else{
+  /*  }else{
       console.log("Incidents storage");
       super.hideSpinner();
       return Promise.resolve(sessionStorage.getItem(key));
-  }
+  }*/
   }
 
   /**

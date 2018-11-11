@@ -131,3 +131,17 @@ class ServiceOrderInstance:
             #entity.active = False
             #ServiceOrder.save(entity)
             entity.key.delete()
+
+    @staticmethod
+    def activedactive(id,status):
+        logging.warning(status)
+
+        current = ServiceOrder.get(id)
+        current.active = status
+        logging.warning("-0000---")
+        logging.warning(current)
+        if current is not None:
+            entity = ServiceOrder.save(current)
+        else:
+            raise ValueError("Service order does not exists")
+        return current

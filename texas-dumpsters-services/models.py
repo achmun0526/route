@@ -158,13 +158,9 @@ class User(webapp2_extras.appengine.auth.models.User):
         role_reg = {}
         for role in roles:
             role_reg.setdefault(role.user.urlsafe(), []).append(role)
-        logging.warning("user-------------------------------------------------------")
-        logging.warning(all_users)
         
         for user in all_users:
             if user!=None:
-                logging.warning("user-------------------------------------------------------")
-                logging.warning(user)
                 user._roles = role_reg[user.key.urlsafe()]
         return all_users
 
@@ -2127,7 +2123,7 @@ class RouteIncident(BaseModel):
 
     @classmethod
     def get_all(cls, page, page_size, filters):
-
+        from services import ServiceOrderService
         total = 0
         query = cls.query()
         entities = None
@@ -2157,15 +2153,23 @@ class RouteIncident(BaseModel):
         if (not page or not page_size):
             entities = query.order(-cls.report_datetime).fetch()
             total = len(entities)
+
         else:
             offset = int(page_size) * (int(page) - 1)
             limit = int(page_size)
             entities = query.order(-cls.report_datetime).fetch(offset=offset, limit=limit)
             # entities = query.order(-cls.sort_index).fetch(offset=offset, limit=limit)
-
             total = query.count()
-
-        return entities, total
+        templist = []
+        for e in entities:
+            orderdetail = ServiceOrderService.ServiceOrderInstance.get(e.order_key.urlsafe())
+            if not orderdetail or orderdetail==None:
+                logging.warning("--------------order not existed---------------")
+            else :
+                if str(filters["company_key"]) == str(orderdetail.company_key.urlsafe()):
+                    templist.append(e)
+                    
+        return templist, len(templist)
 
     def to_dict(self):
         from helpers import Attachments
@@ -2230,7 +2234,8 @@ class AssetInventory(BaseModel):
 
     @classmethod
     def get_all(cls, page, page_size, filters):
-
+        logging.warning("filters")
+        logging.warning(filters)
         total = 0
         query = cls.query()
         entities = None
