@@ -30,6 +30,7 @@ from webapp2_extras.auth import InvalidPasswordError
 from webapp2_extras import auth
 from webapp2_extras import security
 from webapp2_extras import sessions
+from webapp2_extras.appengine.auth import models
 from services import UserService, AuditService
 from models import Role, Audit, AuditActionType
 
@@ -895,19 +896,23 @@ class UsersHandler(BaseHandler):
         try:
             from services import UserService,UserXCompanyService
             from models import UserXCompany
+            from models import User
             id = self.request.get('id')
-            # logging.warning(self.auth.unset_session())
-            companydelete  = UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(id)
-            #deletetoken = self.token_model.get_key(id, 'resend-activation-mail').delete()
-            # logging.warning("------delete role-----------")
             parentId = ndb.Key(urlsafe=id)
+            # delete unique key
+            usertobedeleted = User.get_by_key(parentId)
+            models.Unique.delete_multi(['User.auth_id:'+usertobedeleted.email])
+            models.Unique.delete_multi(['User.email:'+usertobedeleted.email])
+            # delete company
+            companydelete  = UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(id)
+            # delete role
             ndb.Key(Role, Role.ADMIN, parent=parentId).delete()
             ndb.Key(Role, Role.COMPANY_ADMIN, parent=parentId).delete()
             ndb.Key(Role, Role.DRIVER, parent=parentId).delete()
             ndb.Key(Role, Role.DISPATCHER, parent=parentId).delete()
             ndb.Key(Role, Role.MANAGER, parent=parentId).delete()
             ndb.Key(Role, Role.OFFICE_ADMIN_CSR, parent=parentId).delete()
-
+            # delete user
             UserService.UserInstance.delete(id)
             time.sleep(0.5)
             return self.json_data(get_success_reponse())
@@ -2879,7 +2884,7 @@ class RouteHandler(BaseHandler):
         try:
             from services import RouteService
             from models import Route
-
+            print("in route class basehandler")
             #Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
@@ -2895,9 +2900,9 @@ class RouteHandler(BaseHandler):
             filters["end_date"] = self.request.get('end_date')
             filters["status"] = self.request.get('status')
             filters["optimized"] = self.request.get('optimized')
-
+            print("before routeservice")
             entities, total = RouteService.RouteInstance.get_all(page, page_size, filters)
-
+            print("after routeservice")
             if(filters["optimized"] and json.loads(filters["optimized"]) == True):
                 response = {
                     "total":  total,
@@ -2957,7 +2962,7 @@ class RouteItemHandler(BaseHandler):
         try:
             from services import RouteItemService
             from models import RouteItem
-
+            
             logging.warning("inside RouteItemHandler")
 
             data = json.loads(self.request.body)
@@ -3027,7 +3032,7 @@ class RouteItemHandler(BaseHandler):
         try:
             from services import RouteItemService
             from models import RouteItem
-
+            logging.warning("inside routeitemget")
             #Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
@@ -3040,12 +3045,13 @@ class RouteItemHandler(BaseHandler):
             entities, total = RouteItemService.RouteItemInstance.get_all(page, page_size, filters)
 
             print("total route items: %s"%total)
-
+            print(entities)
             response = {
                 "total":  total,
                 "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
+            print("before return basehandlers routeitems")
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:

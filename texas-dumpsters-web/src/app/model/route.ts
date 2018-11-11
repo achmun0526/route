@@ -33,7 +33,11 @@ export class ServiceRoute extends ServerEntity{
    * */
   parseServerResponse(response){
     super.parseServerResponse(response);
+    console.log("in parseserverresponse");
+    console.log("response.route_items");
+    console.log(response.route_items);
     if (response.route_items) {
+      console.log("in if response");
       this.route_items = [];
       for (let item of response.route_items) {
         var routeItem = new RouteItem();

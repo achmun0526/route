@@ -72,7 +72,7 @@ showRoute(route) {
        let markerobj = route.route_items[index].getMarkerObjectForEntity();
        this.markers.push(markerobj);
    }
-
+   console.log("after markers");
    this.direction={
        origin: this.waypts[0].location,
        destination: this.waypts[this.waypts.length-1].location,
@@ -80,11 +80,12 @@ showRoute(route) {
        optimizeWaypoints: false,
        travelMode: 'DRIVING'
    };
-
+   console.log("after direction");
    this.directionsRendererDirective['initialized$'].subscribe( directionsRenderer => {
-  this.directionsRenderer = directionsRenderer;
-  });
-  this.realMarkers = [];
+    this.directionsRenderer = directionsRenderer;
+   });
+   console.log("after directionrender");
+   this.realMarkers = [];
 }
 
   show_route_via_direction(direction){
@@ -101,7 +102,7 @@ showRoute(route) {
 
 
 
-  add_waypt(route_number,route){
+  add_waypt(route_number, route, route_items){
     console.log("///////////////ADDING WAYPT/////////////////");
     let route_number_int = parseInt(route_number);
     this.route_number_index.push(route_number_int);
@@ -110,14 +111,18 @@ showRoute(route) {
     this.route_number_index.sort(function(a, b){return a-b});
     console.log("logging the sorted route number index");
     console.log(this.route_number_index);
-    var number_of_locations = this.route_number_index.length;
+    //var number_of_locations = this.route_number_index.length;
+    var number_of_locations = route_items.length;
+    console.log(number_of_locations);
       this.waypts=[];
     for(var i=0;i<number_of_locations;i++){
-      let index = this.route_number_index[i];
+      //let index = this.route_number_index[i];
+      console.log("before waypts push");
       this.waypts.push({
-          location: route.route_items[index].getLatLng(),
+          location: route_items[i].latitude + "," + route_items[i].longitude,
           stopover: true
       });
+    console.log("after for loop for waypts push");
     }
 
     console.log("logging the waypts");

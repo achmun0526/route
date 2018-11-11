@@ -1752,7 +1752,7 @@ class Route(BaseModel):
 
     company_key = ndb.KeyProperty(kind=Company, required=True)
     date = ndb.DateTimeProperty(required=True)
-    driver_key = ndb.KeyProperty(kind=User)
+    driver_key = ndb.KeyProperty(kind=Driver)
     total_distance = ndb.FloatProperty()
     total_time = ndb.FloatProperty()
     num_of_stops = ndb.IntegerProperty()
@@ -1882,6 +1882,7 @@ class Route(BaseModel):
         )
 
     def to_dict_optimized(self):
+        logging.warning("inside to_dict_optimized")
         return dict(
             id = self.key.urlsafe(),
             date = self.date.strftime("%Y-%m-%d %H:%M:%S"),
@@ -1996,7 +1997,7 @@ class RouteItem(BaseModel):
             limit = int(page_size)
             entities = query.order(cls.sort_index).fetch(offset=offset, limit=limit)
             total = query.count()
-
+        
         return entities, total
 
     @classmethod
@@ -2016,18 +2017,37 @@ class RouteItem(BaseModel):
         entity = self.key.get()
         print(entity)
         print("\n")
-
+        
         print(self.entity_type)
         print("\n")
 
         if self.entity_type == "serviceorder":
+            #Very temporary fix to the specific key type problem
+            print("before so_key.get")
+            self.serviceorder_key = ndb.Key(ServiceOrder,self.item_key)
+            print(self.serviceorder_key)
+            print("after so key making")
             item_entity = self.serviceorder_key.get()
+            print("after so_key.get")
             item = item_entity.to_dict() if self.serviceorder_key is not None else None
         elif self.entity_type == "facility":
+            #Very temporary fix to the specific key type problem
+            print("before facility_key.get")
+            print(self.item_key)
+            self.facility_key = ndb.Key(Facility,self.item_key)
+            print(self.facility_key)
+            print("after facility_key making")
             item_entity = self.facility_key.get()
+            print("after facility_key.get")
             item = item_entity.to_dict() if self.facility_key is not None else None
         else:
+            #Very temporary fix to the specific key type problem
+            print("before yard key make")
+            self.yard_key = ndb.Key(Yard,self.item_key)
+            print(self.yard_key)
+            print("before yard_key.get")
             item_entity = self.yard_key.get()
+            print("After yard_key.get")
             item = item_entity.to_dict() if self.yard_key is not None else None
 
 

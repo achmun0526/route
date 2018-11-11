@@ -59,10 +59,13 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   public startDate: any;
   public endDate: any;
 
+  protected routesTest: ServiceRoute = new ServiceRoute;
   protected routeItemsList = [];
   protected routesList = [];
   protected ordersList = [];
   protected totalRoutes = 0;
+  protected rawRouteItems = new RouteItem;
+  protected rawRoute = new ServiceRoute;
 
   driver: string;
   vehicle: string;
@@ -219,6 +222,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   loadRoutes() {
+    console.log("in LoadRoutes")
     let f_startDate = null;
     let f_endDate = null;
 
@@ -235,6 +239,10 @@ export class DashboardComponent extends BaseComponent implements OnInit {
         this.totalRoutes = this.routesList.length;
         for(let i=0;i<this.totalRoutes;i++){
           this.routesList[i]["display"]=false;
+          //console.log("before routesTest");
+          //this.routesTest.parseServerResponse(res);
+          //console.log("after routes test");
+          //console.log(this.routesTest);
         }
         console.log(this.routesList);
     });
@@ -287,12 +295,12 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   centerMap(icon) {
-    //this.mapHandler.openInfoWindowOnMarker(icon.id, true);
+    this.mapHandler.openInfoWindowOnMarker(icon.id, true);
   }
 
   centerMapRoute(route) {
     if (route.route_items.length > 0) {
-      //this.mapHandler.openInfoWindowOnMarker(route.route_items[0].entity_key, true);
+      this.mapHandler.openInfoWindowOnMarker(route.route_items[0].entity_key, true);
     } else {
       this.routeNoItemsToastError.emit('toast');
     }
@@ -347,14 +355,27 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     route.display = false;
   }
 
-  server_entity_view(item,route_number,server_route_number){
+  //server_entity_view(item,route_number,server_route_number){
+  server_entity_view(item,route_number){
     item.display=true;
     // this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number]);
+    console.log("before route in server_entity_view");
+    console.log(route_number);
+    console.log("before serverroute instance");
+    this.routesService.saveRoutes(this.routesList[route_number]);
+    console.log("after routesservice saveroutes")
+    console.log(this.routesList[route_number]);
+    console.log(this.routeItemsList[route_number]);
+    console.log(this.rawRouteItems);
+    console.log(this.rawRouteItems.getEntityType());
+    this.mapHandler.add_waypt(route_number, this.routesList[route_number], this.rawRouteItems);
   }
-  close_server_entity_view(item,route_number,server_route_number){
-    item.display=false;
-    // this.mapHandler.remove_waypt(route_number,this.service_routes[server_route_number]);
-  }
+  //close_server_entity_view(item,route_number,server_route_number){
+  close_server_entity_view(item,route_number){
+  item.display=false;
+    // this.mapHandler.remove_waypt(route_number,this.service_route_numberte_number]);
+    this.mapHandler.remove_waypt(route_number,this.routesList[route_number]);
+  }7
 
   loadRouteItems(){
     console.log("inside dashboard.component.loadRouteitems()")
@@ -364,12 +385,13 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   loadRouteItemsByRoute(route_key,route_index){
-    console.log("inside dashboard.component.loadRouteitems()")
+    console.log("inside dashboard.component.loadRouteitemsbyroute()")
     console.log(route_key);
     this.routesService.getRouteItemsByRoute(route_key).then(res => {
         let route_item_info = []
         for(let i=0;i<res.length;i++){
           var info={};
+          //this.rawRouteItems = res;
           info["display"]=false;
           info["entity_type"]=res[i].entity_type;
           if(res[i].entity_type="serviceorder"){
@@ -379,7 +401,10 @@ export class DashboardComponent extends BaseComponent implements OnInit {
           route_item_info[i]=info;
         }
         this.routeItemsList[route_index]=route_item_info;
+        console.log("before this.routeItemsList")
         console.log(this.routeItemsList);
+        console.log(typeof this.rawRouteItems);
+       
     });
   }
 

@@ -35,5 +35,6 @@ class DriverInstance:
         if(entity is None):
             raise ValueError("Driver does not exists")
         else:
-            entity.active = False
-            Driver.save(entity)
+            entity.key.delete()
+            # entity.active = False
+            # Driver.save(entity)

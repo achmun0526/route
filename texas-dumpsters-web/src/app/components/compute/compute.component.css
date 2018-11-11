@@ -182,3 +182,15 @@ h1, h2, h3, h4, h5, h6 {
   text-rendering: optimizeLegibility;
   font-weight: 700;
 }
+
+/**.bg-image {
+  background-image: url("/assets/ComputeImage.jpg");
+  background-color: #cccccc;
+  height: 500px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  width: 100% !important;
+}
+**/

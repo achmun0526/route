@@ -184,7 +184,7 @@
                       [(ngModel)]="order.service_time_frame"
                       materialize="material_select">
                 <option value="Am" selected>AM</option>
-                <option value="Pm">Pm</option>
+                <option value="Pm">PM</option>
               </select>
             </p>
           </div>
@@ -206,7 +206,7 @@
       <div class="row">
           <div class="close-footer">
             <a class="waves-effect waves-green btn-flat" (click)="onCancelAction.emit()">Close</a>
-            <button class="waves-effect waves-green btn-flat" type="submit">Save order</button>
+            <button class="waves-effect waves-green btn-flat" type="saveOrder()">Save order</button>
           </div>
       </div>
       <div class="row">

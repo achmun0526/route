@@ -53,7 +53,7 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 	ngOnInit() {
 		super.ngOnInit();
 		this.company = this.authService.getCurrentSelectedCompany();
-		this.getCustomers(false);
+		this.getCustomers(true);
 		this.getSitesByCustomer(false);
 	}
 

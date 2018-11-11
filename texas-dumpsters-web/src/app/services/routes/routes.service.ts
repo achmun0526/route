@@ -88,7 +88,9 @@ export class RoutesService extends BaseService{
       .then(response => {
         super.hideSpinner();
         var res=response.json();
+        console.log("in getRoutesByCompanyOrDriverOrVehicle");
         console.log(res);
+        console.log("res.response.records");
         console.log(res.response.records);
         if (res.status===SUCCESS){
           return res.response.records;
@@ -210,7 +212,7 @@ addRouteItems(route_items):Promise<any>{
       .then(response => {
         super.hideSpinner();
         var res = response.json();
-        if(res.estatus === SUCCESS){
+        if(res.status === SUCCESS){
           return res;
         }else{
           return null;
@@ -274,25 +276,26 @@ addRouteItems(route_items):Promise<any>{
         if (res.status===SUCCESS){
           return res.response.records;
         }})
-      .catch(err=> console.log("error in routes.services.getRoutesByCompanyOrDriver %s",err));
+      .catch(err=> console.log("error in routes.services.getRouteItems %s",err));
   }
 
   getRouteItemsByRoute(route_key){
-    console.log("inside routes.service.getRoute")
+    console.log("inside routes.service.getRouteItemsByRoute");
     super.showSpinner();
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id +
     (route_key != null ? '&route_key=' + route_key:'');
-
     return this.http.get(ADD_ROUTES_ITEM_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
-        var res=response.json();
+        var res = response.json();
+        console.log("before res");
         console.log(res);
+        console.log("before records");
         console.log(res.response.records);
         if (res.status===SUCCESS){
           return res.response.records;
         }})
-      .catch(err=> console.log("error in routes.services.getRoutesByCompanyOrDriver %s",err));
+      .catch(err=> console.log("error in routes.services.getRouteItemsByRoute %s",err));
   }
 
   get_routes_from_cache(){

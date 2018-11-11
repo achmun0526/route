@@ -80,6 +80,8 @@ export class ComputeComponent extends BaseComponent implements OnInit {
   private data_loaded = 0;
   private current_site:Site;
   private sorted_routes = [];
+  private sorted_distances = [];
+  private sorted_durations = [];
   private truck_route_data = [];
   private truck_route;
   private num_of_displayed_routes=0;
@@ -180,11 +182,12 @@ compile_data(){
   for (let i = 0; i < this.ordersList.length; i++) {
     let Order = {};
 
-    Order['order_id'] = this.ordersList[i].id;
+    Order['id'] = this.ordersList[i].id;
     Order['customer_key'] = this.ordersList[i].customer_key;
     Order['quantity'] = parseInt(this.ordersList[i].quantity);
     let order_site = this.ordersList[i].site;
     Order['site_id'] = order_site.id;
+    Order['site_name']=order_site.site_name;
     Order['latitude'] = parseFloat(order_site.latitude);
     Order['longitude'] = parseFloat(order_site.longitude);
 
@@ -199,6 +202,8 @@ compile_data(){
     let Facility = {};
     Facility['latitude'] = parseFloat(this.facilityList[i].latitude);
     Facility['longitude'] = parseFloat(this.facilityList[i].longitude);
+    Facility['name'] =this.facilityList[i].facility_name;
+    Facility['id']=this.facilityList[i].id;
     this.depots.push(Facility);
   }
 
@@ -207,6 +212,8 @@ compile_data(){
     let Yard = {};
     Yard['latitude'] = parseFloat(this.yardsList[i].latitude);
     Yard['longitude'] = parseFloat(this.yardsList[i].longitude);
+    Yard['name'] = this.yardsList[i].yard_name;
+    Yard['id']=this.yardsList[i].id;
     this.landfills.push(Yard);
   }
 
@@ -246,10 +253,22 @@ compute() {
       this.data_loaded = 1;
 
       console.log(JSON.stringify(this.data));
-      this.http.post('http://35.237.114.111:80', this.data)
+      this.http.post('http://127.0.0.1:5000', this.data)
       .toPromise()
         .then(val => {
-            this.update_page(val['_body']);
+          let data = val['_body'];
+          console.log(data);
+          data = JSON.parse(data);
+          let body = data['body'];
+          let status = data['status'];
+          if(status=="FAIL"){
+            console.log("made it inside fail");
+            this.errorThrown = body;
+            this.openErrorModal()
+          }else{
+            console.log("made it inside pass")
+            this.update_page(body)
+          }
           })
         .catch(err => console.log('error: %s', err));
     } else {
@@ -264,9 +283,22 @@ compute() {
       this.data['num_of_iterations']=this.iterations;
 
       console.log(this.data);
-      this.http.post('http://35.237.114.111:80', this.data).toPromise()
+      this.http.post('http://127.0.0.1:5000', this.data).toPromise()
         .then(val => {
-            this.update_page(val['_body']);
+          console.log(val);
+            let data = val['_body'];
+            data = JSON.parse(data);
+            let body = data['body'];
+            console.log(body);
+            let status = data['status'];
+            if(status=="FAIL"){
+              console.log("made it inside fail");
+              this.errorThrown = body;
+              this.openErrorModal()
+            }else{
+              console.log("made it inside pass")
+              this.update_page(body)
+            }
           })
         .catch(err => console.log('error: %s', err));
 
@@ -279,23 +311,28 @@ on_company_changed() {
 }
 
 
-update_page(body_of_data) {
+update_page(json_data) {
+  debugger
   this.compiled_route_duration = 0;
   this.compiled_route_distance=0;
   console.log("logging the returned data");
-  console.log(body_of_data);
+  console.log(json_data);
   this.numbers=[];
   this.route_object_list_arr=[];
-  let json_data = JSON.parse(body_of_data);
+
   this.sorted_routes = json_data.routes;
+  this.sorted_distances = json_data.distances;
+  this.sorted_durations = json_data.durations;
   this.num_of_routes = this.sorted_routes.length;
+
   for (let j = 0; j < this.num_of_routes; j++){
     let number={};
     number['display']=false;
     this.numbers[j] = number;
 
-    this.truck_route = this.sorted_routes[j];
-    let symbols = this.truck_route.symbols;
+    let truck_route = this.sorted_routes[j];
+    let truck_route_distances = this.sorted_distances[j]
+    let truck_route_durations= this.sorted_durations[j]
     let route_object_list = [];
     this.total_route_duration[j] = 0;
     this.total_route_distance[j] = 0;
@@ -303,24 +340,28 @@ update_page(body_of_data) {
 ////////////////////////////Testing out the new route class////////////////////////////////////////
     var service_route= new ServiceRoute();
 /////////////////////////////////////////////////////////////////////////////////////////////////
-      for (let i = 0; i < symbols.length-1; i++) {
+      for (let i = 0; i < truck_route.length-1; i++) {
 
           let route_object = {};
-          let symbol = symbols[i];
-          let type = symbol.substring(0,1);
-          let duration = this.truck_route.btw_durations[i];
-          if(type=="L"){
-            if(isNaN(this.yard_time)==false){
-            duration = duration + parseFloat(this.yard_time)/60;
-            }
-          }else{
-            if(isNaN(this.service_time)==false){
-            duration=duration+parseFloat(this.service_time)/60;
+          let symbol = truck_route[i];
+          let duration = truck_route_durations[i];
+          let distance = truck_route_distances[i];
+
+          if(typeof(symbol)=="string"){
+            let type = symbol.substring(0,1);
+            if(type=="L"){
+              if(isNaN(this.yard_time)==false){
+              duration = duration + parseFloat(this.yard_time)/60;
+              }
+            }else{
+              if(isNaN(this.service_time)==false){
+              duration=duration+parseFloat(this.service_time)/60;
+              }
             }
           }
 
           this.total_route_duration[j] = this.total_route_duration[j] + duration;
-          let distance = this.truck_route.btw_distances[i];
+
           this.total_route_distance[j] = this.total_route_distance[j] + distance;
 
 
@@ -351,6 +392,8 @@ update_page(body_of_data) {
           route_object_list[i] = route_object;
       }
 
+      debugger
+
 /////////// Storing the ServiceRoute into the serviceRoutes[] /////////////////
       this.compiled_route_distance = this.compiled_route_distance+this.total_route_distance[j];
       this.compiled_route_duration = this.compiled_route_duration+this.total_route_duration[j];
@@ -368,21 +411,21 @@ update_page(body_of_data) {
 }
 
 get_entity_from_symbol(symbol){
-  let type = symbol.substring(0, 1);
-
-  if (type == 'L') {
-    let location_string = symbol.substring(1);
-    let location_int = parseInt(location_string);
-    let entity = this.yardsList[location_int];
-    return entity;
-  } else if(type == 'H') {
-    let location_string = symbol.substring(1);
-    let location_int = parseInt(location_string);
-    let entity = this.facilityList[location_int];
-    return entity;
-  } else {
-    let location_int = parseInt(symbol);
-    var current_order= this.ordersList[location_int];
+  if(typeof(symbol)== "string"){
+    let type = symbol.substring(0, 1);
+    if (type == 'L') {
+      let location_string = symbol.substring(1);
+      let location_int = parseInt(location_string);
+      let entity = this.yardsList[location_int];
+      return entity;
+    } else{
+      let location_string = symbol.substring(1);
+      let location_int = parseInt(location_string);
+      let entity = this.facilityList[location_int];
+      return entity;
+    }
+  }else {
+    var current_order= this.ordersList[symbol];
     let entity = current_order;
     return entity;
   }
@@ -390,12 +433,16 @@ get_entity_from_symbol(symbol){
 
 get_entity_type_from_symbol(symbol){
   let  entity= '';
-  let type = symbol.substring(0, 1);
-  if (type == 'L') {
-    entity='yard';
-  } else if(type == 'H') {
-    entity='facility';
-  } else {
+
+  if(typeof(symbol)== "string"){
+    let type = symbol.substring(0, 1);
+    console.log(type);
+    if (type == 'L') {
+      entity='yard';
+    } else {
+      entity='facility';
+    }
+  }else {
     entity='serviceorder';
   }
   return entity;
@@ -403,43 +450,46 @@ get_entity_type_from_symbol(symbol){
 
 // This pulls out the key of the entity so we can reference that object later
 get_entity_key_from_symbol(symbol){
-  let type = symbol.substring(0, 1);
   let entity_key = '';
-  if (type == 'L') {
-    let location_string = symbol.substring(1);
-    let location_int = parseInt(location_string);
-    entity_key = this.yardsList[location_int].id;
-  } else if(type == 'H') {
-    let location_string = symbol.substring(1);
-    let location_int = parseInt(location_string);
-    entity_key = this.facilityList[location_int].id;
-  } else {
-    let location_int = parseInt(symbol);
-    var current_site= this.ordersList[location_int];
-    entity_key = current_site.id;
+  console.log(typeof(symbol))
+  if(typeof(symbol)=="string"){
+    let type = symbol.substring(0, 1);
+    if (type == 'L') {
+      let location_string = symbol.substring(1);
+      let location_int = parseInt(location_string);
+      entity_key = this.yardsList[location_int].id;
+    } else{
+      let location_string = symbol.substring(1);
+      let location_int = parseInt(location_string);
+      entity_key = this.facilityList[location_int].id;
+    }
+  }else {
+    entity_key= this.ordersList[symbol].id;
   }
   return entity_key;
 }
 
 get_latlng_from_symbol(symbol) {
     let address = '';
-    let type = symbol.substring(0, 1);
-    if (type == 'L') {
-      let location_string = symbol.substring(1);
-      let location_int = parseInt(location_string);
-      let lat = this.yardsList[location_int].latitude;
-      let lng = this.yardsList[location_int].longitude;
-      // var latlng= new google.maps.LatLng(lat, lng);
-      var latlng = new CustomLatLng(lat,lng);
-    } else if(type == 'H') {
-      let location_string = symbol.substring(1);
-      let location_int = parseInt(location_string);
-      let lat = this.facilityList[location_int].latitude;
-      let lng = this.facilityList[location_int].longitude;
-      // var latlng= new google.maps.LatLng(lat, lng);
-      var latlng = new CustomLatLng(lat,lng);
-    } else {
-      let location_int = parseInt(symbol);
+    if(typeof(symbol)=="string"){
+      let type = symbol.substring(0, 1);
+      if (type == 'L') {
+        let location_string = symbol.substring(1);
+        let location_int = parseInt(location_string);
+        let lat = this.yardsList[location_int].latitude;
+        let lng = this.yardsList[location_int].longitude;
+        // var latlng= new google.maps.LatLng(lat, lng);
+        var latlng = new CustomLatLng(lat,lng);
+      } else{
+        let location_string = symbol.substring(1);
+        let location_int = parseInt(location_string);
+        let lat = this.facilityList[location_int].latitude;
+        let lng = this.facilityList[location_int].longitude;
+        // var latlng= new google.maps.LatLng(lat, lng);
+        var latlng = new CustomLatLng(lat,lng);
+      }
+    }else {
+      let location_int = symbol;
       var current_site= this.ordersList[location_int].site;
       let lat = current_site.latitude;
       let lng = current_site.longitude;
@@ -451,17 +501,19 @@ get_latlng_from_symbol(symbol) {
 
 get_address_from_symbol(symbol) {
     let address = '';
-    let type = symbol.substring(0, 1);
-    if (type == 'L') {
-      let location_string = symbol.substring(1);
-      let location_int = parseInt(location_string);
-      address = this.yardsList[location_int].getFormattedAddress();
-    } else if(type == 'H') {
-      let location_string = symbol.substring(1);
-      let location_int = parseInt(location_string);
-      address = this.facilityList[location_int].getFormattedAddress();
-    } else {
-      let location_int = parseInt(symbol);
+    if(typeof(symbol)=="string"){
+      let type = symbol.substring(0, 1);
+      if (type == 'L') {
+        let location_string = symbol.substring(1);
+        let location_int = parseInt(location_string);
+        address = this.yardsList[location_int].getFormattedAddress();
+      } else if(type == 'H') {
+        let location_string = symbol.substring(1);
+        let location_int = parseInt(location_string);
+        address = this.facilityList[location_int].getFormattedAddress();
+      }
+  }else {
+      let location_int = symbol;
       var current_site= this.ordersList[location_int].site;
       address = current_site.site_address+', '+current_site.site_city+', '+current_site.site_state+', '+current_site.site_zipcode;
     }
@@ -494,7 +546,7 @@ get_address_from_symbol(symbol) {
 
   server_entity_view(item,route_number,server_route_number){
     item.display=true;
-    this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number]);
+    this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number], route_number);
   }
   close_server_entity_view(item,route_number,server_route_number){
     item.display=false;

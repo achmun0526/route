@@ -95,7 +95,7 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
           this.addSiteToast.emit('toast');
           this.onSaveCompleted.emit();
         }else{
-
+					this.site={};
           this.addSiteToastError.emit('toast');
         }
         this.onCancelAction.emit();
