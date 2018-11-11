@@ -544,9 +544,11 @@ get_address_from_symbol(symbol) {
     this.num_of_displayed_routes=this.num_of_displayed_routes-1;
   }
 
-  server_entity_view(item,route_number,server_route_number){
+  server_entity_view(item,destination_number,route_number){
     item.display=true;
-    this.mapHandler.add_waypt(route_number,this.service_routes[server_route_number], route_number);
+    let route_items = this.service_routes[route_number]['route_items'];
+    console.log(route_items)
+    this.mapHandler.add_waypt(destination_number,route_number, route_items);
   }
   close_server_entity_view(item,route_number,server_route_number){
     item.display=false;

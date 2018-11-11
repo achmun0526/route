@@ -39,7 +39,7 @@ export class MapHandlerComponent implements OnInit, AfterViewInit {
   iw_content: string;
   waypts = [];
   waypts_index={};
-  route_number_index=[];
+  destination_number_index=[];
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -63,13 +63,13 @@ export class MapHandlerComponent implements OnInit, AfterViewInit {
 
 
 
-showRoute(route) {
+showRoute(route_items) {
 
   console.log("///////////////SHOW ROUTE/////////////////////");
    this.markers=[];
-   for (let i = 0; i < this.route_number_index.length; i++) {
-       let index = this.route_number_index[i];
-       let markerobj = route.route_items[index].getMarkerObjectForEntity();
+   for (let i = 0; i < this.destination_number_index.length; i++) {
+       let index = this.destination_number_index[i];
+       let markerobj = route_items[index].getMarkerObjectForEntity();
        this.markers.push(markerobj);
    }
    console.log("after markers");
@@ -102,24 +102,34 @@ showRoute(route) {
 
 
 
-  add_waypt(route_number, route, route_items){
+  add_waypt(destination_number, route_number, route_items){
     console.log("///////////////ADDING WAYPT/////////////////");
-    let route_number_int = parseInt(route_number);
-    this.route_number_index.push(route_number_int);
+    let destination_number_int = parseInt(destination_number);
+    this.destination_number_index.push(destination_number_int);
     console.log("logging the unsorted route number index");
-    console.log(this.route_number_index);
-    this.route_number_index.sort(function(a, b){return a-b});
+    console.log(this.destination_number_index);
+    this.destination_number_index.sort(function(a, b){return a-b});
     console.log("logging the sorted route number index");
-    console.log(this.route_number_index);
-    //var number_of_locations = this.route_number_index.length;
-    var number_of_locations = route_items.length;
-    console.log(number_of_locations);
+    console.log(this.destination_number_index);
+
+    var number_of_destinations = this.destination_number_index.length;
+    console.log(number_of_destinations);
       this.waypts=[];
-    for(var i=0;i<number_of_locations;i++){
-      //let index = this.route_number_index[i];
+    for(let i=0;i<number_of_destinations;i++){
       console.log("before waypts push");
+      let index = this.destination_number_index[i]
+      let route_item = route_items[index]
+      let latitude = 0;
+      let longitude = 0;
+      if(route_item.entity_type=="serviceorder"){
+        latitude = route_item['entity']['site'].latitude;
+        longitude = route_item['entity']['site'].longitude;
+      }else{
+        latitude = route_item['entity'].latitude;
+        longitude = route_item['entity'].longitude;
+      }
       this.waypts.push({
-          location: route_items[i].latitude + "," + route_items[i].longitude,
+          location: latitude + "," + longitude,
           stopover: true
       });
     console.log("after for loop for waypts push");
@@ -127,24 +137,24 @@ showRoute(route) {
 
     console.log("logging the waypts");
     console.log(this.waypts);
-    this.showRoute(route);
+    this.showRoute(route_items);
   }
 
   remove_waypt(route_number,route){
     console.log("///////////////REMOVING WAYPT/////////////////");
     console.log("logging the sorted route number index before removal");
-    console.log(this.route_number_index);
-    let route_number_int = parseInt(route_number);
-    var index_of_removal = this.route_number_index.indexOf(route_number_int);
+    console.log(this.destination_number_index);
+    let destination_number_int = parseInt(route_number);
+    var index_of_removal = this.destination_number_index.indexOf(destination_number_int);
     if (index_of_removal > -1) {
-      this.route_number_index.splice(index_of_removal, 1);
+      this.destination_number_index.splice(index_of_removal, 1);
     }
     console.log("logging the sorted route number index after removal");
-    console.log(this.route_number_index);
-    var number_of_locations = this.route_number_index.length;
+    console.log(this.destination_number_index);
+    var number_of_locations = this.destination_number_index.length;
       this.waypts=[];
     for(var i=0;i<number_of_locations;i++){
-      let index = this.route_number_index[i];
+      let index = this.destination_number_index[i];
       this.waypts.push({
           location: route.route_items[index].getLatLng(),
           stopover: true
