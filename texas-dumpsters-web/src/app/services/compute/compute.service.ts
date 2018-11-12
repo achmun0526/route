@@ -97,12 +97,12 @@ export class ComputeService extends BaseService {
         const simpleObservable = new Observable((observer) => {
 
             // observable execution
-            observer.next(this.routesService.deleteRoutesByDate(date))
+            observer.next(this.routesService.deleteRoutesByDate(date));
             for(let i=0;i<num_of_routes;i++){
               let route = routes[i];
-              observer.next(this.routesService.saveRoutes(route))
+              observer.next(this.routesService.saveRoutes(route));
             }
-            observer.complete()
+            observer.complete();
         })
         // subscribe to the observable
         console.log('just before subscribe');
@@ -113,6 +113,4 @@ export class ComputeService extends BaseService {
         });
         console.log('just after subscribe');
       }
-    }
-
 }

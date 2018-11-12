@@ -98,6 +98,7 @@ showRoute(route_items) {
    });
    console.log("after directionrender");
    this.realMarkers = [];
+   console.log(this.markers);
 }
 
   show_route_via_direction(direction){
@@ -109,7 +110,7 @@ showRoute(route_items) {
   openInfoWindowOnMarker(event, marker) {
       console.log('clicked on marker' + marker.location);
       this.iw_content = 'This is Marker ' + marker.location;
-      this.marker_clicked.next(marker.location);
+      this.marker_clicked.emit(marker.location);
   }
 
 

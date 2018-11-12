@@ -79,7 +79,59 @@
 		</div>
 	</div>
 
+	<!-- routes table -->
+	<!-- <div class="row">
+		<div class="col s12">
+			<ul class="collapsible" data-collapsible="accordion"
+				*ngIf="routesList.length > 0">
+				<li class="tab-header lead">
+					<div class="collapsible-header">
+						<div class="row data-object col s12">
+							<div class="col s12 m4 l2">Company:</div>
+							<div class="col s12 m4 l2">Driver:</div>
+							<div class="col s12 m4 l2">Vehicle:</div>
+							<div class="col s12 m4 l3">Date:</div>
+							<div class="col s12 m4 l3">Notes:</div>
+						</div>
+					</div>
+				</li>
+				<div class="routes-dashboard">
+					<li *ngFor="let item of routesList" (click)="selectRoute(item)"
+						class="table">
+						<div class="collapsible-header">
+							<div class="row data-object col s12">
+								<div class="col s12 m4 l2">
+									<div class="tab_label">Company:</div>
+									{{item.company.name}}
+								</div>
+								<div class="col s12 m4 l2">
+									<div class="tab_label">Driver:</div>
+									{{item.driver.first_name}} {{item.driver.last_name}}
+								</div>
+								<div class="col s12 m4 l2">
+									<div class="tab_label">Vehicle:</div>
+									{{item.vehicle.vehicle_name}}-{{item.vehicle.tag_number}}
+								</div>
+								<div class="col s12 m4 l3">
+									<div class="tab_label">Date:</div>
+									{{Utils.toAMPM(item.date)}}
+								</div>
+								<div class="col s12 m4 l3">
+									<div class="tab_label">Notes:</div>
+									{{Utils.trimStringOnLength(item.notes,15,'...')}}
+								</div>
+							</div>
+							<p class="secondary-content">
+								<app-icon-tooltip [iconName]="'visibility'"
+									[tooltipText]="'Details'" (click)="goToRouteDetails(item)">
+								</app-icon-tooltip>
+							</p>
 
+						</div>
+					</li>
+				</div>
+			</ul>
+		</div> -->
 
 		<div class="alert-text" *ngIf="totalRoutes == 0">
 			<h2 class="center">

@@ -240,7 +240,6 @@ export class DashboardComponent extends BaseComponent implements OnInit {
         this.totalRoutes = this.routesList.length;
         for(let i=0;i<this.totalRoutes;i++){
           this.routesList[i]["display"]=false;
-          console.log(this.routesList[i]);
           this.rawRouteList[i] = new ServiceRoute;
           this.rawRouteList[i].id = this.routesList[i].id;
           this.rawRouteList[i].company_key = this.routesList[i].company_key;
@@ -249,15 +248,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
           this.rawRouteList[i].distance = this.routesList[i].total_distance;
           this.rawRouteList[i].time = this.routesList[i].total_time;
           this.rawRouteList[i].notes = this.routesList[i].notes;
-
-          //console.log("before routesTest");
-          //this.routesTest.parseServerResponse(res);
-          //console.log("after routes test");
-          //console.log(this.routesTest);
         }
-        console.log("after loadROutes shit");
-        console.log(this.routesList);
-        console.log(this.rawRouteList);
+        console.log("after loadRoutes");
     });
   }
 
@@ -327,6 +319,10 @@ export class DashboardComponent extends BaseComponent implements OnInit {
 
   }
 
+  //openInfoWindowOnMarker($event, marker) {
+  //  this.mapHandler.openInfoWindowOnMarker($event, marker);
+  //}
+
   // Order the routeItems by sort_index asc
   orderRouteItemsBySortId(routeItems) {
     if (routeItems.length > 1) {
@@ -359,6 +355,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   view_route(route,j) {
+    for (let eachRoute of this.routesList) eachRoute.display = false;
     route.display = true;
     console.log(route);
     this.loadRouteItemsByRoute(route.id,j);
@@ -369,19 +366,17 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   //server_entity_view(item,route_number,server_route_number){
-  server_entity_view(item,destination_number, route_number){
+  server_entity_view(item, destination_number, route_number){
     item.display=true;
     console.log("before route in server_entity_view");
     let route_items = this.rawRouteList[route_number].route_items;
-    this.mapHandler.add_waypt(destination_number, route_items );
-    this.dest_num += 1;
+    this.mapHandler.add_waypt(destination_number, route_items);
   }
   //close_server_entity_view(item,route_number,server_route_number){
-  close_server_entity_view(item,destination_number, route_number){
+  close_server_entity_view(item, destination_number, route_number){
   item.display=false;
     let route_items = this.rawRouteList[route_number].route_items;
     this.mapHandler.remove_waypt(destination_number,route_items);
-    this.dest_num -= 1;
   }
 
   loadRouteItems(){
@@ -411,11 +406,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
           }
           route_item_info[i]=info;
         }
-        console.log("before rawRouteList");
-        console.log(this.rawRouteList);
         this.routeItemsList[route_index]=route_item_info;
-        console.log("before this.routeItemsList");
-        console.log(this.routeItemsList);
 
 
     });
