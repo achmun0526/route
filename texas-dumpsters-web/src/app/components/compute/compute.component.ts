@@ -160,78 +160,7 @@ export class ComputeComponent extends BaseComponent implements OnInit {
       });
   }
 
-compile_data(){
 
-  this.data = {};
-  this.orders = [];
-  this.trucks = [];
-  try {
-    if(this.ordersList.length == 0)
-      throw new Error('There are no orders.');
-    if(this.facilityList.length == 0)
-      throw new Error('Facilities cannot be 0.');
-    if(this.yardsList.length == 0)
-      throw new Error('There cannot be 0 yards!');
-  }
-  catch(e) {
-    console.log(e);
-    this.errorThrown = e;
-    this.openErrorModal();
-  }
-
-  for (let i = 0; i < this.ordersList.length; i++) {
-    let Order = {};
-
-    Order['id'] = this.ordersList[i].id;
-    Order['customer_key'] = this.ordersList[i].customer_key;
-    Order['quantity'] = parseInt(this.ordersList[i].quantity);
-    let order_site = this.ordersList[i].site;
-    Order['site_id'] = order_site.id;
-    Order['site_name']=order_site.site_name;
-    Order['latitude'] = parseFloat(order_site.latitude);
-    Order['longitude'] = parseFloat(order_site.longitude);
-
-    let size_string = parseInt(this.assetsSizeList[this.ordersList[i].asset_size - 1].name);
-    Order['size'] = size_string;
-    Order['type'] = this.ordersList[i].purpose_of_service;
-    this.orders.push(Order);
-  }
-
-  // Forming an array of depots
-  for (let i = 0; i < this.facilityList.length; i++) {
-    let Facility = {};
-    Facility['latitude'] = parseFloat(this.facilityList[i].latitude);
-    Facility['longitude'] = parseFloat(this.facilityList[i].longitude);
-    Facility['name'] =this.facilityList[i].facility_name;
-    Facility['id']=this.facilityList[i].id;
-    this.depots.push(Facility);
-  }
-
-  // Forming an array of landfills
-  for (let i = 0; i < this.yardsList.length; i++) {
-    let Yard = {};
-    Yard['latitude'] = parseFloat(this.yardsList[i].latitude);
-    Yard['longitude'] = parseFloat(this.yardsList[i].longitude);
-    Yard['name'] = this.yardsList[i].yard_name;
-    Yard['id']=this.yardsList[i].id;
-    this.landfills.push(Yard);
-  }
-
-  let Truck_Value = {};
-  Truck_Value['truck_num'] = parseInt(this.num_of_trucks);
-  this.trucks.push(Truck_Value);
-
-  let Iteration_Value = {};
-  Iteration_Value['iteration_num'] = parseInt(this.num_of_iterations);
-  this.iterations.push(Iteration_Value);
-
-  this.data['orders'] = this.orders;
-  this.data['depots'] = this.depots;
-  this.data['landfills'] = this.landfills;
-  this.data['num_of_trucks'] = this.trucks;
-  this.data['num_of_iterations']=this.iterations;
-
-}
 
 compute() {
   this.numbers=[];
@@ -305,6 +234,78 @@ compute() {
     }
 }
 
+compile_data(){
+
+  this.data = {};
+  this.orders = [];
+  this.trucks = [];
+  try {
+    if(this.ordersList.length == 0)
+      throw new Error('There are no orders.');
+    if(this.facilityList.length == 0)
+      throw new Error('Facilities cannot be 0.');
+    if(this.yardsList.length == 0)
+      throw new Error('There cannot be 0 yards!');
+  }
+  catch(e) {
+    console.log(e);
+    this.errorThrown = e;
+    this.openErrorModal();
+  }
+
+  for (let i = 0; i < this.ordersList.length; i++) {
+    let Order = {};
+
+    Order['id'] = this.ordersList[i].id;
+    Order['customer_key'] = this.ordersList[i].customer_key;
+    Order['quantity'] = parseInt(this.ordersList[i].quantity);
+    let order_site = this.ordersList[i].site;
+    Order['site_id'] = order_site.id;
+    Order['site_name']=order_site.site_name;
+    Order['latitude'] = parseFloat(order_site.latitude);
+    Order['longitude'] = parseFloat(order_site.longitude);
+
+    let size_string = parseInt(this.assetsSizeList[this.ordersList[i].asset_size - 1].name);
+    Order['size'] = size_string;
+    Order['type'] = this.ordersList[i].purpose_of_service;
+    this.orders.push(Order);
+  }
+
+  // Forming an array of depots
+  for (let i = 0; i < this.facilityList.length; i++) {
+    let Facility = {};
+    Facility['latitude'] = parseFloat(this.facilityList[i].latitude);
+    Facility['longitude'] = parseFloat(this.facilityList[i].longitude);
+    Facility['name'] =this.facilityList[i].facility_name;
+    Facility['id']=this.facilityList[i].id;
+    this.depots.push(Facility);
+  }
+
+  // Forming an array of landfills
+  for (let i = 0; i < this.yardsList.length; i++) {
+    let Yard = {};
+    Yard['latitude'] = parseFloat(this.yardsList[i].latitude);
+    Yard['longitude'] = parseFloat(this.yardsList[i].longitude);
+    Yard['name'] = this.yardsList[i].yard_name;
+    Yard['id']=this.yardsList[i].id;
+    this.landfills.push(Yard);
+  }
+
+  let Truck_Value = {};
+  Truck_Value['truck_num'] = parseInt(this.num_of_trucks);
+  this.trucks.push(Truck_Value);
+
+  let Iteration_Value = {};
+  Iteration_Value['iteration_num'] = parseInt(this.num_of_iterations);
+  this.iterations.push(Iteration_Value);
+
+  this.data['orders'] = this.orders;
+  this.data['depots'] = this.depots;
+  this.data['landfills'] = this.landfills;
+  this.data['num_of_trucks'] = this.trucks;
+  this.data['num_of_iterations']=this.iterations;
+
+}
 
 on_company_changed() {
     this.computeService.set_selected_company(this.selectedCompany);
@@ -397,8 +398,8 @@ update_page(json_data) {
 /////////// Storing the ServiceRoute into the serviceRoutes[] /////////////////
       this.compiled_route_distance = this.compiled_route_distance+this.total_route_distance[j];
       this.compiled_route_duration = this.compiled_route_duration+this.total_route_duration[j];
-      service_route.time = this.total_route_duration[j].toFixed(2);
-      service_route.distance = this.total_route_distance[j].toFixed(2);
+      service_route.time = parseFloat(this.total_route_duration[j].toFixed(2));
+      service_route.distance = parseFloat(this.total_route_distance[j].toFixed(2));
       this.route_items_holder[j]=service_route.route_items;
       this.service_routes[j]=service_route;
       this.total_route_duration[j] = this.total_route_duration[j].toFixed(2);
@@ -521,7 +522,7 @@ get_address_from_symbol(symbol) {
   }
 
 
-  filter() {
+filter() {
     if (this.date != null){
       this.date_changed_bool = true;
       // this.ordersService.getAssetsSizeList().then(res => this.assetsSizeList = res);
@@ -531,69 +532,61 @@ get_address_from_symbol(symbol) {
         this.num_of_services = this.ordersList.length;
       });
     }
-  }
+}
 
-  view_route(number,route_list_number) {
+view_route(number,route_list_number) {
     number.display = true;
     this.num_of_displayed_routes=this.num_of_displayed_routes+1;
     this.current_route_list_display_number=route_list_number;
-  }
+}
 
-  close_view_route(number) {
+close_view_route(number) {
     number.display = false;
     this.num_of_displayed_routes=this.num_of_displayed_routes-1;
-  }
+}
 
-  server_entity_view(item,destination_number,route_number){
+server_entity_view(item,destination_number,route_number){
     item.display=true;
     let route_items = this.service_routes[route_number]['route_items'];
     console.log(route_items)
     this.mapHandler.add_waypt(destination_number,route_items);
-  }
+}
 
-  close_server_entity_view(item,destination_number,route_number){
+close_server_entity_view(item,destination_number,route_number){
     debugger
     item.display=false;
     let route_items = this.service_routes[route_number]['route_items'];
     this.mapHandler.remove_waypt(destination_number,route_items);
-  }
+}
 
-  show_event_data(event_data){
+show_event_data(event_data){
     this.service_detail_number = event_data;
     this.service_detail_info = this.route_items_holder[this.current_route_list_display_number][this.service_detail_number];
     this.markers_initialized = true;
     setTimeout(() => {
       this.serviceDetailModal.emit({action:'modal',params:['open']});
       }, 100);
-  }
+}
 
-  saveRoutes(){
-    console.log("compute.component.saveRoutes()");
-    let route = { "RouteItems":[
-        {"entity_type": 'serviceorder',"entity_key":'test_so1',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":20},
-        {"entity_type": 'serviceorder',"entity_key":'test_so2',"latitude":'666',"longitude":'-777',"dist_2_next":97,"time_2_next":89,"sort_index":15},
-        {"entity_type": 'facility',"entity_key":'test_facility',"latitude":'32.5',"longitude":'-96.79',"dist_2_next":25.6,"time_2_next":23.6,"sort_index":11},
-      ],"total_distance":25.6,"total_time":30.5
-    };
-    route["date"]=this.date.date;
-    console.log(route);
+saveRoutes(){
+  console.log("Compute.saveRoutes()");
+  this.computeService.refreshRoutes(this.service_routes,this.date.date)
 
-    this.routesService.saveRoutes(route);
-  }
+}
 
-  openErrorModal(){
+openErrorModal(){
     setTimeout(() => {
       this.errorModal.emit({action:'modal',params:['open']})
     }, 100);
-  }
+}
 
-  update_orders_shown(){
+update_orders_shown(){
     console.log("updating orders shown");
 
-  }
+}
 
-  onCloseClicked(){
+onCloseClicked(){
     this.errorModal.emit({action:'modal',params:['close']});
-  }
+}
 
 }

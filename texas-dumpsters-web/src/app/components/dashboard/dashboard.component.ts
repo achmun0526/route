@@ -63,7 +63,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   protected routesList = [];
   protected ordersList = [];
   protected totalRoutes = 0;
-  protected rawRouteList = []; 
+  protected rawRouteList = [];
   protected dest_num = 0;
 
   driver: string;
@@ -234,7 +234,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     // let f_vehicle = Utils.setParameter(this.selectedVehicle);
 
     this.routesService.getRoutesByCompanyOrDriverOrVehicle(null, f_company, f_driver, f_vehicle, f_startDate, f_endDate).then(res => {
-      console.log("before loadroutes res");  
+      console.log("before loadroutes res");
         this.routesList = res;
       console.log(res);
         this.totalRoutes = this.routesList.length;
@@ -369,18 +369,20 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   //server_entity_view(item,route_number,server_route_number){
-  server_entity_view(item,route_number, destination_number){
+  server_entity_view(item,destination_number, route_number){
     item.display=true;
     console.log("before route in server_entity_view");
-    this.mapHandler.add_waypt(this.dest_num, route_number, this.rawRouteList[route_number].route_items);
+    let route_items = this.rawRouteList[route_number].route_items;
+    this.mapHandler.add_waypt(destination_number, route_items );
     this.dest_num += 1;
   }
   //close_server_entity_view(item,route_number,server_route_number){
-  close_server_entity_view(item,route_number){
+  close_server_entity_view(item,destination_number, route_number){
   item.display=false;
-    // this.mapHandler.remove_waypt(route_number,this.service_route_numberte_number]);
-    this.mapHandler.remove_waypt(route_number,this.routesList[route_number]);
-  }7
+    let route_items = this.rawRouteList[route_number].route_items;
+    this.mapHandler.remove_waypt(destination_number,route_items);
+    this.dest_num -= 1;
+  }
 
   loadRouteItems(){
     console.log("inside dashboard.component.loadRouteitems()")
@@ -414,8 +416,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
         this.routeItemsList[route_index]=route_item_info;
         console.log("before this.routeItemsList");
         console.log(this.routeItemsList);
-        
-       
+
+
     });
   }
 

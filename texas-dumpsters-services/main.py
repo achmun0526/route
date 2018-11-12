@@ -80,7 +80,7 @@ app = webapp2.WSGIApplication([
 
      # Route
      webapp2.Route('/x/a/v1/route', handler=RouteHandler),
-
+     webapp2.Route('/x/a/v1/flush_routes', handler=FlushRoutesHandler),
 
      # Route Item
      webapp2.Route('/x/a/v1/route_item', handler=RouteItemHandler),

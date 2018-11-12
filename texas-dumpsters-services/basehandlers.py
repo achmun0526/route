@@ -395,8 +395,8 @@ class SignupHandler(BaseHandler):
                     user_data = self.user_model.create_user(
                         email,
                         unique_properties,
-                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk, 
-                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password, 
+                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
+                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
                         verified=False)
 
                 if not user_data[0]: #user_data is a tuple
@@ -1533,7 +1533,7 @@ class ImportEntityHandler(BaseHandler):
                                 #raise ValueError("Longitude Entry is not Valid: %s" % longitude)
                                 #error_list = error_list + "Longitude Entry is not Valid: %s" % longitude
                             site_account_id = str(row[1])
-                            
+
                             site_exists = SiteService.SiteInstance.get_by_account_id_and_company_key(site_account_id, customer_company_key)
 
                             if site_exists is not None:
@@ -2953,20 +2953,75 @@ class RouteHandler(BaseHandler):
 
             return self.json_data(get_fail_response(errors))
 
+class FlushRoutesHandler(BaseHandler):
+    def delete(self):
+        try:
+            from services import RouteService
+            from services import RouteItemService
+
+            print("\n Inside FlushRoutesHandler \n")
+             #Filters
+            filters = {}
+            filters["active"] = self.request.get('active')
+            filters["route_key"] = self.request.get('route_key')
+            filters["vehicle_key"] = self.request.get('vehicle_key')
+            filters["company_key"] = self.request.get('company_key')
+            filters["driver_key"] = self.request.get('driver_key')
+            filters["start_date"] = self.request.get('start_date')
+            filters["end_date"] = self.request.get('end_date')
+            filters["status"] = self.request.get('status')
+            filters["optimized"] = self.request.get('optimized')
+
+            print("\n About to query entities \n")
+
+            print(filters)
+            print("\n")
+
+            entities, total = RouteService.RouteInstance.get_all('', '', filters)
+
+            print("finished the query")
+
+            for entity in entities:
+                route_item_filters = {}
+                route_item_filters["active"] = self.request.get('active')
+                route_item_filters["route_key"] = self.request.get('route_key')
+                route_items, total_route_items = RouteItemService.RouteItemInstance.get_all('', '', route_item_filters)
+
+                for route_item in route_items:
+                    route_item.key.delete()
+
+                entity.key.delete()
+
+
+            return self.json_data(get_success_reponse())
+
+        except Exception, e:
+            errors = [str(e)]
+
+            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
+
+            audit = Audit()
+            audit.populate(
+                user_email=users.get_current_user().email(),
+                error=str(e),
+                message=message
+            )
+            AuditService.AuditInstance.save(audit)
+
+            return self.json_data(get_fail_response(errors))
+
+
 class RouteItemHandler(BaseHandler):
     def post(self):
         try:
             from services import RouteItemService
             from models import RouteItem
-            
-            logging.warning("inside RouteItemHandler")
+
+            print("INSIDE RouteItemHandler")
 
             data = json.loads(self.request.body)
 
             entity_types = ["yard", "serviceorder", "facility"]
-
-            logging.warning("gkhgk")
-
 
             for item in data:
 
@@ -2988,7 +3043,7 @@ class RouteItemHandler(BaseHandler):
                 if entity_type not in entity_types:
                     raise ValueError("Entity Type not allowed")
 
-
+                print("ok we got this far")
 
                 route_item.populate(
                     route_key=ndb.Key(urlsafe = route_key),
@@ -2997,14 +3052,7 @@ class RouteItemHandler(BaseHandler):
                     entity_type=entity_type,
                     item_key=item_key,
                     sort_index=sort_index,
-                    latitude=latitude,
-                    longitude=longitude
                 )
-
-
-
-                if id is not None:
-                    route_item.key = ndb.Key(urlsafe=id)
 
 
                 route_item = RouteItemService.RouteItemInstance.save(route_item)
@@ -3430,7 +3478,7 @@ class RouteIncidentHandler(BaseHandler):
 
             from services import RouteIncidentService,ServiceOrderService
             from models import RouteIncident, RouteIncidentStatus
-            
+
 
             data = json.loads(self.request.body)
 

@@ -73,6 +73,9 @@ export const DO_GOOGLE_API_CALL=SECURE_END_POINT+'/do_google_api_get_request';;
 export const GEOREVERSE_ADDRESS_URL='https://maps.googleapis.com/maps/api/geocode/json';
 export const DIRECTIONS_API_URL='https://maps.googleapis.com/maps/api/directions/json';
 
+/**------------------- COMPUTE ENGINE URLS ----------------------------------------------------- */
+export const TRIGGER_COMPUTE_URL = 'http://35.196.28.82:443';
+
 /**--------------------COMPANIES SERVICES URLs-----------------------------------------------------*/
 export const ADD_COMPANY_URL= SECURE_END_POINT+'/company';
 export const GET_ALL_COMPANIES_URL= SECURE_END_POINT+'/company';
@@ -120,7 +123,7 @@ export const GET_VEHICLES_BY_ID_URL= SECURE_END_POINT+'/vehicle?vehicle_key=';
 export const DRIVERS_URL= SECURE_END_POINT+'/driver';
 // export const GET_DRIVERS_BY_ID_URL= SECURE_END_POINT+'/driver?driver_key=';
 
-/**--------------------ROTE ITEM SERVICES URLs-----------------------------------------------------*/
+/**--------------------ROuTE ITEM SERVICES URLs-----------------------------------------------------*/
 export const ADD_ROUTES_ITEM_URL= SECURE_END_POINT+'/route_item';
 export const GET_ALL_ROUTES_ITEM_URL= SECURE_END_POINT+'/route_item';
 export const GET_ROUTES_ITEM_BY_ID_URL= SECURE_END_POINT+'/route?active=all&route_key=';
@@ -128,7 +131,7 @@ export const ARRANGE_ROUTE_ITEM_URL = SECURE_END_POINT + '/route/arrange_item';
 
 /**--------------------ROUTES SERVICES URLs-----------------------------------------------------*/
 export const ROUTES_URL= SECURE_END_POINT+'/route';
-
+export const FLUSH_ROUTES_URL = SECURE_END_POINT+'/flush_routes'
 /**--------------------PRICING SERVICES URLs-----------------------------------------------------*/
 export const ADD_PRICING_URL= SECURE_END_POINT+'/servicepricing';
 export const GET_ALL_PRICINGS_URL= SECURE_END_POINT+'/servicepricing?company=';
@@ -162,6 +165,3 @@ export const LIST_PROBLEMS_STATUS_URL= SECURE_END_POINT+'/list/service_order_pro
 
 /**------------------- ATTACHMENTS URLS ----------------------------------------------------- */
 export const GET_ATTACHMENTS_URL= SECURE_END_POINT+"/attachment";
-
-/**------------------- COMPUTE ENGINE URLS ----------------------------------------------------- */
-export const TRIGGER_COMPUTE_URL = 'http://35.196.28.82:443';

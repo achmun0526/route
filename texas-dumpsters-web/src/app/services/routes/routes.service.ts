@@ -7,7 +7,8 @@ import {
   SUCCESS,
   ADD_ROUTES_ITEM_URL,
   ROUTES_URL,
-  ARRANGE_ROUTE_ITEM_URL
+  FLUSH_ROUTES_URL,
+  ARRANGE_ROUTE_ITEM_URL,
 } from '../../common/app-conf';
 import { BaseService} from '../../common/base-service';
 import { isNullOrUndefined} from "util";
@@ -155,6 +156,8 @@ addRouteItems(route_items):Promise<any>{
       .catch(this.handleError);
   }
 
+
+
 	/**
 	 * This method calls the server in order to save item in route
 	 *
@@ -224,21 +227,22 @@ addRouteItems(route_items):Promise<any>{
 
 // This saves the ServiceRoute model to the session storage so we can look at it inside the Route segment in the Dashboard
   saveRoutes(route){
+    debugger
     console.log("routes.service.saveRoutes()");
 
     let route_portion={};
-    let route_items = route.RouteItems;
-    route_portion["total_time"]=route.total_time;
-    route_portion["total_distance"]=route.total_distance;
+    let route_items = route.route_items;
+    route_portion["total_time"]=parseFloat(route.time);
+    route_portion["total_distance"]=parseFloat(route.distance);
     route_portion["driver"]=null;
     route_portion["num_of_stops"]=route_items.length;
-    route_portion["company_key"]=this.authService.getCurrentSelectedCompany().id;
+    route_portion["company_key"]=route.company_key
     route_portion["date"]=route.date;
     route_portion["status"]=1;
 
     console.log(route_portion);
 
-    return this.http.post(ROUTES_URL, route_portion).toPromise()
+    this.http.post(ROUTES_URL, route_portion).toPromise()
       .then(response => {
         let res = response.json()
         console.log(res);
@@ -247,7 +251,7 @@ addRouteItems(route_items):Promise<any>{
         }
 
         console.log(route_items);
-
+        debugger
         return this.http.post(ADD_ROUTES_ITEM_URL, route_items).toPromise()
           .then(response => {
             super.hideSpinner();
@@ -257,10 +261,30 @@ addRouteItems(route_items):Promise<any>{
 
       })
       .catch(err=>(console.log("error: "+err)));
-
-
-
   }
+
+  /**
+   * Deletes all the routes and route items for a given day
+   * */
+  deleteRoutesByDate(date){
+    debugger
+    var params = '?company_key=' + this.authService.getCurrentSelectedCompany().id +
+       (date != null ? '&start_date=' + date:'') +
+       (date != null ? '&end_date='+ date: '') ;
+    super.showSpinner();
+    return this.http.delete(FLUSH_ROUTES_URL + params).toPromise()
+      .then(response => {
+        super.hideSpinner();
+        var res = response.json();
+        if (res.status === SUCCESS) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .catch(this.handleError);
+  }
+
 
   getRouteItems(){
     console.log("inside routes.service.getRoute")

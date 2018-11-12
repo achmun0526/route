@@ -158,7 +158,7 @@ class User(webapp2_extras.appengine.auth.models.User):
         role_reg = {}
         for role in roles:
             role_reg.setdefault(role.user.urlsafe(), []).append(role)
-        
+
         for user in all_users:
             if user!=None:
                 user._roles = role_reg[user.key.urlsafe()]
@@ -1781,12 +1781,14 @@ class Route(BaseModel):
     @classmethod
     def get_all(cls, page, page_size, filters):
 
+
         total = 0
         query = cls.query()
         entities = None
 
         if str(filters["route_key"]):
             query = query.filter(cls.key == ndb.Key(urlsafe = filters["route_key"]))
+
 
         if str(filters["status"]):
             query = query.filter(cls.status == RouteStatus(int(filters["status"])))
@@ -1854,6 +1856,7 @@ class Route(BaseModel):
 
         return entities, total
 
+
     @classmethod
     def get(cls, id):
         key = ndb.Key(urlsafe = id)
@@ -1905,7 +1908,6 @@ class RouteItem(BaseModel):
     entity_type = ndb.StringProperty(required=True)
     item_key = ndb.StringProperty()
     sort_index = ndb.IntegerProperty()
-
     active = ndb.BooleanProperty(required=True, default=True)
     latitude = ndb.StringProperty()
     longitude = ndb.StringProperty()
@@ -1918,11 +1920,11 @@ class RouteItem(BaseModel):
 
         if self.entity_type =='serviceorder':
             logging.warning("in serviceorder")
-            self.serviceorder_key = ndb.Key(ServiceOrder,self.item_key)
+            self.serviceorder_key = ndb.Key(urlsafe = self.item_key)
         elif self.entity_type =="yard":
-            self.yard_key = ndb.Key(Yard,self.item_key)
+            self.yard_key = ndb.Key(urlsafe = self.item_key)
         else:
-            self.facility_key = ndb.Key(Facility,self.item_key)
+            self.facility_key = ndb.Key(urlsafe = self.item_key)
 
         key = self.put()
 
@@ -1973,6 +1975,7 @@ class RouteItem(BaseModel):
         query = cls.query()
         entities = None
 
+        '''Route Key Filter'''
         if str(filters["route_key"]):
             query = query.filter(cls.route_key == ndb.Key(urlsafe = filters["route_key"]))
 
@@ -1993,7 +1996,7 @@ class RouteItem(BaseModel):
             limit = int(page_size)
             entities = query.order(cls.sort_index).fetch(offset=offset, limit=limit)
             total = query.count()
-        
+
         return entities, total
 
     @classmethod
@@ -2013,7 +2016,7 @@ class RouteItem(BaseModel):
         entity = self.key.get()
         print(entity)
         print("\n")
-        
+
         print(self.entity_type)
         print("\n")
 
@@ -2168,7 +2171,7 @@ class RouteIncident(BaseModel):
             else :
                 if str(filters["company_key"]) == str(orderdetail.company_key.urlsafe()):
                     templist.append(e)
-                    
+
         return templist, len(templist)
 
     def to_dict(self):
