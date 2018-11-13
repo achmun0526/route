@@ -527,6 +527,7 @@ class Company(BaseModel):
             longitude = self.longitude
         )
 
+
 class Driver(BaseModel):
 
     created_at = ndb.DateTimeProperty(auto_now_add=True)
@@ -535,8 +536,8 @@ class Driver(BaseModel):
     authentication_failure_at = ndb.DateTimeProperty()
     authentication_failure_count = ndb.IntegerProperty()
 
-
     company_key = ndb.KeyProperty(kind=Company, required=True)
+    user_key = ndb.KeyProperty(kind=User, required=True)
     driver_email = ndb.StringProperty(required=True)
     driver_name = ndb.StringProperty()
     driver_phone= ndb.StringProperty()
@@ -545,8 +546,7 @@ class Driver(BaseModel):
 
     active = ndb.BooleanProperty(default=True)
 
-    activated = ndb.BooleanProperty(required=True,
-        default=True)  # I don't recall how or if this attribute is being used
+    activated = ndb.BooleanProperty(required=True, default=True)  # Is this attribute being used?
 
     def save(self):
         action_type = AuditActionType.Created
@@ -577,6 +577,8 @@ class Driver(BaseModel):
             query = query.filter(cls.key == ndb.Key(urlsafe = filters["driver_key"]))
         if str(filters["company_key"]):
             query = query.filter(cls.company_key == ndb.Key(urlsafe = filters["company_key"]))
+        if str(filters["user_key"]):
+            query = query.filter(cls.user_key == ndb.Key(urlsafe = filters["user_key"]))
 
         '''Active'''
         if (filters["active"] and str(filters["active"]) == "all"):
@@ -585,8 +587,6 @@ class Driver(BaseModel):
             query = query.filter(cls.active == json.loads(filters["active"]))
         else:
             query = query.filter(cls.active == True)
-
-
 
         '''Pagination'''
         if (not page or not page_size):
@@ -611,6 +611,7 @@ class Driver(BaseModel):
         return dict(
             id = self.key.urlsafe(),
             company_key = self.company_key.urlsafe(),
+            user_key = self.user_key.urlsafe(),
             driver_name = self.driver_name,
             driver_email = self.driver_email,
             driver_operational = self.driver_operational,
@@ -618,6 +619,7 @@ class Driver(BaseModel):
             driver_id = self.driver_id,
             active = self.active,
         )
+
 
 class UserXCompany(BaseModel):
 
@@ -1199,8 +1201,12 @@ class ServiceOrder(BaseModel):
         return None
 
     def to_dict(self):
+        try:
+            # todo: @adozier, says "Account has been deleted"?
         from helpers import Attachments
         has_attachments = Attachments.AttachmentsHelper.exists_attachments_for_entity_key(self.key.urlsafe())
+        except:
+            has_attachments = False
         return dict(
             id = self.key.urlsafe(),
             has_attachments = has_attachments,
@@ -1414,10 +1420,12 @@ class ServicePricing(BaseModel):
             active = self.active
         )
 
+
 class AuditActionType(messages.Enum):
     Created = 1
     Updated = 2
     Deleted = 3
+
 
 class Audit(BaseModel):
 
@@ -1895,8 +1903,6 @@ class Route(BaseModel):
             status = int(self.status) if self.status is not None else None
         )
 
-
-
 class RouteItem(BaseModel):
 
     dist_2_next = ndb.FloatProperty()
@@ -2012,45 +2018,23 @@ class RouteItem(BaseModel):
         return entity
 
     def to_dict(self):
-        print("=============================================")
         entity = self.key.get()
-        print(entity)
-        print("\n")
-
-        print(self.entity_type)
-        print("\n")
 
         if self.entity_type == "serviceorder":
             #Very temporary fix to the specific key type problem
-            print("before so_key.get")
             self.serviceorder_key = ndb.Key(ServiceOrder,self.item_key)
-            print(self.serviceorder_key)
-            print("after so key making")
             item_entity = self.serviceorder_key.get()
-            print("after so_key.get")
             item = item_entity.to_dict() if self.serviceorder_key is not None else None
         elif self.entity_type == "facility":
             #Very temporary fix to the specific key type problem
-            print("before facility_key.get")
-            print(self.item_key)
             self.facility_key = ndb.Key(Facility,self.item_key)
-            print(self.facility_key)
-            print("after facility_key making")
             item_entity = self.facility_key.get()
-            print("after facility_key.get")
             item = item_entity.to_dict() if self.facility_key is not None else None
         else:
             #Very temporary fix to the specific key type problem
-            print("before yard key make")
             self.yard_key = ndb.Key(Yard,self.item_key)
-            print(self.yard_key)
-            print("before yard_key.get")
             item_entity = self.yard_key.get()
-            print("After yard_key.get")
             item = item_entity.to_dict() if self.yard_key is not None else None
-
-
-        print(item_entity)
 
         return dict(
             id = self.key.urlsafe(),
@@ -2063,8 +2047,9 @@ class RouteItem(BaseModel):
             sort_index = self.sort_index,
             active = self.active,
             latitude = self.latitude,
-            longitude = self.longitude
+            longitude = self.longitude,
         )
+
 
 class RouteIncidentStatus(messages.Enum):
     Reported = 1

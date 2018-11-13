@@ -236,15 +236,15 @@ addRouteItems(route_items):Promise<any>{
     route_portion["total_distance"]=parseFloat(route.distance);
     route_portion["driver"]=null;
     route_portion["num_of_stops"]=route_items.length;
-    route_portion["company_key"]=route.company_key
+    route_portion["company_key"]=route.company_key;
     route_portion["date"]=route.date;
     route_portion["status"]=1;
 
     console.log(route_portion);
 
-    this.http.post(ROUTES_URL, route_portion).toPromise()
+    return this.http.post(ROUTES_URL, route_portion).toPromise()
       .then(response => {
-        let res = response.json()
+        let res = response.json();
         console.log(res);
         for(let i=0;i<route_items.length;i++){
           route_items[i]["route_key"]=res.response.id;
@@ -252,7 +252,7 @@ addRouteItems(route_items):Promise<any>{
 
         console.log(route_items);
         debugger
-        return this.http.post(ADD_ROUTES_ITEM_URL, route_items).toPromise()
+        this.http.post(ADD_ROUTES_ITEM_URL, route_items).toPromise()
           .then(response => {
             super.hideSpinner();
             console.log(response);
