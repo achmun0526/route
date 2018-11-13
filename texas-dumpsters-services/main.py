@@ -51,7 +51,6 @@ app = webapp2.WSGIApplication([
 
       # Driver
      webapp2.Route('/x/a/v1/driver', handler=DriverHandler),
-     webapp2.Route('/x/a/v1/driver_list', handler=DriverListHandler),
 
      # Customer Service Address
      webapp2.Route('/x/a/v1/customer_service_address', handler=CustomerServiceAddressHandler),

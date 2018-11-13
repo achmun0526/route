@@ -118,13 +118,6 @@ indexes:
   - name: created_at
     direction: desc
 
-- kind: Driver
-  properties:
-  - name: active
-  - name: user_key
-  - name: created_at
-    direction: desc
-
 - kind: Facility
   properties:
   - name: active

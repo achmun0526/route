@@ -273,7 +273,6 @@ class SignupHandler(BaseHandler):
         return self.json_data(resp)
 
     def post(self):
-        # todo: @adozier, we need to make sure that a Driver is created when a User with role DRIVER is created
         try:
             from services import UserService
             from services import UserXCompanyService
@@ -379,7 +378,6 @@ class SignupHandler(BaseHandler):
                     # )
                     driver.populate(
                         company_key=ndb.Key(urlsafe=company_key),
-                        user_key=user_key,
                         driver_email = email,
                         driver_name = '{} {}'.format(first_name, last_name),
                         driver_phone = contact_phone_mobile or contact_phone_desk
@@ -454,10 +452,7 @@ class SignupHandler(BaseHandler):
         except Exception, e:
             errors = [str(e)]
             return self.json_data(get_fail_response(errors))
-
-
 class SignInHandler(BaseHandler):
-
     def post(self):
         from services import UserService
         from models import User
@@ -467,7 +462,7 @@ class SignInHandler(BaseHandler):
 
         email = email.lower()
 
-        # todo: @adozier check if user does not exist and return - nonexistent!
+
         user = UserService.UserInstance.get_by_email(email)
 
         password_check = security.check_password_hash(password, user.password)
@@ -521,10 +516,10 @@ class ProfileHandler(BaseHandler):
         return self.json_data(get_success_reponse(message="Profile has been updated"))
 
 
+
 class SignInGoogle(webapp2.RequestHandler):
     def get(self):
         return webapp2.redirect(users.create_login_url(webapp2.uri_for('verify_google_sign_in')))
-
 
 class UserEmailAvailabilityHandler(BaseHandler):
     def get(self, email):
@@ -662,7 +657,6 @@ class RevokeAdminRoleHandler(BaseHandler):
 
 
 class RoleAssignmentHandler(BaseHandler):
-
     @role_required(Role.ADMIN)
     def get(self, assignee_id):
         if not assignee_id:
@@ -695,7 +689,6 @@ class RoleAssignmentHandler(BaseHandler):
             return self.json_data(resp)
 
         # At this point, we can trust all role_names
-        # todo: @adozier, if a Role already exists for the user, do not add it again...
         roles = [Role(parent=assignee.key, id=rn, user=assignee.key, name=rn) for rn in role_names]
         role_keys = ndb.put_multi(roles)
         assignee._roles = roles
@@ -727,11 +720,8 @@ class RoleAssignmentHandler(BaseHandler):
         resp = get_success_reponse(user=assignee.to_dict())
         return self.json_data(resp)
 
-
 class GoogleUserVerifyHandler(BaseHandler):
-
     def get(self):
-
         from models import User
         from models import Role
 
@@ -762,7 +752,6 @@ class GoogleUserVerifyHandler(BaseHandler):
         #     else:
         #         return self.redirect('/errors/user_not_registered.html')
         #
-        # todo: @adozier, this same check seems to be in multiple places. put it in one place
         if users.is_current_user_admin():
             # Automatically Add the ADMIN Role
             if(user is not None and hasattr(user, "key")):
@@ -779,14 +768,6 @@ class GoogleUserVerifyHandler(BaseHandler):
         #
         # if user.first_name and user.last_name: # All info defined
         #     return self.redirect('/')
-        # todo: @adozier, this redirect is in two different places. might investigate creating a single service to
-        roles = [role.name for role in user.get_roles()]
-        # print('user.roles: {0}'.format(roles))
-
-        # serve initial page for different types of users
-        if Role.DRIVER in roles:
-            return self.redirect('/management/routes')
-        else:
         return self.redirect('/')
 
 
@@ -2405,8 +2386,6 @@ class YardHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            # todo: @adozier, clean up error reporting into one or two derived methods in BaseHandler
-
             errors = [str(e)]
 
             message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
@@ -2446,24 +2425,46 @@ class YardHandler(BaseHandler):
 
             return self.json_data(get_fail_response(errors))
 
-
 class DriverHandler(BaseHandler):
-    """
-    Handles queries for a Driver entity
-    """
-
-    def get(self):
+    def post(self):
         try:
             from services import DriverService
             from models import Driver
+            print "driver---------------"
 
-            driver_id = self.request.get('id')
+            data = json.loads(self.request.body)
 
-            driver = DriverService.DriverInstance.get(driver_id)
+            id = data.get('id')
 
-            response = {"driver": driver.to_dict()}
 
-            return self.json_data(get_success_reponse(response=response))
+            driver_operational = data.get('driver_operational')
+            company_key = data.get('company_key')
+            driver_name = data.get('driver_name')
+            driver_email = data.get('driver_email')
+            driver_phone = data.get('driver_phone')
+            driver_id = data.get('driver_id')
+            active = data.get('active')
+
+
+            driver = Driver()
+
+            driver.populate(
+                company_key=ndb.Key(urlsafe=company_key),
+                driver_email = driver_email,
+                driver_name = driver_name,
+                driver_phone = driver_phone,
+                driver_id = driver_id,
+                driver_operational=driver_operational,
+            )
+
+
+            if id is not None:
+                driver.key = ndb.Key(urlsafe=id)
+
+            driver = DriverService.DriverInstance.save(driver)
+
+
+            return self.json_data(get_success_reponse(response=driver.to_dict()))
 
         except Exception, e:
             errors = [str(e)]
@@ -2480,43 +2481,30 @@ class DriverHandler(BaseHandler):
 
             return self.json_data(get_fail_response(errors))
 
-    def post(self):
+    def get(self):
         try:
             from services import DriverService
             from models import Driver
-            print("driver---------------")
 
-            data = json.loads(self.request.body)
 
-            id = data.get('id')
+            #Pagination
+            page = self.request.get('page')
+            page_size = self.request.get('page_size')
 
-            driver_operational = data.get('driver_operational')
-            company_key = data.get('company_key')
-            user_key = data.get('user_key')
-            driver_name = data.get('driver_name')
-            driver_email = data.get('driver_email')
-            driver_phone = data.get('driver_phone')
-            driver_id = data.get('driver_id')
-            active = data.get('active')
+             #Filters
+            filters = {}
+            filters["active"] = self.request.get('active')
+            filters["driver_key"] = self.request.get('driver_key')
+            filters["company_key"] = self.request.get('company_key')
 
-            driver = Driver()
+            entities, total = DriverService.DriverInstance.get_all(page, page_size, filters)
 
-            driver.populate(
-                company_key=ndb.Key(urlsafe=company_key),
-                user_key=ndb.Key(urlsafe=user_key),
-                driver_email = driver_email,
-                driver_name = driver_name,
-                driver_phone = driver_phone,
-                driver_id = driver_id,
-                driver_operational=driver_operational,
-            )
+            response = {
+                "total":  total,
+                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+            }
 
-            if id is not None:
-                driver.key = ndb.Key(urlsafe=id)
-
-            driver = DriverService.DriverInstance.save(driver)
-
-            return self.json_data(get_success_reponse(response=driver.to_dict()))
+            return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
             errors = [str(e)]
@@ -2541,11 +2529,7 @@ class DriverHandler(BaseHandler):
 
             DriverService.DriverInstance.delete(id)
 
-             #Filters
-            filters = {}
-            filters["active"] = self.request.get('active')
-            filters["driver_key"] = self.request.get('driver_key')
-            filters["company_key"] = self.request.get('company_key')
+            return self.json_data(get_success_reponse())
 
         except Exception, e:
             errors = [str(e)]
@@ -2561,51 +2545,6 @@ class DriverHandler(BaseHandler):
             AuditService.AuditInstance.save(audit)
 
             return self.json_data(get_fail_response(errors))
-
-
-class DriverListHandler(BaseHandler):
-
-    def get(self):
-        try:
-            from services import DriverService
-            from models import Driver
-
-            # Pagination
-            page = self.request.get('page')
-            page_size = self.request.get('page_size')
-
-            # Filters
-            filters = {
-                "active": self.request.get('active'),
-                "driver_key": self.request.get('driver_key'),
-                "company_key": self.request.get('company_key'),
-                "user_key": self.request.get('user_key'),
-            }
-
-            entities, total = DriverService.DriverInstance.get_all(page, page_size, filters)
-
-            response = {
-                "total": total,
-                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
-            }
-
-            return self.json_data(get_success_reponse(response=response))
-
-        except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
-
 
 class FacilityHandler(BaseHandler):
     def post(self):
@@ -3014,7 +2953,6 @@ class RouteHandler(BaseHandler):
 
             return self.json_data(get_fail_response(errors))
 
-
 class FlushRoutesHandler(BaseHandler):
     def delete(self):
         try:
@@ -3150,13 +3088,14 @@ class RouteItemHandler(BaseHandler):
 
             entities, total = RouteItemService.RouteItemInstance.get_all(page, page_size, filters)
 
-            # print("total route items: %s"%total)
-            # print(entities)
+            print("total route items: %s"%total)
+            print(entities)
             response = {
                 "total":  total,
                 "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
+            print("before return basehandlers routeitems")
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
