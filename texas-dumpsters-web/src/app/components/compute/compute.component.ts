@@ -379,9 +379,9 @@ update_page(json_data) {
           service_route.populate_route_items(route_item);
           service_route.company_key= this.authService.getCurrentSelectedCompany().id;
           //// GET RID OF THE IF STATEMENT LATER AND KEEP THE ELSE ///////////////////////////////
-              this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');   //GET RID OF THIS DURING PRODUCTION
-              console.log(this.date.date);
-              service_route.date = this.date.date;
+          this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');   //GET RID OF THIS DURING PRODUCTION
+          console.log(this.date.date);
+          service_route.date = this.date.date;
           //////////////////////////////////////////////
 
           route_object['display'] = false;
@@ -548,7 +548,7 @@ close_view_route(number) {
 server_entity_view(item,destination_number,route_number){
   item.display=true;
   let route_items = this.service_routes[route_number]['route_items'];
-  console.log(route_items)
+  console.log(route_items);
   this.mapHandler.add_waypt(destination_number,route_items);
 }
 

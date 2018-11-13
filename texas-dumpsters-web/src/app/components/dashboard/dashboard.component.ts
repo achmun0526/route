@@ -387,7 +387,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   loadRouteItemsByRoute(route_key,route_index){
-    console.log("inside dashboard.component.loadRouteitemsbyroute()")
+    console.log("inside dashboard.component.loadRouteitemsbyroute()");
     console.log(route_key);
     this.routesService.getRouteItemsByRouteAndCompany(route_key).then(res => {
         let route_item_info = []

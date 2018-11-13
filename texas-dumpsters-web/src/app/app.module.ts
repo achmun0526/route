@@ -111,7 +111,7 @@ const routes: Routes = [
   {path: 'management/customers/:id', canActivate: [AuthGuard], component: DetailsCustomerComponent, data: {title: 'Customer Details'}},
   {path: 'management/sites', canActivate: [AuthGuard], component: SitesManagementComponent, data: {title: 'Sites'}},
   {path: 'management/sites_details/:id', canActivate: [AuthGuard], component: DetailsSiteComponent, data: {title: 'Site Details'}},
-  {path: 'management/orders', component: OrdersAdministratorComponent, data: {title: 'Orders'}},//canActivate:[AuthGuard],   Turn this back on later
+  {path: 'management/orders', canActivate: [AuthGuard], component: OrdersAdministratorComponent, data: {title: 'Orders'}},
   {path: 'management/orders/:id', canActivate: [AuthGuard], component: DetailsOrdersComponent, data: {title: 'Order Details'}},
   {path: 'management/routes', canActivate: [AuthGuard], component: AdministratorRouteComponent, data: {title: 'Routes'}},
   {path: 'management/routes/:id', canActivate: [AuthGuard], component: DetailsRouteComponent, data: {title: 'Route Details'}},

@@ -1,4 +1,3 @@
-
 """This module contanis all handlers used in the project."""
 
 import os
@@ -15,7 +14,6 @@ import struct
 import config
 import inspect
 import time
-
 
 from google.appengine.api import app_identity
 from datetime import datetime, timedelta
@@ -34,7 +32,6 @@ from webapp2_extras.appengine.auth import models
 from services import UserService, AuditService
 from models import Role, Audit, AuditActionType
 
-
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 logging.warning('This will get logged to a file')
 logger = logging.getLogger()
@@ -47,8 +44,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-SUCCESS='SUCCESS'
-FAIL='FAIL'
+SUCCESS = 'SUCCESS'
+FAIL = 'FAIL'
+
 
 def get_success_reponse(**kwargs):
     kwargs.update(
@@ -58,6 +56,7 @@ def get_success_reponse(**kwargs):
     )
     return kwargs
 
+
 def get_fail_response(errors, **kwargs):
     if len(errors) < 1:
         raise ValueError('Fail responses require at least 1 error (errors[])')
@@ -65,17 +64,21 @@ def get_fail_response(errors, **kwargs):
     kwargs['status'] = FAIL
     return kwargs
 
+
 def render(template_name, context):
     return JINJA_ENVIRONMENT.get_template(template_name).render(context)
 
+
 class MissingRequiredRole(Exception):
     pass
+
 
 def user_required(handler):
     """
     Decorator that checks if there's a user associated with the current session.
     Will also fail if there's no session present.
     """
+
     def check_login(self, *args, **kwargs):
         auth = self.auth
         if not auth.get_user_by_session():
@@ -84,17 +87,21 @@ def user_required(handler):
         else:
             return handler(self, *args, **kwargs)
 
+
 def role_required(*required_roles, **role_options):
     """
     Decorator to ensure current user possesses the all required roles.
     """
+
     def wrap(handler):
         def wrapped_handler(self, *args, **kwargs):
             def fail_json(msg='User does not possess all required roles'):
                 failed_respose = get_fail_response([msg])
                 return self.json_data(failed_respose)
+
             def fail_redirect(msg='User does not possess all required roles'):
                 return self.redirect(role_options['on_fail_redirect'])
+
             fail_response = fail_json
             print "role_options: ", role_options
             if 'on_fail_redirect' in role_options:
@@ -106,14 +113,17 @@ def role_required(*required_roles, **role_options):
                 return fail_response('Not Authenticated.  No user found in session')
             if not 'user_id' in user:
                 return fail_response()
-            if len(required_roles) == 0: # Just want to make sure you are logged in.
+            if len(required_roles) == 0:  # Just want to make sure you are logged in.
                 return handler(self, *args, **kwargs)
             user = ndb.Key(User, user['user_id']).get()
             if user.has_any_role(*required_roles):
                 return handler(self, *args, **kwargs)
             return fail_response()
+
         return wrapped_handler
+
     return wrap
+
 
 def token_required(handler):
     def check_token(self, *args, **kwargs):
@@ -125,15 +135,15 @@ def token_required(handler):
 
             ''' Parameters validations '''
             if headers.has_key("token"):
-                token=headers["token"]
+                token = headers["token"]
             else:
                 raise ValueError("Token is required")
             if headers.has_key("sdate"):
-                date=headers["sdate"]
+                date = headers["sdate"]
             else:
                 raise ValueError("Date is required")
             if headers.has_key("email"):
-                email=headers["email"]
+                email = headers["email"]
             else:
                 raise ValueError("Email is required")
 
@@ -161,6 +171,7 @@ def token_required(handler):
             return self.json_data(get_fail_response(errors))
 
     return check_token
+
 
 class BaseHandler(webapp2.RequestHandler):
     @webapp2.cached_property
@@ -219,7 +230,7 @@ class BaseHandler(webapp2.RequestHandler):
                 continue
             values.append(self.request.get(key))
         if "to_dict" in kwargs and kwargs.get("to_dict"):
-            return dict(zip(args,values))
+            return dict(zip(args, values))
         if len(args) == 1:
             return values[0]
         return values
@@ -251,10 +262,27 @@ class BaseHandler(webapp2.RequestHandler):
         self.response.write(render(template_name, context))
         return
 
+    def audit(self, *errors):
+        errors = [str(e) for e in errors]
+        message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
+
+        audit = Audit()
+        user = users.get_current_user()
+        audit.populate(
+            user_email=user.email() if user else '',
+            error='; '.join(errors),
+            message=message,
+        )
+        AuditService.AuditInstance.save(audit)
+
+        return self.json_data(get_fail_response(errors))
+
+
 class EchoHandler(BaseHandler):
     def post(self):
         value = self.get_request_values('echo')
         return self.json_data(get_success_reponse(echo=value))
+
 
 class DoGoogleApiGetRequestHandler(BaseHandler):
     def post(self):
@@ -266,6 +294,7 @@ class DoGoogleApiGetRequestHandler(BaseHandler):
         except Exception, e:
             errors = [str(e)]
             return self.json_data(get_fail_response(errors))
+
 
 class SignupHandler(BaseHandler):
     def get(self):
@@ -280,9 +309,13 @@ class SignupHandler(BaseHandler):
             from models import User
             from models import UserXCompany
 
-            email, first_name, last_name, contact_phone_desk, contact_phone_mobile, device_id, password, role, company_key, user_key = self.get_request_values("email", "first_name", "last_name", "contact_phone_desk", "contact_phone_mobile", "device_id", "password", "role", "company_key", "user_key")
+            email, first_name, last_name, contact_phone_desk, contact_phone_mobile, device_id, password, role, company_key, user_key = self.get_request_values(
+                "email", "first_name", "last_name", "contact_phone_desk", "contact_phone_mobile", "device_id",
+                "password", "role", "company_key", "user_key")
             user_name, user_domain = email.split('@')
-            logging.warning(self.get_request_values("email", "first_name", "last_name", "contact_phone_desk", "contact_phone_mobile", "device_id", "password", "role", "company_key", "user_key"))
+            logging.warning(self.get_request_values("email", "first_name", "last_name", "contact_phone_desk",
+                                                    "contact_phone_mobile", "device_id", "password", "role",
+                                                    "company_key", "user_key"))
             user = User()
 
             email = email.lower()
@@ -330,13 +363,14 @@ class SignupHandler(BaseHandler):
 
                 if company_key:
 
-                    relationship = UserXCompanyService.UserXCompanyInstance.get_by_company_and_user(ndb.Key(urlsafe=company_key), user.key)
+                    relationship = UserXCompanyService.UserXCompanyInstance.get_by_company_and_user(
+                        ndb.Key(urlsafe=company_key), user.key)
 
                     if relationship is None:
                         userXcompany = UserXCompany()
                         userXcompany.populate(
-                            user = user.key,
-                            company = ndb.Key(urlsafe=company_key)
+                            user=user.key,
+                            company=ndb.Key(urlsafe=company_key)
                         )
                         UserXCompanyService.UserXCompanyInstance.save(userXcompany)
                         time.sleep(0.5)
@@ -344,8 +378,8 @@ class SignupHandler(BaseHandler):
                         UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(user.key.urlsafe())
                         userXcompany = UserXCompany()
                         userXcompany.populate(
-                            user = user.key,
-                            company = ndb.Key(urlsafe=company_key)
+                            user=user.key,
+                            company=ndb.Key(urlsafe=company_key)
                         )
                         UserXCompanyService.UserXCompanyInstance.save(userXcompany)
                         time.sleep(0.5)
@@ -364,10 +398,10 @@ class SignupHandler(BaseHandler):
                     return self.json_data(resp)
 
                 unique_properties = ['email']
-                #logging.warning(Role)
-                #logging.warning(Role.DRIVER)
-				# Creating Driver Entity for Role Driver
-                if role is not None and role.upper()== Role.DRIVER:
+                # logging.warning(Role)
+                # logging.warning(Role.DRIVER)
+                # Creating Driver Entity for Role Driver
+                if role is not None and role.upper() == Role.DRIVER:
                     from services import DriverService
                     from models import Driver
                     driver = Driver()
@@ -380,9 +414,9 @@ class SignupHandler(BaseHandler):
                     driver.populate(
                         company_key=ndb.Key(urlsafe=company_key),
                         user_key=user_key,
-                        driver_email = email,
-                        driver_name = '{} {}'.format(first_name, last_name),
-                        driver_phone = contact_phone_mobile or contact_phone_desk
+                        driver_email=email,
+                        driver_name='{} {}'.format(first_name, last_name),
+                        driver_phone=contact_phone_mobile or contact_phone_desk
                     )
                     entity = DriverService.DriverInstance.save(driver)
                     user_data = self.user_model.create_user(
@@ -401,7 +435,7 @@ class SignupHandler(BaseHandler):
                         contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
                         verified=False)
 
-                if not user_data[0]: #user_data is a tuple
+                if not user_data[0]:  # user_data is a tuple
                     errors = ['Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1])]
                     resp = get_fail_response(errors=errors)
                     return self.json_data(resp)
@@ -435,12 +469,13 @@ class SignupHandler(BaseHandler):
                 ndb.Key(Role, Role.ADMIN, parent=user.key).delete()
 
             if company_key:
-                relationship = UserXCompanyService.UserXCompanyInstance.get_by_company_and_user(ndb.Key(urlsafe=company_key), user.key)
+                relationship = UserXCompanyService.UserXCompanyInstance.get_by_company_and_user(
+                    ndb.Key(urlsafe=company_key), user.key)
                 if relationship is None:
                     userXcompany = UserXCompany()
                     userXcompany.populate(
-                        user = user.key,
-                        company = ndb.Key(urlsafe=company_key)
+                        user=user.key,
+                        company=ndb.Key(urlsafe=company_key)
                     )
                     UserXCompanyService.UserXCompanyInstance.save(userXcompany)
                     time.sleep(0.5)
@@ -472,13 +507,12 @@ class SignInHandler(BaseHandler):
 
         password_check = security.check_password_hash(password, user.password)
 
-
         if user:
             if user.is_authentication_locked():
                 errors = ['Account is Temporarily Locked.  Exceeded maximum authentication failures.']
-                return self.json_data(get_fail_response(errors,locked=True))
+                return self.json_data(get_fail_response(errors, locked=True))
 
-            if password_check or (password==user.password):
+            if password_check or (password == user.password):
                 resp = get_success_reponse(email=email, user=user.to_dict())
                 self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
                 return self.json_data(resp)
@@ -490,10 +524,13 @@ class SignInHandler(BaseHandler):
             errors = ['Username %s is incorrect ' % (email)]
             resp = get_fail_response(errors, email=email)
             return self.json_data(resp)
+
+
 class SignOutHandler(BaseHandler):
     def get(self):
         self.auth.unset_session()
         self.redirect('/')
+
 
 class ProfileHandler(BaseHandler):
     @role_required()
@@ -504,11 +541,11 @@ class ProfileHandler(BaseHandler):
         google_user = users.get_current_user()
         resp = None
         if google_user is None:
-                user = UserService.UserInstance.get_by_email('test@gmail.com')
-                if user is None:
-                    resp = get_fail_response(['Not Authenticated.  No user found in session'])
-                else:
-                    resp = get_success_reponse(user=self.user.to_dict())
+            user = UserService.UserInstance.get_by_email('test@gmail.com')
+            if user is None:
+                resp = get_fail_response(['Not Authenticated.  No user found in session'])
+            else:
+                resp = get_success_reponse(user=self.user.to_dict())
         else:
             resp = get_success_reponse(user=self.user.to_dict())
         return self.json_data(resp)
@@ -537,6 +574,7 @@ class UserEmailAvailabilityHandler(BaseHandler):
             resp = get_success_reponse(email=email, message='Email not in use')
         return self.json_data(resp)
 
+
 class UsernameAvailabilityHandler(BaseHandler):
     def get(self, name):
         from models import UserName
@@ -548,6 +586,7 @@ class UsernameAvailabilityHandler(BaseHandler):
             resp = get_fail_response(errors)
 
         return self.json_data(resp)
+
 
 class UsernameHandler(BaseHandler):
 
@@ -575,6 +614,7 @@ class UsernameHandler(BaseHandler):
             resp = get_fail_response(errors)
 
         return self.json_data(resp)
+
 
 class VerificationHandler(BaseHandler):
     def get(self, *args, **kwargs):
@@ -608,16 +648,17 @@ class VerificationHandler(BaseHandler):
 
         elif verification_type == 'p':
             # supply user to the page
-            #params = {
+            # params = {
             #    'user': user,
             #    'token': signup_token
-            #}
-            #resp = get_success_reponse(token=signup_token)
-            #return self.json_data(resp)
+            # }
+            # resp = get_success_reponse(token=signup_token)
+            # return self.json_data(resp)
             return self.redirect('/change_password?t=%s' % signup_token)
         else:
             logging.info('verification type not supported')
             self.abort(404)
+
 
 class ResendEmailVerification(BaseHandler):
     def post(self):
@@ -626,9 +667,10 @@ class ResendEmailVerification(BaseHandler):
             errors = ['Missing required attribute "user_id"']
             return self.json_data(get_fail_response(errors))
 
-        #taskqueue.add(url=self.uri_for('send_email_verification'), params=dict(user_id=user_id))
+        # taskqueue.add(url=self.uri_for('send_email_verification'), params=dict(user_id=user_id))
 
         return self.json_data(get_success_reponse(message='Verification Email has been queued'))
+
 
 class AssignAdminRoleHandler(BaseHandler):
     @role_required(Role.ADMIN)
@@ -689,9 +731,10 @@ class RoleAssignmentHandler(BaseHandler):
             return self.json_data(resp)
         # Make sure all requested Role Names are legit names
         allowed_roles = Role.admin_assignable_roles()
-        if not all(rn in allowed_roles for rn in role_names): # TODO: This test should likely built into Role!
+        if not all(rn in allowed_roles for rn in role_names):  # TODO: This test should likely built into Role!
             bad_roles = set(role_names) - set(allowed_roles)
-            resp = get_fail_response(errors=['Attempted to assign a Role that is not assignable: %s' % ','.join(bad_roles)])
+            resp = get_fail_response(
+                errors=['Attempted to assign a Role that is not assignable: %s' % ','.join(bad_roles)])
             return self.json_data(resp)
 
         # At this point, we can trust all role_names
@@ -716,14 +759,15 @@ class RoleAssignmentHandler(BaseHandler):
             return self.json_data(resp)
         # Make sure all requested Role Names are legit names
         allowed_roles = Role.admin_assignable_roles()
-        if not all(rn in allowed_roles for rn in role_names): # TODO: This test should likely built into Role!
+        if not all(rn in allowed_roles for rn in role_names):  # TODO: This test should likely built into Role!
             bad_roles = set(role_names) - set(allowed_roles)
-            resp = get_fail_response(errors=['Attempted to alter a Role that is not assignable: %s' % ','.join(bad_roles)])
+            resp = get_fail_response(
+                errors=['Attempted to alter a Role that is not assignable: %s' % ','.join(bad_roles)])
             return self.json_data(resp)
 
         role_keys = [ndb.Key(Role, rn, parent=assignee.key) for rn in role_names]
         ndb.delete_multi(role_keys)
-        assignee.get_roles() # re-warms the _roles
+        assignee.get_roles()  # re-warms the _roles
         resp = get_success_reponse(user=assignee.to_dict())
         return self.json_data(resp)
 
@@ -765,14 +809,14 @@ class GoogleUserVerifyHandler(BaseHandler):
         # todo: @adozier, this same check seems to be in multiple places. put it in one place
         if users.is_current_user_admin():
             # Automatically Add the ADMIN Role
-            if(user is not None and hasattr(user, "key")):
+            if (user is not None and hasattr(user, "key")):
                 Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
         else:
             ndb.Key(Role, Role.ADMIN, parent=user.key).delete()
 
-# # UNCOMMENT THIS WHEN YOU WANT TO CREATE AN ADMIN FOR A NEW USER
-#         if(user is not None and hasattr(user, "key")):
-#             Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
+        # # UNCOMMENT THIS WHEN YOU WANT TO CREATE AN ADMIN FOR A NEW USER
+        #         if(user is not None and hasattr(user, "key")):
+        #             Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
 
         # Authenticate to this user and update session
         self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
@@ -806,6 +850,7 @@ class AuthenticatedContextHandler(webapp2.RequestHandler):
         self.response.out.write(web_output)
         return
 
+
 class UsersHandler(BaseHandler):
 
     def get(self):
@@ -815,11 +860,11 @@ class UsersHandler(BaseHandler):
         from models import UserXCompany
         from models import Company
 
-        #Pagination
+        # Pagination
         page = self.request.get('page')
         page_size = self.request.get('page_size')
 
-        #Filters
+        # Filters
         filters = {}
         filters["activated"] = self.request.get('activated')
         filters["optimized"] = self.request.get('optimized')
@@ -831,8 +876,8 @@ class UsersHandler(BaseHandler):
         @ndb.tasklet
         def callback(user):
             roles = yield Role.query(ancestor=user.key).fetch_async()
-            userXcompany = UserXCompany.query(UserXCompany.user==user.key).get()
-            if(userXcompany is not None):
+            userXcompany = UserXCompany.query(UserXCompany.user == user.key).get()
+            if (userXcompany is not None):
                 company = Company.query(Company.key == userXcompany.company).get()
                 if company is not None:
                     user._company = company.to_dict()
@@ -852,17 +897,17 @@ class UsersHandler(BaseHandler):
             all_users = User.get_by_roles(roles_joined.upper())
             keys = []
             for user in all_users:
-            	if user!=None:
-                	keys.append(user.key)
+                if user != None:
+                    keys.append(user.key)
 
             if not keys:
-                qry = qry.filter(User.email == None)
+                qry = qry.filter(User.email is None)
             else:
                 qry = qry.filter(User.key.IN(keys))
 
         '''Email'''
         if email:
-            qry = qry.filter(User.email==email)
+            qry = qry.filter(User.email == email)
 
         '''Company'''
         if company:
@@ -873,12 +918,13 @@ class UsersHandler(BaseHandler):
             if len(users_ids) > 0:
                 qry = qry.filter(User.key.IN(users_ids))
             else:
-                qry = qry.filter(User.email == None)
+                qry = qry.filter(User.email is None)
 
         '''Active'''
         if (filters["activated"] and str(filters["activated"]) == "all"):
             pass
-        elif filters["activated"] and (json.loads(filters["activated"]) == True or json.loads(filters["activated"]) == False):
+        elif filters["activated"] and (
+                json.loads(filters["activated"]) == True or json.loads(filters["activated"]) == False):
             qry = qry.filter(User.activated == json.loads(filters["activated"]))
         else:
             qry = qry.filter(User.activated == True)
@@ -892,34 +938,32 @@ class UsersHandler(BaseHandler):
             all_users = qry.order(-User.created_at).fetch(offset=offset, limit=limit)
             total = qry.count()
 
-        if(filters["optimized"] and json.loads(filters["optimized"]) == True):
+        if (filters["optimized"] and json.loads(filters["optimized"]) == True):
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([u.to_dict_optimized() for u in all_users]))
+                "total": total,
+                "records": json.loads(json.dumps([u.to_dict_optimized() for u in all_users]))
             }
         else:
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([u.to_dict() for u in all_users]))
+                "total": total,
+                "records": json.loads(json.dumps([u.to_dict() for u in all_users]))
             }
-
-
 
         return self.json_data(get_success_reponse(response=response))
 
     def delete(self):
         try:
-            from services import UserService,UserXCompanyService
+            from services import UserService, UserXCompanyService
             from models import UserXCompany
             from models import User
             id = self.request.get('id')
             parentId = ndb.Key(urlsafe=id)
             # delete unique key
             usertobedeleted = User.get_by_key(parentId)
-            models.Unique.delete_multi(['User.auth_id:'+usertobedeleted.email])
-            models.Unique.delete_multi(['User.email:'+usertobedeleted.email])
+            models.Unique.delete_multi(['User.auth_id:' + usertobedeleted.email])
+            models.Unique.delete_multi(['User.email:' + usertobedeleted.email])
             # delete company
-            companydelete  = UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(id)
+            companydelete = UserXCompanyService.UserXCompanyInstance.remove_all_companies_from_user(id)
             # delete role
             ndb.Key(Role, Role.ADMIN, parent=parentId).delete()
             ndb.Key(Role, Role.COMPANY_ADMIN, parent=parentId).delete()
@@ -933,19 +977,8 @@ class UsersHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class CompanyHandler(BaseHandler):
 
@@ -1001,19 +1034,7 @@ class CompanyHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=company.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
@@ -1021,11 +1042,11 @@ class CompanyHandler(BaseHandler):
             from services import CompanyService
             from models import Company
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["user"] = self.request.get('user')
@@ -1034,26 +1055,14 @@ class CompanyHandler(BaseHandler):
             entities, total = CompanyService.CompanyInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -1066,19 +1075,8 @@ class CompanyHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class UserXCompanyHandler(BaseHandler):
 
@@ -1096,8 +1094,8 @@ class UserXCompanyHandler(BaseHandler):
             userXcompany = UserXCompany()
 
             userXcompany.populate(
-                user = ndb.Key(urlsafe=user),
-                company = ndb.Key(urlsafe=company)
+                user=ndb.Key(urlsafe=user),
+                company=ndb.Key(urlsafe=company)
             )
 
             if id is not None:
@@ -1105,22 +1103,10 @@ class UserXCompanyHandler(BaseHandler):
 
             userXcompany = UserXCompanyService.UserXCompanyInstance.save(userXcompany)
 
-            return self.json_data(get_success_reponse(response = userXcompany.to_dict()))
+            return self.json_data(get_success_reponse(response=userXcompany.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -1134,19 +1120,7 @@ class UserXCompanyHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
@@ -1154,31 +1128,22 @@ class UserXCompanyHandler(BaseHandler):
             from services import UserXCompanyService
             from models import UserXCompany
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
             entities, total = UserXCompanyService.UserXCompanyInstance.get_all(page, page_size)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
 
 class CustomerHandler(BaseHandler):
     def post(self):
@@ -1192,7 +1157,7 @@ class CustomerHandler(BaseHandler):
             company_key = data.get('company_key')
             source_system_id = data.get('source_system_id')
             source_system = data.get('source_system')
-            customer_account_id=data.get('customer_account_id')
+            customer_account_id = data.get('customer_account_id')
             customer_name = data.get('customer_name')
             contact_name = data.get('contact_name')
             contact_email = data.get('contact_email')
@@ -1237,30 +1202,18 @@ class CustomerHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=customer.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import CustomerService
             from models import Customer
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["company_key"] = self.request.get('company_key')
@@ -1269,26 +1222,14 @@ class CustomerHandler(BaseHandler):
             entities, total = CustomerService.CustomerInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -1301,19 +1242,7 @@ class CustomerHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class CustomerServiceAddressHandler(BaseHandler):
@@ -1337,71 +1266,49 @@ class CustomerServiceAddressHandler(BaseHandler):
 
             customerServiceAddress.populate(
                 customer_key=ndb.Key(urlsafe=customer_key),
-                address = address,
-                zipcode = zipcode,
-                state = state,
-                city = city,
-                notes = notes
+                address=address,
+                zipcode=zipcode,
+                state=state,
+                city=city,
+                notes=notes
             )
 
             if id is not None:
                 customerServiceAddress.key = ndb.Key(urlsafe=id)
 
-            customerServiceAddress = CustomerServiceAddressService.CustomerServiceAddressInstance.save(customerServiceAddress)
+            customerServiceAddress = CustomerServiceAddressService.CustomerServiceAddressInstance.save(
+                customerServiceAddress)
 
             return self.json_data(get_success_reponse(response=customerServiceAddress.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import CustomerServiceAddressService
             from models import CustomerServiceAddress
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["customer"] = self.request.get('customer')
 
-            entities, total = CustomerServiceAddressService.CustomerServiceAddressInstance.get_all(page, page_size, filters)
+            entities, total = CustomerServiceAddressService.CustomerServiceAddressInstance.get_all(page, page_size,
+                                                                                                   filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class ImportEntityHandler(BaseHandler):
@@ -1421,7 +1328,7 @@ class ImportEntityHandler(BaseHandler):
             customer_key = data.get("customer_key")
 
             file = data.get("file")
-            #Validations parameters
+            # Validations parameters
 
             if entity is None:
                 raise ValueError("Entity field is required")
@@ -1466,12 +1373,12 @@ class ImportEntityHandler(BaseHandler):
 
                     '''if line is empty then skip it'''
                     if not line:
-                        index=index+1
+                        index = index + 1
                         continue
 
                     '''if line starts with * then skip it---This part currently does not work'''
                     if line.startswith('*'):
-                        index=index+1
+                        index = index + 1
                         continue
 
                     try:
@@ -1502,14 +1409,14 @@ class ImportEntityHandler(BaseHandler):
                                 # active=json.loads(row[10].lower()) if row[10] is not None else True
                             )
                             customer_account_id = str(row[0])
-                            customer_response = CustomerService.CustomerInstance.get_by_company_and_account_id(customer.company_key, customer_account_id)
+                            customer_response = CustomerService.CustomerInstance.get_by_company_and_account_id(
+                                customer.company_key, customer_account_id)
                             if customer_response is not None:
                                 error_list = error_list + "    Customer ID already exists: " + customer_account_id + ".%"
                                 raise ValueError("Customer ID already exists.")
                             CustomerService.CustomerInstance.save(customer)
                             index = index + 1
                             customer_response = None
-
 
                         elif entity == "site":
 
@@ -1535,29 +1442,29 @@ class ImportEntityHandler(BaseHandler):
 
                             latitude = row[10]
                             longitude = row[11]
-                            #try:
+                            # try:
                             latitude_check = float(latitude)
                             if latitude_check == 0 or latitude is None:
-                                #raise ValueError("Latitude Entry cannot be 0")
+                                # raise ValueError("Latitude Entry cannot be 0")
                                 error_list = error_list + "    Latitude entry cannot be 0.%"
-                            #except ValueError:
-                                #raise ValueError("Latitude Entry is not Valid: %s" % latitude)
-                                #error_list = error_list + "Latitude Entry is not Valid: %s" % latitude
-                            #try:
+                            # except ValueError:
+                            # raise ValueError("Latitude Entry is not Valid: %s" % latitude)
+                            # error_list = error_list + "Latitude Entry is not Valid: %s" % latitude
+                            # try:
                             longitude_check = float(longitude)
                             if longitude_check == 0 or longitude is None:
-                                    #raise ValueError("Longitude Entry cannot be 0")
+                                # raise ValueError("Longitude Entry cannot be 0")
                                 error_list = error_list + "    Longitude entry cannot be 0.%"
-                            #except ValueError:
-                                #raise ValueError("Longitude Entry is not Valid: %s" % longitude)
-                                #error_list = error_list + "Longitude Entry is not Valid: %s" % longitude
+                            # except ValueError:
+                            # raise ValueError("Longitude Entry is not Valid: %s" % longitude)
+                            # error_list = error_list + "Longitude Entry is not Valid: %s" % longitude
                             site_account_id = str(row[1])
 
-                            site_exists = SiteService.SiteInstance.get_by_account_id_and_company_key(site_account_id, customer_company_key)
+                            site_exists = SiteService.SiteInstance.get_by_account_id_and_company_key(site_account_id,
+                                                                                                     customer_company_key)
 
                             if site_exists is not None:
                                 error_list = error_list + "    A site with this site ID already exists: " + site_account_id + ".%"
-
 
                             if len(error_list) != 0:
                                 raise ValueError("There was an error.")
@@ -1565,8 +1472,8 @@ class ImportEntityHandler(BaseHandler):
                             site = Site()
                             site.populate(
                                 source_system=source_system,
-                                company_key=ndb.Key(Company,customer_company_key.id()),
-                                customer_key = ndb.Key(urlsafe = customer_key),
+                                company_key=ndb.Key(Company, customer_company_key.id()),
+                                customer_key=ndb.Key(urlsafe=customer_key),
                                 customer_account_id=customer_account_id,
                                 site_account_id=row[1],
                                 site_name=row[2],
@@ -1583,7 +1490,6 @@ class ImportEntityHandler(BaseHandler):
                             )
 
                             SiteService.SiteInstance.save(site)
-
 
                             index = index + 1
 
@@ -1604,42 +1510,35 @@ class ImportEntityHandler(BaseHandler):
                             if site is None:
                                 error_list = error_list + "    Site account ID not found: " + site_account_id + ".%"
 
-
-
                             try:
-                               service_date = datetime.strptime(row[3], '%m/%d/%Y %H:%M')
+                                service_date = datetime.strptime(row[3], '%m/%d/%Y %H:%M')
                             except Exception, e:
                                 print(e)
                                 service_date = datetime.today()
-
-
 
                             purpose_of_service = row[5]
                             purpose_valid = False
                             for Purpose in PurposeOfService:
                                 purpose_name = Purpose.name[:]
-                                if(purpose_of_service == purpose_name):
+                                if (purpose_of_service == purpose_name):
                                     purpose_of_service = PurposeOfService(purpose_name)
                                     purpose_valid = True
-                            if(not purpose_valid):
+                            if (not purpose_valid):
                                 error_list = error_list + "    ServiceOrder does not specify a Type or Type format is incorrect.%"
 
-
                             asset_size = row[6]
-
 
                             asset_size_check = 0
                             asset_size_value = 0
                             for Asset in AssetSize:
                                 asset_name = Asset.name[3:5]
-                                if(asset_name == asset_size):
+                                if (asset_name == asset_size):
                                     asset_size_check = 1
                                     break
                                 else:
-                                    asset_size_value = asset_size_value+1
+                                    asset_size_value = asset_size_value + 1
 
-
-                            if(asset_size_check != 1):
+                            if (asset_size_check != 1):
                                 error_list = error_list + "after asset size"
 
                             service_order = ServiceOrder()
@@ -1649,25 +1548,27 @@ class ImportEntityHandler(BaseHandler):
                             site_key = site.key.urlsafe()
 
                             service_order.populate(
-                                customer_account_id = row[0],
-                                site_account_id = row[1],
-                                service_ticket_id = row[2],
+                                customer_account_id=row[0],
+                                site_account_id=row[1],
+                                service_ticket_id=row[2],
                                 service_date=service_date,
                                 service_time_frame=row[4],
                                 purpose_of_service=purpose_of_service,
                                 asset_size=AssetSize(asset_size_value),
                                 notes=row[7],
                                 source_system=source_system,
-                                customer_key=ndb.Key(urlsafe = customer_key),
-                                site_key=ndb.Key(urlsafe = site_key),
-                                company_key = ndb.Key(urlsafe = company_key),
-                                active = True,
+                                customer_key=ndb.Key(urlsafe=customer_key),
+                                site_key=ndb.Key(urlsafe=site_key),
+                                company_key=ndb.Key(urlsafe=company_key),
+                                active=True,
                             )
 
                             service_ticket_id = row[2]
-                            service_ticket_id_exists = ServiceOrderService.ServiceOrderInstance.get_by_service_ticket_id_and_company(customer.company_key,str(service_ticket_id))
+                            service_ticket_id_exists = ServiceOrderService.ServiceOrderInstance.get_by_service_ticket_id_and_company(
+                                customer.company_key, str(service_ticket_id))
                             if service_ticket_id_exists is not None:
-                                error_list = error_list + "    Service Ticket ID is not unique: " + str(service_ticket_id) + ".%"
+                                error_list = error_list + "    Service Ticket ID is not unique: " + str(
+                                    service_ticket_id) + ".%"
 
                             if len(error_list) != 0:
                                 raise ValueError("Error in uploading service orders.")
@@ -1759,10 +1660,10 @@ class ImportEntityHandler(BaseHandler):
                             continue
 
                         total_inserted_rows = total_inserted_rows + 1
-                    #This is where the errors for each row are logged.
+                    # This is where the errors for each row are logged.
                     except Exception, e:
                         errors.append({"The following error(s) occured in row": (index + 1)})
-                        errors.append({"%^":error_list})
+                        errors.append({"%^": error_list})
                         print("logging the exception")
                         print(e)
                         print("\n")
@@ -1782,19 +1683,8 @@ class ImportEntityHandler(BaseHandler):
                 return self.json_data(get_success_reponse(response="No file found"))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class SiteHandler(BaseHandler):
     def post(self):
@@ -1807,8 +1697,8 @@ class SiteHandler(BaseHandler):
             id = data.get('id')
             source_system_id = data.get('source_system_id')
             customer_key = data.get('customer_key')
-            customer_account_id=data.get('customer_account_id')
-            site_account_id=data.get('site_account_id')
+            customer_account_id = data.get('customer_account_id')
+            site_account_id = data.get('site_account_id')
             company_key = data.get('company_key')
             site_name = data.get('site_name')
             site_address = data.get('site_address')
@@ -1824,7 +1714,7 @@ class SiteHandler(BaseHandler):
             site = Site()
 
             site.populate(
-                company_key = ndb.Key(urlsafe=company_key),
+                company_key=ndb.Key(urlsafe=company_key),
                 source_system_id=source_system_id,
                 source_system="web",
                 customer_key=ndb.Key(urlsafe=customer_key),
@@ -1850,30 +1740,18 @@ class SiteHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=site.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import SiteService
             from models import Site
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["site_key"] = self.request.get('site_key')
@@ -1883,26 +1761,14 @@ class SiteHandler(BaseHandler):
             entities, total = SiteService.SiteInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -1917,19 +1783,7 @@ class SiteHandler(BaseHandler):
 
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class ServiceOrderHandler(BaseHandler):
@@ -1937,13 +1791,14 @@ class ServiceOrderHandler(BaseHandler):
         try:
 
             from services import ServiceOrderService
-            from models import ServiceOrder, ServiceOrderState, PurposeOfService, AssetType, AssetSize, ServiceOrderFailureReason
+            from models import ServiceOrder, ServiceOrderState, PurposeOfService, AssetType, AssetSize, \
+                ServiceOrderFailureReason
 
             data = json.loads(self.request.body)
-            #logging.warning(data)
+            # logging.warning(data)
 
             id = data.get('id')
-            source_system= data.get('source_system_id')
+            source_system = data.get('source_system_id')
             customer_key = data.get('customer_key')
             site_key = data.get('site_key')
             company_key = data.get('company_key')
@@ -1965,10 +1820,8 @@ class ServiceOrderHandler(BaseHandler):
 
             service_order = ServiceOrder()
 
-
             if state is None:
                 state = 1
-
 
             if failure_reason is not None:
                 failure_reason = ServiceOrderFailureReason(int(failure_reason))
@@ -1986,10 +1839,10 @@ class ServiceOrderHandler(BaseHandler):
                 service_date = datetime.strptime(service_date, "%m/%d/%Y %H:%M:%S")
 
             service_order.populate(
-                company_key = ndb.Key(urlsafe=company_key),
-                customer_account_id = customer_account_id,
-                site_account_id = site_account_id,
-                service_ticket_id = service_ticket_id,
+                company_key=ndb.Key(urlsafe=company_key),
+                customer_account_id=customer_account_id,
+                site_account_id=site_account_id,
+                service_ticket_id=service_ticket_id,
                 service_date=service_date,
                 service_time_frame=service_time_frame,
                 purpose_of_service=purpose_of_service,
@@ -1998,37 +1851,22 @@ class ServiceOrderHandler(BaseHandler):
                 source_system=source_system,
                 customer_key=ndb.Key(urlsafe=customer_key),
                 site_key=ndb.Key(urlsafe=site_key),
-                state = state,
+                state=state,
 
                 # active=json.loads(row[8].lower()) if row[8] is not None else True,
             )
-
 
             if id is not None:
                 service_order.key = ndb.Key(urlsafe=id)
 
             service_order = ServiceOrderService.ServiceOrderInstance.save(service_order)
 
-
-
             return self.json_data(get_success_reponse(response=service_order.to_dict()))
 
         except Exception, e:
 
             logging.warning(e)
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email() if users.get_current_user() is not None else None,
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
@@ -2040,11 +1878,11 @@ class ServiceOrderHandler(BaseHandler):
             from services import ServiceOrderService
             from models import ServiceOrder
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["customer_key"] = self.request.get('customer_key')
@@ -2059,25 +1897,13 @@ class ServiceOrderHandler(BaseHandler):
             entities, total = ServiceOrderService.ServiceOrderInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2090,19 +1916,8 @@ class ServiceOrderHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class ServiceOrderProblemHandler(BaseHandler):
     def get(self):
@@ -2110,11 +1925,11 @@ class ServiceOrderProblemHandler(BaseHandler):
             from services import ServiceOrderProblemService
             from models import ServiceOrderProblem
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-            #Filters
+            # Filters
             filters = {}
             filters["id"] = self.request.get('id')
             filters["service_order_key"] = self.request.get('service_order_key')
@@ -2127,26 +1942,15 @@ class ServiceOrderProblemHandler(BaseHandler):
             entities, total = ServiceOrderProblemService.ServiceOrderProblemInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email() if users.get_current_user() is not None else None,
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class ServiceOrderProblemChangeStatusHandler(BaseHandler):
     def post(self):
@@ -2158,24 +1962,13 @@ class ServiceOrderProblemChangeStatusHandler(BaseHandler):
             service_order_problem_key = data.get("service_order_problem_key")
             new_status = int(data.get("new_status"))
 
-            service_order_problem = ServiceOrderProblemService.ServiceOrderProblemInstance.change_status(service_order_problem_key, new_status)
+            service_order_problem = ServiceOrderProblemService.ServiceOrderProblemInstance.change_status(
+                service_order_problem_key, new_status)
 
             return self.json_data(get_success_reponse(response=service_order_problem.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email() if users.get_current_user() is not None else '',
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class ServicePricingHandler(BaseHandler):
@@ -2213,30 +2006,18 @@ class ServicePricingHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import ServicePrincingService
             from models import ServicePricing
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["company"] = self.request.get('company')
@@ -2244,26 +2025,14 @@ class ServicePricingHandler(BaseHandler):
             entities, total = ServicePrincingService.ServicePricingInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2276,19 +2045,7 @@ class ServicePricingHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class ListHandler(BaseHandler):
@@ -2298,24 +2055,12 @@ class ListHandler(BaseHandler):
 
             response = ListsService.ListsInstance.get_by_name(name)
 
-            result = get_success_reponse(response = response)
+            result = get_success_reponse(response=response)
 
             return self.json_data(result)
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class YardHandler(BaseHandler):
@@ -2343,7 +2088,7 @@ class YardHandler(BaseHandler):
             yard = Yard()
 
             yard.populate(
-                source_system = "web",
+                source_system="web",
                 company_key=ndb.Key(urlsafe=company_key),
                 yard_name=yard_name,
                 yard_address=yard_address,
@@ -2366,30 +2111,18 @@ class YardHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=yard.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import YardService
             from models import Yard
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["yard_key"] = self.request.get('yard_key')
@@ -2398,8 +2131,8 @@ class YardHandler(BaseHandler):
             entities, total = YardService.YardInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
@@ -2407,19 +2140,7 @@ class YardHandler(BaseHandler):
         except Exception, e:
             # todo: @adozier, clean up error reporting into one or two derived methods in BaseHandler
 
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2432,19 +2153,7 @@ class YardHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class DriverHandler(BaseHandler):
@@ -2466,19 +2175,7 @@ class DriverHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def post(self):
         try:
@@ -2504,10 +2201,10 @@ class DriverHandler(BaseHandler):
             driver.populate(
                 company_key=ndb.Key(urlsafe=company_key),
                 user_key=ndb.Key(urlsafe=user_key),
-                driver_email = driver_email,
-                driver_name = driver_name,
-                driver_phone = driver_phone,
-                driver_id = driver_id,
+                driver_email=driver_email,
+                driver_name=driver_name,
+                driver_phone=driver_phone,
+                driver_id=driver_id,
                 driver_operational=driver_operational,
             )
 
@@ -2519,19 +2216,7 @@ class DriverHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=driver.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2541,26 +2226,14 @@ class DriverHandler(BaseHandler):
 
             DriverService.DriverInstance.delete(id)
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["driver_key"] = self.request.get('driver_key')
             filters["company_key"] = self.request.get('company_key')
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class DriverListHandler(BaseHandler):
@@ -2592,19 +2265,7 @@ class DriverListHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class FacilityHandler(BaseHandler):
@@ -2633,7 +2294,7 @@ class FacilityHandler(BaseHandler):
             facility = Facility()
 
             facility.populate(
-                source_system = "web",
+                source_system="web",
                 company_key=ndb.Key(urlsafe=company_key),
                 facility_name=facility_name,
                 facility_address=facility_address,
@@ -2657,30 +2318,18 @@ class FacilityHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=facility.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import FacilityService
             from models import Facility
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["facility_key"] = self.request.get('facility_key')
@@ -2689,26 +2338,14 @@ class FacilityHandler(BaseHandler):
             entities, total = FacilityService.FacilityInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2721,19 +2358,8 @@ class FacilityHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class VehicleHandler(BaseHandler):
     def post(self):
@@ -2772,7 +2398,7 @@ class VehicleHandler(BaseHandler):
                 raise ValueError("Key specified as driver is not a Driver")
 
             vehicle.populate(
-                source_system = "web",
+                source_system="web",
                 company_key=ndb.Key(urlsafe=company_key),
                 driver_key=ndb.Key(urlsafe=driver_key),
                 vehicle_name=vehicle_name,
@@ -2790,30 +2416,18 @@ class VehicleHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=vehicle.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import VehicleService
             from models import Vehicle
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["vehicle_key"] = self.request.get('vehicle_key')
@@ -2822,26 +2436,14 @@ class VehicleHandler(BaseHandler):
             entities, total = VehicleService.VehicleInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -2854,19 +2456,8 @@ class VehicleHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class RouteHandler(BaseHandler):
     def post(self):
@@ -2885,7 +2476,7 @@ class RouteHandler(BaseHandler):
             total_distance = data.get('total_distance')
             total_time = data.get('total_time')
             num_of_stops = data.get('num_of_stops')
-            status=data.get('status')
+            status = data.get('status')
             notes = data.get('notes')
 
             route = Route()
@@ -2899,95 +2490,67 @@ class RouteHandler(BaseHandler):
             if status is not None:
                 status = RouteStatus(status)
 
-
-
             route.populate(
-                company_key= company_key,
+                company_key=company_key,
                 date=datetime.strptime(date, "%m/%d/%Y"),
-                driver_key= driver_key,
-                total_distance = total_distance,
-                total_time = total_time,
-                num_of_stops = num_of_stops,
-                status = status,
+                driver_key=driver_key,
+                total_distance=total_distance,
+                total_time=total_time,
+                num_of_stops=num_of_stops,
+                status=status,
                 notes=notes
                 # vehicle_key=ndb.Key(urlsafe=vehicle_key),
             )
-
 
             if id is not None:
                 route.key = ndb.Key(urlsafe=id)
 
             route = RouteService.RouteInstance.save(route)
 
-
             return self.json_data(get_success_reponse(response=route.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import RouteService
             from models import Route
-            print("in route class basehandler")
-            #Pagination
+
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
-            filters = {}
-            filters["active"] = self.request.get('active')
-            filters["route_key"] = self.request.get('route_key')
-            filters["vehicle_key"] = self.request.get('vehicle_key')
-            filters["company_key"] = self.request.get('company_key')
-            filters["driver_key"] = self.request.get('driver_key')
-            filters["start_date"] = self.request.get('start_date')
-            filters["end_date"] = self.request.get('end_date')
-            filters["status"] = self.request.get('status')
-            filters["optimized"] = self.request.get('optimized')
-            print("before routeservice")
+            # Filters
+            filters = {
+                "active": self.request.get('active'),
+                "route_key": self.request.get('route_key'),
+                "vehicle_key": self.request.get('vehicle_key'),
+                "company_key": self.request.get('company_key'),
+                "driver_key": self.request.get('driver_key'),
+                "start_date": self.request.get('start_date'),
+                "end_date": self.request.get('end_date'),
+                "status": self.request.get('status'),
+                "optimized": self.request.get('optimized'),
+            }
+
             entities, total = RouteService.RouteInstance.get_all(page, page_size, filters)
-            print("after routeservice")
-            if(filters["optimized"] and json.loads(filters["optimized"]) == True):
+
+            if filters["optimized"] and json.loads(filters["optimized"]) == True:
                 response = {
-                    "total":  total,
-                    "records":  json.loads(json.dumps([entity.to_dict_optimized() for entity in entities]))
+                    "total": total,
+                    "records": json.loads(json.dumps([entity.to_dict_optimized() for entity in entities]))
                 }
             else:
                 response = {
-                    "total":  total,
-                    "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                    "total": total,
+                    "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
                 }
-
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -3000,19 +2563,7 @@ class RouteHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class FlushRoutesHandler(BaseHandler):
@@ -3022,7 +2573,7 @@ class FlushRoutesHandler(BaseHandler):
             from services import RouteItemService
 
             print("\n Inside FlushRoutesHandler \n")
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["route_key"] = self.request.get('route_key')
@@ -3054,23 +2605,10 @@ class FlushRoutesHandler(BaseHandler):
 
                 entity.key.delete()
 
-
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
 
 class RouteItemHandler(BaseHandler):
@@ -3098,8 +2636,6 @@ class RouteItemHandler(BaseHandler):
                 longitude = item.get('longitude')
                 active = item.get('active')
 
-
-
                 route_item = RouteItem()
 
                 if entity_type not in entity_types:
@@ -3108,42 +2644,29 @@ class RouteItemHandler(BaseHandler):
                 print("ok we got this far")
 
                 route_item.populate(
-                    route_key=ndb.Key(urlsafe = route_key),
-                    dist_2_next = dist_2_next,
-                    time_2_next = time_2_next,
+                    route_key=ndb.Key(urlsafe=route_key),
+                    dist_2_next=dist_2_next,
+                    time_2_next=time_2_next,
                     entity_type=entity_type,
                     item_key=item_key,
                     sort_index=sort_index,
                 )
 
-
                 route_item = RouteItemService.RouteItemInstance.save(route_item)
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import RouteItemService
             from models import RouteItem
             logging.warning("inside routeitemget")
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["active"] = self.request.get('active')
             filters["route_key"] = self.request.get('route_key')
@@ -3153,26 +2676,15 @@ class RouteItemHandler(BaseHandler):
             # print("total route items: %s"%total)
             # print(entities)
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class SendSmsHandler(BaseHandler):
     def post(self):
@@ -3191,6 +2703,7 @@ class SendSmsHandler(BaseHandler):
         except Exception, e:
             errors = [str(e)]
             return self.json_data(get_fail_response(errors))
+
 
 class SendSmsToDriverHandler(BaseHandler):
     def post(self):
@@ -3231,6 +2744,7 @@ class SendSmsToDriverHandler(BaseHandler):
             errors = [str(e)]
             return self.json_data(get_fail_response(errors))
 
+
 class AssetInventoryHandler(BaseHandler):
 
     def get(self):
@@ -3238,37 +2752,26 @@ class AssetInventoryHandler(BaseHandler):
             from services import AssetInventoryService
             from models import AssetInventory
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-             #Filters
+            # Filters
             filters = {}
             filters["company_key"] = self.request.get('company_key')
 
             entities, total = AssetInventoryService.AssetInventoryInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class MessageHandler(BaseHandler):
     def post(self):
@@ -3312,30 +2815,18 @@ class MessageHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=message.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import MessageService
             from models import Message
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-            #Filters
+            # Filters
             filters = {}
             filters["id"] = self.request.get('id')
             filters["company_key"] = self.request.get('company_key')
@@ -3347,36 +2838,24 @@ class MessageHandler(BaseHandler):
             filters["end_date"] = self.request.get('end_date')
             filters["parent_message_key"] = self.request.get('parent_message_key')
 
-            #options
+            # options
             options = {}
             options["no-childs"] = self.request.get('no-childs')
 
-            #Sort
+            # Sort
             sort = self.request.get('sort')
 
             entities, total = MessageService.MessageInstance.get_all(page, page_size, filters, sort)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict_with_childs(options) for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict_with_childs(options) for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -3389,19 +2868,8 @@ class MessageHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class NotificationHandler(BaseHandler):
     def post(self):
@@ -3438,30 +2906,18 @@ class NotificationHandler(BaseHandler):
             return self.json_data(get_success_reponse(response=notification.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import NotificationService
             from models import Notification
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-            #Filters
+            # Filters
             filters = {}
             filters["id"] = self.request.get('id')
             filters["company_key"] = self.request.get('company_key')
@@ -3474,38 +2930,26 @@ class NotificationHandler(BaseHandler):
             filters["notification_type"] = self.request.get('notification_type')
             filters["optimized"] = self.request.get('optimized')
 
-            #Sort
+            # Sort
             sort = self.request.get('sort')
 
             entities, total = NotificationService.NotificationInstance.get_all(page, page_size, filters, sort)
 
-            if(filters["optimized"] and json.loads(filters["optimized"]) == True):
+            if (filters["optimized"] and json.loads(filters["optimized"]) == True):
                 response = {
-                    "total":  total,
-                    "records":  json.loads(json.dumps([entity.to_dict_optimized() for entity in entities]))
+                    "total": total,
+                    "records": json.loads(json.dumps([entity.to_dict_optimized() for entity in entities]))
                 }
             else:
                 response = {
-                    "total":  total,
-                    "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                    "total": total,
+                    "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
                 }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
@@ -3518,38 +2962,25 @@ class NotificationHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class RouteIncidentHandler(BaseHandler):
 
     def post(self):
         try:
 
-            from services import RouteIncidentService,ServiceOrderService
+            from services import RouteIncidentService, ServiceOrderService
             from models import RouteIncident, RouteIncidentStatus
 
-
             data = json.loads(self.request.body)
-
 
             id = data.get('id')
             service_ticket_id = data.get('service_ticket_id')
             # driver_key = data.get('driver_key')
             order_key = data.get('order_id')
             # incident_type = data.get("incident_type")
-            order_canceled=data.get('order_canceled')
+            order_canceled = data.get('order_canceled')
             # status = data.get("status")
             report_datetime = data.get('report_datetime')
             if report_datetime is not None:
@@ -3562,51 +2993,37 @@ class RouteIncidentHandler(BaseHandler):
             route_incident.populate(
                 # driver_key=ndb.Key(urlsafe=driver_key),
                 order_key=ndb.Key(urlsafe=order_key),
-                report_datetime = report_datetime,
-                service_ticket_id = service_ticket_id,
-                order_canceled = order_canceled,
+                report_datetime=report_datetime,
+                service_ticket_id=service_ticket_id,
+                order_canceled=order_canceled,
                 # incident_type=incident_type,
                 incident_notes=incident_notes,
             )
 
             if order_canceled:
-                #ServiceOrderService.ServiceOrderInstance.delete(order_key)
-                ServiceOrderService.ServiceOrderInstance.activedactive(order_key,False)
-
+                # ServiceOrderService.ServiceOrderInstance.delete(order_key)
+                ServiceOrderService.ServiceOrderInstance.activedactive(order_key, False)
 
             # The line below is where the error is occuring. acting as if the incident has an id when it does not
             if id is not None:
                 route_incident.key = ndb.Key(urlsafe=id)
-
 
             route_incident = RouteIncidentService.RouteIncidentInstance.save(route_incident)
 
             return self.json_data(get_success_reponse(response=route_incident.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import RouteIncidentService
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-            #Filters
+            # Filters
             filters = {}
             filters["id"] = self.request.get('id')
             # filters["route_key"] = self.request.get('route_key')
@@ -3618,31 +3035,18 @@ class RouteIncidentHandler(BaseHandler):
             entities, total = RouteIncidentService.RouteIncidentInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def delete(self):
         try:
             from services import RouteIncidentService
-
 
             id = self.request.get('id')
 
@@ -3651,19 +3055,8 @@ class RouteIncidentHandler(BaseHandler):
             return self.json_data(get_success_reponse())
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class AttachmentHandler(blobstore_handlers.BlobstoreUploadHandler, BaseHandler):
 
@@ -3683,19 +3076,7 @@ class AttachmentHandler(blobstore_handlers.BlobstoreUploadHandler, BaseHandler):
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
@@ -3707,21 +3088,10 @@ class AttachmentHandler(blobstore_handlers.BlobstoreUploadHandler, BaseHandler):
 
             response = json.loads(json.dumps(list))
 
-            return self.json_data(get_success_reponse(response = response))
+            return self.json_data(get_success_reponse(response=response))
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class RoutePositionHistoryHandler(BaseHandler):
 
@@ -3748,34 +3118,23 @@ class RoutePositionHistoryHandler(BaseHandler):
             if id is not None:
                 route_position_history.key = ndb.Key(urlsafe=id)
 
-            route_position_history = RoutePositionHistoryService.RoutePositionHistoryInstance.save(route_position_history)
+            route_position_history = RoutePositionHistoryService.RoutePositionHistoryInstance.save(
+                route_position_history)
 
             return self.json_data(get_success_reponse(response=route_position_history.to_dict()))
 
         except Exception, e:
-            errors = [str(e)]
-
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
+            return self.audit(e)
 
     def get(self):
         try:
             from services import RoutePositionHistoryService
 
-            #Pagination
+            # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
 
-            #Filters
+            # Filters
             filters = {}
             filters["id"] = self.request.get('id')
             filters["route_key"] = self.request.get('route_key')
@@ -3783,62 +3142,52 @@ class RoutePositionHistoryHandler(BaseHandler):
             entities, total = RoutePositionHistoryService.RoutePositionHistoryInstance.get_all(page, page_size, filters)
 
             response = {
-                "total":  total,
-                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+                "total": total,
+                "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
             }
 
             return self.json_data(get_success_reponse(response=response))
 
         except Exception, e:
-            errors = [str(e)]
+            return self.audit(e)
 
-            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
-
-            audit = Audit()
-            audit.populate(
-                user_email=users.get_current_user().email(),
-                error=str(e),
-                message=message
-            )
-            AuditService.AuditInstance.save(audit)
-
-            return self.json_data(get_fail_response(errors))
 
 class TestRouteHandler(BaseHandler):
     def get(self):
-        #try:
-            from services import RouteService, RouteItemService, FacilityService
-            from models import Route, RouteItem, Facility
+        # try:
+        from services import RouteService, RouteItemService, FacilityService
+        from models import Route, RouteItem, Facility
 
-            route = Route()
+        route = Route()
 
-            date = "05/04/2018 12:12:00"
+        date = "05/04/2018 12:12:00"
 
-            route.populate(
-                date=datetime.strptime(date, "%m/%d/%Y %H:%M:%S"),
-                company_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIUCxIHQ29tcGFueRiAgICAgPCLCgw"),
-                notes="",
-                driver_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIRCxIEVXNlchiAgICAgICACgw"),
-                vehicle_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIUCxIHVmVoaWNsZRiAgICAgMjjCww"),
-            )
+        route.populate(
+            date=datetime.strptime(date, "%m/%d/%Y %H:%M:%S"),
+            company_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIUCxIHQ29tcGFueRiAgICAgPCLCgw"),
+            notes="",
+            driver_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIRCxIEVXNlchiAgICAgICACgw"),
+            vehicle_key=ndb.Key(urlsafe="aghkZXZ-Tm9uZXIUCxIHVmVoaWNsZRiAgICAgMjjCww"),
+        )
 
-            route = RouteService.RouteInstance.save(route)
+        route = RouteService.RouteInstance.save(route)
 
-            facilities, total = FacilityService.FacilityInstance.get_all(None, None, {"company_key": "aghkZXZ-Tm9uZXIUCxIHQ29tcGFueRiAgICAgPCLCgw", "facility_key": "", "active": "all"})
+        facilities, total = FacilityService.FacilityInstance.get_all(None, None, {
+            "company_key": "aghkZXZ-Tm9uZXIUCxIHQ29tcGFueRiAgICAgPCLCgw", "facility_key": "", "active": "all"})
 
-            print(facilities)
+        print(facilities)
 
-            for x in range(len(facilities)):
-                route_item = RouteItem()
-                f = facilities[x]
+        for x in range(len(facilities)):
+            route_item = RouteItem()
+            f = facilities[x]
 
-                route_item.populate(route_key=route.key,
-                                    entity_type="facility",
-                                    entity_key=f.key,
-                                    sort_index=x,
-                                    active=True,
-                                    latitude=f.latitude,
-                                    longitude=f.longitude)
-                RouteItemService.RouteItemInstance.save(route_item)
+            route_item.populate(route_key=route.key,
+                                entity_type="facility",
+                                entity_key=f.key,
+                                sort_index=x,
+                                active=True,
+                                latitude=f.latitude,
+                                longitude=f.longitude)
+            RouteItemService.RouteItemInstance.save(route_item)
 
-            return self.json_data(get_success_reponse(response=route.to_dict()))
+        return self.json_data(get_success_reponse(response=route.to_dict()))

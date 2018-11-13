@@ -19,7 +19,7 @@ export class RouteItem extends ServerEntity{
   entity_key : string ="" ;
   sort_index : number;
   dist_2_next : number;
-  time_2_next: number;
+  time_2_next: number;  // hours
   route_number: number;
   active : boolean;
   entity: any;
@@ -37,7 +37,14 @@ export class RouteItem extends ServerEntity{
 
   parseServerResponse(response){
     super.parseServerResponse(response);
-    var entity:ServerEntity;
+
+    this.sort_index = response.sort_index;
+    this.dist_2_next = response.dist_2_next;
+    this.time_2_next = response.time_2_next;
+    this.route_number = response.route_number;
+    this.active = response.active;
+
+    let entity:ServerEntity;
     switch (this.entity_type){
       case RouteItem.ENTITY_TYPES.FACILITY:
         entity=new Facility();
@@ -49,7 +56,7 @@ export class RouteItem extends ServerEntity{
         entity=new Order();
         break;
     }
-    entity.parseServerResponse(response.entity);
+    entity.parseServerResponse(response.item);
     this.entity=entity;
   }
 

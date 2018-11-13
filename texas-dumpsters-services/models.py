@@ -1789,14 +1789,12 @@ class Route(BaseModel):
     @classmethod
     def get_all(cls, page, page_size, filters):
 
-
         total = 0
         query = cls.query()
         entities = None
 
         if str(filters["route_key"]):
             query = query.filter(cls.key == ndb.Key(urlsafe = filters["route_key"]))
-
 
         if str(filters["status"]):
             query = query.filter(cls.status == RouteStatus(int(filters["status"])))
@@ -1837,15 +1835,15 @@ class Route(BaseModel):
                 fictional_date = datetime.strptime("02/01/1970", "%m/%d/%Y")
                 query = query.filter(cls.date == fictional_date)
 
-        if(str(filters["start_date"]) and str(filters["end_date"])):
+        if str(filters["start_date"]) and str(filters["end_date"]):
 
             sd = datetime.strptime(str(filters["start_date"]), "%m/%d/%Y")
             ed = datetime.strptime(str(filters["end_date"]), "%m/%d/%Y")
             ed = ed + timedelta(hours=23, minutes=59, seconds=59)
-            query = query.filter(ndb.AND(cls.date >= sd, ndb.AND(cls.date <= ed)))
+            query = query.filter(ndb.AND(cls.date >= sd, cls.date <= ed))
 
         '''Active'''
-        if (filters["active"] and str(filters["active"]) == "all"):
+        if filters["active"] and str(filters["active"]) == "all":
             pass
         elif filters["active"] and (json.loads(filters["active"]) == True or json.loads(filters["active"]) == False):
             query = query.filter(cls.active == json.loads(filters["active"]))
@@ -1853,7 +1851,7 @@ class Route(BaseModel):
             query = query.filter(cls.active == True)
 
         '''Pagination'''
-        if (not page or not page_size):
+        if not page or not page_size:
             entities = query.order(-cls.date).fetch()
             total = len(entities)
         else:
@@ -1945,7 +1943,6 @@ class RouteItem(BaseModel):
             audit.save()
 
         return self.get(key.urlsafe())
-
 
     def delete(cls):
 

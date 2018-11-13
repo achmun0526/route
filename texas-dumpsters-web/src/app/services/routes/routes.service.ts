@@ -328,22 +328,36 @@ addRouteItems(route_items):Promise<any>{
       .catch(err=> console.log("error in routes.services.getRouteItemsByRouteAndCompany %s",err));
   }
 
-  getRouteItemsByRoute(route_key){
+  getRouteItemsByRoute(route_key): Promise<RouteItem[]> {
+
+    if (route_key === '') {
+      return Promise.all([]);
+    }
+
     super.showSpinner();
+
     return this.http.get(ADD_ROUTES_ITEM_URL + '?route_key=' + route_key).toPromise()
       .then(response => {
         super.hideSpinner();
-        var res = response.json();
-        console.log("before res");
-        console.log(res);
-        console.log("before records");
-        console.log(res.response.records);
+        let res = response.json();
+
+        let items: RouteItem[] = [];
+
         if (res.status===SUCCESS){
-          return res.response.records;
-        } else {
-          return [];
+          items = res.response.records.map(rec => {
+            let item = new RouteItem();
+            item.parseServerResponse(rec);
+            return item;
+          });
         }
-      }).catch(err=> console.log("error in routes.services.getRouteItemsByRoute %s",err));
+
+        return items;
+
+      }).catch(err => {
+
+        console.log("error in routes.services.getRouteItemsByRoute %s",err);
+        return [];
+      });
   }
 
   getRouteByDriver(driverKey, date = ''): Promise<ServiceRoute> {
