@@ -537,6 +537,7 @@ class Driver(BaseModel):
 
 
     company_key = ndb.KeyProperty(kind=Company, required=True)
+    user_key = ndb.KeyProperty(kind=User)
     driver_email = ndb.StringProperty(required=True)
     driver_name = ndb.StringProperty()
     driver_phone= ndb.StringProperty()
