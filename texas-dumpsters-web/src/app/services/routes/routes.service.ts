@@ -14,11 +14,15 @@ import { BaseService} from '../../common/base-service';
 import { isNullOrUndefined} from "util";
 import { AuthService} from "../auth/auth.service";
 import {LZStringService} from 'ng-lz-string';
+import {Utils} from "../../common/utils";
+import {DriversService} from "../drivers/drivers.service";
+import {Driver} from "../../model/driver";
 
 @Injectable()
 export class RoutesService extends BaseService{
 
-	constructor(private http: Http,private authService:AuthService, private lz: LZStringService) {
+	constructor(private http: Http,private authService:AuthService, private driverService: DriversService,
+              private lz: LZStringService) {
 		super();
 	}
 
@@ -303,8 +307,8 @@ addRouteItems(route_items):Promise<any>{
       .catch(err=> console.log("error in routes.services.getRouteItems %s",err));
   }
 
-  getRouteItemsByRoute(route_key){
-    console.log("inside routes.service.getRouteItemsByRoute");
+  getRouteItemsByRouteAndCompany(route_key){
+    console.log("inside routes.service.getRouteItemsByRouteAndCompany");
     super.showSpinner();
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id +
     (route_key != null ? '&route_key=' + route_key:'');
@@ -318,8 +322,69 @@ addRouteItems(route_items):Promise<any>{
         console.log(res.response.records);
         if (res.status===SUCCESS){
           return res.response.records;
+        } else {
+          return [];
         }})
-      .catch(err=> console.log("error in routes.services.getRouteItemsByRoute %s",err));
+      .catch(err=> console.log("error in routes.services.getRouteItemsByRouteAndCompany %s",err));
+  }
+
+  getRouteItemsByRoute(route_key){
+    super.showSpinner();
+    return this.http.get(ADD_ROUTES_ITEM_URL + '?route_key=' + route_key).toPromise()
+      .then(response => {
+        super.hideSpinner();
+        var res = response.json();
+        console.log("before res");
+        console.log(res);
+        console.log("before records");
+        console.log(res.response.records);
+        if (res.status===SUCCESS){
+          return res.response.records;
+        } else {
+          return [];
+        }
+      }).catch(err=> console.log("error in routes.services.getRouteItemsByRoute %s",err));
+  }
+
+  getRouteByDriver(driverKey, date = ''): Promise<ServiceRoute> {
+      let params = '?driver_key=' + driverKey;
+
+      if (date == '') {
+          date = Utils.date2FormattedString(new Date(), 'MM/DD/YYYY');
+      }
+
+      params += '&start_date=' + date;
+      params += '&end_date=' + date;
+
+      return this.http.get(ROUTES_URL + params).toPromise().then(response => {
+        let rec = response.json().response.records;
+        if (rec != null && rec.length > 0) {
+          return rec[0] as ServiceRoute;
+        } else {
+          return new ServiceRoute();
+        }
+      }).catch(err => {
+        console.error('Error in getting route by Driver... %s', err);
+        return new ServiceRoute();
+      });
+  }
+
+  getRouteByUser(date = ''): Promise<ServiceRoute> {
+    return this.driverService.getDriverByUser().then(driver => {
+      return this.getRouteByDriver(driver.id, date);
+    });
+  }
+
+  getRouteItemsByDriver(driverKey, date = '') {
+    return this.getRouteByDriver(driverKey, date).then(route => {
+      return this.getRouteItemsByRoute(route.id);
+    })
+  }
+
+  getRouteItemsByUser(date = '') {
+    return this.getRouteByUser(date).then(route => {
+      return this.getRouteItemsByRoute(route.id);
+    })
   }
 
   get_routes_from_cache(){

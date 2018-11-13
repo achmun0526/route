@@ -39,7 +39,7 @@ export class IncidentReportComponent extends BaseComponent implements OnInit {
         // this.endDate = new Date();
         // this.endDate = (this.endDate.getMonth()+1)+'-'+(this.endDate.getDate())+'-'+this.endDate.getFullYear();
         // this.date = {};
-        // this.date.date = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
+        // this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
 
     }
 
@@ -55,8 +55,8 @@ export class IncidentReportComponent extends BaseComponent implements OnInit {
         // this.incidentsService.getIncidentsStatusList().then(res=>{
         //   this.incidentsStatusList=res;
         // });
-        this.startDate = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
-        this.endDate = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
+        this.startDate = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
+        this.endDate = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
         this.filter(false);
     }
 

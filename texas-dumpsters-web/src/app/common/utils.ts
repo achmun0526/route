@@ -94,7 +94,7 @@ export class Utils {
    */
   public static toAMPM(datetime){
     if(datetime instanceof Date){
-      datetime = this.date2FormmatedString(datetime, "YYYY-MM-DD HH:mm:ss");
+      datetime = this.date2FormattedString(datetime, "YYYY-MM-DD HH:mm:ss");
     }
     datetime = "" + datetime;
     var array = datetime.split(" ");
@@ -143,7 +143,7 @@ export class Utils {
     }
   }
 
-  static date2FormmatedString(datetime:Date, format:String){
+  static date2FormattedString(datetime:Date, format:String){
     var y = datetime.getFullYear();
     var M = datetime.getMonth()+1; //this fix becouse month starts in 0
     var d = datetime.getDate();
@@ -167,6 +167,13 @@ export class Utils {
 
   static formattedString2Date(formattedDate:string, format:string){
     if(format == "MM-DD-YYYY"){
+      var splitted = formattedDate.split('-');
+      var month = parseInt(splitted[0]) - 1; //this needs to be substracted 1 to match the correct month.
+      var day = parseInt(splitted[1]);
+      var year = parseInt(splitted[2]);
+
+      return new Date(year, month, day);
+    } else if (format == "MM-DD-YYYY") {
       var splitted = formattedDate.split('-');
       var month = parseInt(splitted[0]) - 1; //this needs to be substracted 1 to match the correct month.
       var day = parseInt(splitted[1]);

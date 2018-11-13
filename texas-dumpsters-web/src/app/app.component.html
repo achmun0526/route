@@ -36,7 +36,7 @@
         <li><a (click)="authService.signOut()">Sign Out</a></li>
       </ul>
 			<div>
-				<h5 id="sf-main-title" class="page-title">title</h5>
+				<h5 id="sf-main-title" class="page-title">Your Route</h5>
       </div>
 
       <app-widget-notification style="float:right"></app-widget-notification>
@@ -45,7 +45,7 @@
         <div class="user_info">
           <ul class="data_user">
             <li><a (click)="openEditUserModal()">{{authService.getCurrentUser().email}}</a></li>
-            <li><a class="roleText">({{authService.getCurrentUser().roles?authService.getCurrentUser().roles[0]:'User'}})</a></li>
+            <li><a class="roleText">{{authService.getCurrentUser().getUserRole()}}</a></li>
           </ul>
         </div>
       </div>

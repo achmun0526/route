@@ -38,6 +38,10 @@ export class AppComponent {
 						this.getCompanies();
 					}else{
 						this.selectedCompany = this.loggedUser.company;
+						if (this.selectedCompany == null) {
+							// todo: @adozier, create a better interface for this error to be fixed...
+							alert('Company for user not defined!');
+						}
 						this.authService.saveCurrentSelectedCompany(this.selectedCompany, true);
 					}
 				}

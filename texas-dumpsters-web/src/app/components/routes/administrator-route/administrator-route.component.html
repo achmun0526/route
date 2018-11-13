@@ -1,95 +1,180 @@
 <div class="row">
-	<div class="col s12 m6 l1">
-			<ul>
-				<li class="btn-list">
-					<a class="btn-floating red" (click)="addRouteModal.emit({action:'modal',params:['open']})">
-						<app-icon-tooltip
-							[iconName]="'add'"
-							[tooltipText]="'Add Route'">
-						</app-icon-tooltip>
-					</a>
-				</li>
-			</ul>
-	</div>
+    <div class="col s12 m6 l1">
+        <ul>
+            <li class="btn-list">
+                <a class="btn-floating red" (click)="addRouteModal.emit({action:'modal',params:['open']})">
+                    <app-icon-tooltip [iconName]="'add'" [tooltipText]="'Add Route'">
+                    </app-icon-tooltip>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
+
 <div class="row">
-	<div class="col s12">
-		<p>Total Routes {{totalRoutes}}</p>
-	</div>
-	<div class="col s12">
-		<ul class="collapsible" data-collapsible="accordion" *ngIf="routesList.length > 0">
-			<li class="tab-header lead">
-				<div class="collapsible-header">
-					<div class="row data-object">
-            			<div class="col s12 m4 l2">Vehicle:</div>
-						<div class="col s12 m4 l4">Driver:</div>
-						<div class="col s12 m4 l3">Date:</div>
-						<div class="col s12 m4 l3">Notes:</div>
-					</div>
-				</div>
-			</li>
-			<li *ngFor="let item of routesList" class="table">
-				<div class="collapsible-header">
-					<div class="row data-object">
-						<div class="col  s12 m4 l2">
-							<div class="tab_label">Vehicle :</div>
-							{{item.vehicle.vehicle_name}}-{{item.vehicle.tag_number}}
-						</div>
-						<div class="col  s12 m4 l4">
-							<div class="tab_label">Driver :</div>
-							{{item.driver.first_name + " " + item.driver.last_name + " - " + item.driver.email}}
-						</div>
-						<div class="col  s12 m4 l3">
-							<div class="tab_label">Date :</div>
-							<!--{{item.date | date: 'MM/dd/yyyy hh:mm:ss a'}}-->
-							{{Utils.toAMPM(item.date)}}
-						</div>
-						<div class="col  s12 m4 l3">
-							<div class="tab_label">Notes:</div>
-              				{{Utils.trimStringOnLength(item.notes,15,'...')}}
-						</div>
-					</div>
-					<p class="secondary-content">
-						<app-icon-tooltip
-															[iconName]="'mode_edit'"
-															[tooltipText]="'Edit'"
-															(click)="openEditRouteModal(item)">
-						</app-icon-tooltip>
+    <div class="col s12">
+        <p>Total Routes {{totalRoutes}}</p>
+    </div>
+    <div class="input-field-col col s12 m4 l2" style="display: flex">
+        <input materialize="pickadate" [(ngModel)]="date"
+               [materializeParams]="[{format:'mm-dd-yyyy', closeOnSelect: true }]"
+               (change)="loadRoutes()"
+               type="text" style="margin-right: 0.5rem">
+    </div>
 
-						<app-icon-tooltip
-															[iconName]="'visibility'"
-															[tooltipText]="'Details'"
-															(click)="goToRouteDetails(item)">
-						</app-icon-tooltip>
+    <div id="routes" *ngIf="totalRouteItems > 0">
+        <!--<ul *ngFor="let route of routesList; let j= index">-->
+        <!--<div class="row data-object h4">-->
+        <!--<div class="col s12 m12 l4">Route {{j+1}}</div>-->
+        <!--<div class="col s12 m12 l4">Hours: {{route.total_time}}</div>-->
+        <!--<div class="col s12 m12 l4">Miles: {{route.total_distance}}</div>-->
+        <!--</div>-->
+        <div class="col s12 m2 l1">
+            <a *ngIf="route.display==false" class="waves-effect waves-light btn modal-trigger blue lighten-3"
+               (click)="view_route(route,j)">View</a>
+            <a *ngIf="route.display==true" class="waves-effect waves-light btn modal-trigger blue lighten-3"
+               (click)="close_view_route(route)">Close</a>
+        </div>
+        <div class="row data-object">
+            <div *ngIf="route.display">
+                <div class="col s12 m10 l10 map" style="padding: 0;">
+                    <app-map-handler [service_route]="route"
+                                     (marker_clicked)="show_event_data($event)"></app-map-handler>
+                </div>
+                <div class="col s12 m2 l2 scrollable">
+                    <li *ngFor="let item of routeItemsList; let i = index">
 
-						<app-icon-tooltip
-															[iconName]="'delete'"
-															[tooltipText]="'Delete'"
-															(click)="deleteRoute(item)">
-						</app-icon-tooltip>
-					</p>
-
-					</div>
-				</li>
-		</ul>
-	</div>
-
-	<div class="alert-text" *ngIf="routesList.length == 0">
-		<h2 class="center"><i class="material-icons">assignment_late</i></h2>
-		<h4 class="center">There are no Routes to list</h4>
-	</div>
+                        <div *ngIf="item.entity_type=='facility'">
+                            <div *ngIf="item.display==false" class="facility_info"
+                                 (click)="server_entity_view(item,i,j)">Facility
+                            </div>
+                            <div *ngIf="item.display==true" class="facility_info_close"
+                                 (click)="close_server_entity_view(item,i,j)">Facility
+                            </div>
+                            <div class="route_item_seperator"></div>
+                        </div>
+                        <div *ngIf="item.entity_type=='serviceorder'">
+                            <div *ngIf="item.display==false" class="serviceorder_info"
+                                 (click)="server_entity_view(item,i,j)">{{item.size.name + " " + item.order_type.name}}
+                            </div>
+                            <div *ngIf="item.display==true" class="serviceorder_info_close"
+                                 (click)="close_server_entity_view(item,i,j)">{{item.size.name + " " +
+                                item.order_type.name}}
+                            </div>
+                            <div class="route_item_seperator"></div>
+                        </div>
+                        <div *ngIf="item.entity_type=='yard'">
+                            <div *ngIf="item.display==false" class="yard_info" (click)="server_entity_view(item,i,j)">
+                                Landfill
+                            </div>
+                            <div *ngIf="item.display==true" class="yard_info_close"
+                                 (click)="close_server_entity_view(item,i,j)">Landfill
+                            </div>
+                            <div class="route_item_seperator"></div>
+                        </div>
+                    </li>
+                </div>
+            </div>
+        </div>
+        <!--</ul>-->
+    </div>
 </div>
+
+<!--<div class="row">-->
+    <!--<div class="col s12">-->
+        <!--<p>Total Routes {{totalRoutes}}</p>-->
+    <!--</div>-->
+    <!--<div class="input-field-col col s12 m4 l2" style="display: flex">-->
+        <!--<input materialize="pickadate" [(ngModel)]="date"-->
+               <!--[materializeParams]="[{format:'mm-dd-yyyy', closeOnSelect: true }]"-->
+               <!--(change)="loadRoutes()"-->
+               <!--type="text" style="margin-right: 0.5rem">-->
+    <!--</div>-->
+
+    <!--&lt;!&ndash;-->
+    <!--Items displayed for each Route:-->
+     <!-- - address-->
+     <!-- - city-->
+     <!-- - dumpster size-->
+     <!-- - lat/long-->
+     <!-- - time/schedule,-->
+     <!-- - type (service order vs landfill)-->
+     <!-- - status ("Staging...", "On my way", "Here!")-->
+    <!--Filters:-->
+     <!-- - by day-->
+     <!-- - toggle: show only what still needs to be done or the whole day-->
+    <!--&ndash;&gt;-->
+    <!--<div class="col s12">-->
+        <!--<ul class="collapsible" data-collapsible="accordion" *ngIf="routeItemsList.length > 0">-->
+            <!--<li class="tab-header lead">-->
+                <!--<div class="collapsible-header">-->
+                    <!--<div class="row data-object">-->
+                        <!--<div class="col s12 m4 l2">Vehicle:</div>-->
+                        <!--<div class="col s12 m4 l4">Driver:</div>-->
+                        <!--<div class="col s12 m4 l3">Date:</div>-->
+                        <!--<div class="col s12 m4 l3">Notes:</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</li>-->
+            <!--<li *ngFor="let item of routeItemsList" class="table">-->
+                <!--<div class="collapsible-header">-->
+                    <!--<div class="row data-object">-->
+                        <!--<div class="col  s12 m4 l2">-->
+                            <!--<div class="tab_label">Vehicle :</div>-->
+                            <!--{{item.vehicle.vehicle_name}}-{{item.vehicle.tag_number}}-->
+                        <!--</div>-->
+                        <!--<div class="col  s12 m4 l4">-->
+                            <!--<div class="tab_label">Driver :</div>-->
+                            <!--{{item.driver.first_name + " " + item.driver.last_name + " - " + item.driver.email}}-->
+                        <!--</div>-->
+                        <!--<div class="col  s12 m4 l3">-->
+                            <!--<div class="tab_label">Date :</div>-->
+                            <!--&lt;!&ndash;{{item.date | date: 'MM/dd/yyyy hh:mm:ss a'}}&ndash;&gt;-->
+                            <!--{{Utils.toAMPM(item.date)}}-->
+                        <!--</div>-->
+                        <!--<div class="col  s12 m4 l3">-->
+                            <!--<div class="tab_label">Notes:</div>-->
+                            <!--{{Utils.trimStringOnLength(item.notes,15,'...')}}-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<p class="secondary-content">-->
+                        <!--<app-icon-tooltip [iconName]="'mode_edit'" [tooltipText]="'Edit'"-->
+                                          <!--(click)="openEditRouteModal(item)">-->
+                        <!--</app-icon-tooltip>-->
+
+                        <!--<app-icon-tooltip [iconName]="'visibility'" [tooltipText]="'Details'"-->
+                                          <!--(click)="goToRouteDetails(item)">-->
+                        <!--</app-icon-tooltip>-->
+
+                        <!--<app-icon-tooltip [iconName]="'delete'" [tooltipText]="'Delete'" (click)="deleteRoute(item)">-->
+                        <!--</app-icon-tooltip>-->
+                    <!--</p>-->
+
+                <!--</div>-->
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</div>-->
+
+    <!--<div class="alert-text" *ngIf="routesList.length == 0">-->
+        <!--<h2 class="center"><i class="material-icons">assignment_late</i></h2>-->
+        <!--<h4 class="center">There are no Routes to list</h4>-->
+    <!--</div>-->
+<!--</div>-->
 
 <!--add route modal -->
-<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addRouteModal">
-  <app-save-route (afterSaveCompleted)="onRouteCreated()" (onCancelAction)="closeAddRuteModal()"></app-save-route>
+<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]"
+     [materializeActions]="addRouteModal">
+    <app-save-route (afterSaveCompleted)="onRouteCreated()" (onCancelAction)="closeAddRuteModal()"></app-save-route>
 </div>
 
 <!--edit route modal -->
-<div *ngIf="selectedRoute!=null" id="modal2" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editRouteModal">
-  <app-save-route [routeToEdit]="selectedRoute" (afterSaveCompleted)="onRouteUpdated()" (onCancelAction)="onRouteEditCancelled()"></app-save-route>
+<div *ngIf="selectedRoute!=null" id="modal2" class="modal modal-fixed-footer" materialize="modal"
+     [materializeParams]="[{dismissible: true}]" [materializeActions]="editRouteModal">
+    <app-save-route [routeToEdit]="selectedRoute" (afterSaveCompleted)="onRouteUpdated()"
+                    (onCancelAction)="onRouteEditCancelled()"></app-save-route>
 </div>
 
 <!-- delete customer toasts -->
 <a materialize [materializeParams]="['Route deleted successfully',4000]" [materializeActions]="deleteRoutesToast"></a>
-<a materialize [materializeParams]="['There was an error Delete a Route',4000]" [materializeActions]="deleteRoutesToastError"></a>
+<a materialize [materializeParams]="['There was an error Delete a Route',4000]"
+   [materializeActions]="deleteRoutesToastError"></a>

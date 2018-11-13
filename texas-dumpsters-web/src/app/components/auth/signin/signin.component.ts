@@ -31,12 +31,12 @@ export class SigninComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
-		super.ngOnInit();
-    //IF the user is already validated, we redirect it to the dashboard
-    this.authService.getUserProfile().then(user=>{
-      if (user!=null){
-        window.location.href='/';
-        this.router.navigateByUrl('/dashboard');
+    super.ngOnInit();
+
+    // IF the user is already validated, we redirect it to the dashboard
+    this.authService.getUserProfile().then(user => {
+      if (user != null) {
+        window.location.href = (user.roles.indexOf(this.ROLE_NAMES.DRIVER)) > -1 ? '/management/routes' : '/dashboard';
       }
     });
   }

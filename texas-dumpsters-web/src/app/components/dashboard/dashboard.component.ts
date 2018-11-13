@@ -107,8 +107,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     // this.selectedDriver = null;
     // this.selectedVehicle = null;
     // Set start and end dates to same day
-    this.startDate = Utils.date2FormmatedString(new Date(), 'MM-DD-YYYY');
-    this.endDate = Utils.date2FormmatedString(new Date(), 'MM-DD-YYYY');
+    this.startDate = Utils.date2FormattedString(new Date(), 'MM-DD-YYYY');
+    this.endDate = Utils.date2FormattedString(new Date(), 'MM-DD-YYYY');
     // At the begining filters are set to all possible values after that it filters
     this.getAllCompanies();
     this.getAllDrivers();
@@ -235,7 +235,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
 
     this.routesService.getRoutesByCompanyOrDriverOrVehicle(null, f_company, f_driver, f_vehicle, f_startDate, f_endDate).then(res => {
       console.log("before loadroutes res");
-        this.routesList = res;
+      this.routesList = res;
       console.log(res);
         this.totalRoutes = this.routesList.length;
         for(let i=0;i<this.totalRoutes;i++){
@@ -374,7 +374,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
   //close_server_entity_view(item,route_number,server_route_number){
   close_server_entity_view(item, destination_number, route_number){
-  item.display=false;
+    item.display=false;
     let route_items = this.rawRouteList[route_number].route_items;
     this.mapHandler.remove_waypt(destination_number,route_items);
   }
@@ -389,7 +389,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   loadRouteItemsByRoute(route_key,route_index){
     console.log("inside dashboard.component.loadRouteitemsbyroute()")
     console.log(route_key);
-    this.routesService.getRouteItemsByRoute(route_key).then(res => {
+    this.routesService.getRouteItemsByRouteAndCompany(route_key).then(res => {
         let route_item_info = []
         for(let i=0;i<res.length;i++){
           var info={};

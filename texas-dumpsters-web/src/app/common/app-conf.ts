@@ -120,7 +120,8 @@ export const VEHICLES_URL= SECURE_END_POINT+'/vehicle';
 export const GET_VEHICLES_BY_ID_URL= SECURE_END_POINT+'/vehicle?vehicle_key=';
 
 /**--------------------DRIVERS SERVICES URLs------------------------------------------------------*/
-export const DRIVERS_URL= SECURE_END_POINT+'/driver';
+export const DRIVERS_URL = SECURE_END_POINT + '/driver';
+export const DRIVERS_LIST_URL = SECURE_END_POINT + '/driver_list';
 // export const GET_DRIVERS_BY_ID_URL= SECURE_END_POINT+'/driver?driver_key=';
 
 /**--------------------ROuTE ITEM SERVICES URLs-----------------------------------------------------*/

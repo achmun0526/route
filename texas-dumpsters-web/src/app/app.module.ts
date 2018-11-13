@@ -14,8 +14,10 @@ import { LZStringModule, LZStringService } from 'ng-lz-string';
 import {SigninComponent} from './components/auth/signin/signin.component';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-//Services
+
+// Services
 import {AuthGuard} from './services/auth/auth.guard.service';
+import {DriverService} from './services/driver/driver.service';
 import {CompaniesService} from './services/companies/companies.service';
 import {CustomerService} from './services/customer/customer.service';
 import {SitesService} from './services/sites/sites.service';
@@ -208,6 +210,7 @@ const routes: Routes = [
   ],
   providers: [
     AuthGuard,
+    DriverService,
     CompaniesService,
     AuthService,
     CustomerService,

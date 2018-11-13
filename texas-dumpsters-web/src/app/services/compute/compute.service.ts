@@ -61,7 +61,7 @@ export class ComputeService extends BaseService {
             }
         });
 
-        this.date = Utils.date2FormmatedString(Utils.addDays(new Date, 1), 'MM/DD/YYYY');
+        this.date = Utils.date2FormattedString(Utils.addDays(new Date, 1), 'MM/DD/YYYY');
     }
 
 

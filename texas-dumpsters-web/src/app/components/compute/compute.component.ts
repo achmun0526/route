@@ -138,7 +138,7 @@ export class ComputeComponent extends BaseComponent implements OnInit {
 
       this.date = {};
       // set default day tomorrow
-      this.date.date = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
+      this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
       this.ordersService.getAssetsSizeList().then(res => this.assetsSizeList = res);
 
       // this.ordersService.getOrders(false,null,null).then(res => {
@@ -379,7 +379,7 @@ update_page(json_data) {
           service_route.populate_route_items(route_item);
           service_route.company_key= this.authService.getCurrentSelectedCompany().id;
           //// GET RID OF THE IF STATEMENT LATER AND KEEP THE ELSE ///////////////////////////////
-              this.date.date = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');   //GET RID OF THIS DURING PRODUCTION
+              this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');   //GET RID OF THIS DURING PRODUCTION
               console.log(this.date.date);
               service_route.date = this.date.date;
           //////////////////////////////////////////////
@@ -523,49 +523,49 @@ get_address_from_symbol(symbol) {
 
 
 filter() {
-    if (this.date != null){
-      this.date_changed_bool = true;
-      // this.ordersService.getAssetsSizeList().then(res => this.assetsSizeList = res);
-      this.ordersService.getOrdersByDates(null, this.date.date, this.date.date, null,true).then(res => {
-      console.log(res);
-        this.ordersList = JSON.parse(res);
-        this.num_of_services = this.ordersList.length;
-      });
-    }
+  if (this.date != null){
+    this.date_changed_bool = true;
+    // this.ordersService.getAssetsSizeList().then(res => this.assetsSizeList = res);
+    this.ordersService.getOrdersByDates(null, this.date.date, this.date.date, null,true).then(res => {
+    console.log(res);
+      this.ordersList = JSON.parse(res);
+      this.num_of_services = this.ordersList.length;
+    });
+  }
 }
 
 view_route(number,route_list_number) {
-    number.display = true;
-    this.num_of_displayed_routes=this.num_of_displayed_routes+1;
-    this.current_route_list_display_number=route_list_number;
+  number.display = true;
+  this.num_of_displayed_routes=this.num_of_displayed_routes+1;
+  this.current_route_list_display_number=route_list_number;
 }
 
 close_view_route(number) {
-    number.display = false;
-    this.num_of_displayed_routes=this.num_of_displayed_routes-1;
+  number.display = false;
+  this.num_of_displayed_routes=this.num_of_displayed_routes-1;
 }
 
 server_entity_view(item,destination_number,route_number){
-    item.display=true;
-    let route_items = this.service_routes[route_number]['route_items'];
-    console.log(route_items)
-    this.mapHandler.add_waypt(destination_number,route_items);
+  item.display=true;
+  let route_items = this.service_routes[route_number]['route_items'];
+  console.log(route_items)
+  this.mapHandler.add_waypt(destination_number,route_items);
 }
 
 close_server_entity_view(item,destination_number,route_number){
-    debugger
-    item.display=false;
-    let route_items = this.service_routes[route_number]['route_items'];
-    this.mapHandler.remove_waypt(destination_number,route_items);
+  debugger
+  item.display=false;
+  let route_items = this.service_routes[route_number]['route_items'];
+  this.mapHandler.remove_waypt(destination_number,route_items);
 }
 
 show_event_data(event_data){
-    this.service_detail_number = event_data;
-    this.service_detail_info = this.route_items_holder[this.current_route_list_display_number][this.service_detail_number];
-    this.markers_initialized = true;
-    setTimeout(() => {
-      this.serviceDetailModal.emit({action:'modal',params:['open']});
-      }, 100);
+  this.service_detail_number = event_data;
+  this.service_detail_info = this.route_items_holder[this.current_route_list_display_number][this.service_detail_number];
+  this.markers_initialized = true;
+  setTimeout(() => {
+    this.serviceDetailModal.emit({action:'modal',params:['open']});
+    }, 100);
 }
 
 saveRoutes(){
@@ -575,18 +575,18 @@ saveRoutes(){
 }
 
 openErrorModal(){
-    setTimeout(() => {
-      this.errorModal.emit({action:'modal',params:['open']})
-    }, 100);
+  setTimeout(() => {
+    this.errorModal.emit({action:'modal',params:['open']})
+  }, 100);
 }
 
 update_orders_shown(){
-    console.log("updating orders shown");
+  console.log("updating orders shown");
 
 }
 
 onCloseClicked(){
-    this.errorModal.emit({action:'modal',params:['close']});
+  this.errorModal.emit({action:'modal',params:['close']});
 }
 
 }

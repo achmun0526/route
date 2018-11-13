@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { PaginationResponse } from '../../model/pagination_response';
 import { Http } from '@angular/http';
 import { Driver } from '../../model/driver';
-import { SUCCESS, DRIVERS_URL} from '../../common/app-conf';
+import { SUCCESS, DRIVERS_LIST_URL, DRIVERS_URL } from '../../common/app-conf';
 import { BaseService} from '../../common/base-service';
 import { isNullOrUndefined} from "util";
 import { AuthService} from "../auth/auth.service";
@@ -31,7 +31,7 @@ export class DriversService extends BaseService{
       sessionStorage.clear();
     }
     if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
-      return this.http.get(DRIVERS_URL + params).toPromise()
+      return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
           super.hideSpinner();
           var res = response.json();
@@ -54,7 +54,7 @@ export class DriversService extends BaseService{
     if (!isNullOrUndefined(pagingInfo)){
       params=super.getPagingInfoAsURLParams(params,pagingInfo).toString();
     }
-    return this.http.get(DRIVERS_URL + params).toPromise()
+    return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         var res=response.json();
@@ -66,7 +66,7 @@ export class DriversService extends BaseService{
       .catch(this.handleError);
   }
 
-	/**
+  /**
    * This method calls the server in order to get vehicle by Id
    *
    *
@@ -74,7 +74,7 @@ export class DriversService extends BaseService{
   getDriversId(driversId):Promise<Driver> {
     super.showSpinner();
     var params = driversId;
-    return this.http.get(DRIVERS_URL + params).toPromise()
+    return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         var res=response.json();
@@ -96,7 +96,7 @@ export class DriversService extends BaseService{
   getDriversByDriver(driverId):Promise<PaginationResponse> {
     super.showSpinner();
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id+"&driver_key="+driverId;
-    return this.http.get(DRIVERS_URL + params).toPromise()
+    return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         var res=response.json();
@@ -113,7 +113,7 @@ export class DriversService extends BaseService{
   getDriversByDriver_superAdmin(driverId):Promise<PaginationResponse> {
     super.showSpinner();
     var params="?driver_key="+driverId;
-    return this.http.get(DRIVERS_URL + params).toPromise()
+    return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         var res=response.json();
@@ -142,12 +142,12 @@ export class DriversService extends BaseService{
       .catch(this.handleError);
   }
 
-	/**
-	 * This method calls the server in order to save vehicle
-	 *
-	 *
-	 * */
-	saveDriver(driverData):Promise<any> {
+  /**
+   * This method calls the server in order to save vehicle
+   *
+   *
+  **/
+  saveDriver(driverData):Promise<any> {
     console.log("posting the driver data to python code")
     console.log(driverData);
 		super.showSpinner();
@@ -158,6 +158,34 @@ export class DriversService extends BaseService{
       console.log(res);
       return res;
     }).catch(err => console.log('errorrrrrr: %s', err));
+  }
+
+  /**
+   * Gets a Driver instance from the current user's key
+   *
+   * @returns {Promise<Driver>}
+   */
+  getDriverByUser(): Promise<Driver> {
+      super.showSpinner();
+      let params = '?user_key=' + this.authService.getCurrentUser().user_key;
+      return this.http.get(DRIVERS_LIST_URL + params).toPromise().then(response => {
+        super.hideSpinner();
+        let rec = response.json().response.records;
+
+        if (rec == null || rec.length == 0) {
+            console.log('Driver has no route for specified date!');
+        } else if (rec.length == 1) {
+            return rec[0];
+        } else {
+            console.error('Drivers should not have more than 1 route');
+            return rec[0];
+        }
+
+        return new Driver();
+      }).catch(err => {
+        console.error('Driver Error: %s', err);
+        return new Driver();
+      });
   }
 
 }

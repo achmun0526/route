@@ -76,7 +76,7 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
     super.ngOnInit();
 
     this.date = {};
-    this.date.date = Utils.date2FormmatedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
+    this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');
 
 		this.ordersService.getPurposeOfServiceList().then(res=>this.purposeServiceList=res);
     this.ordersService.getOrderStateList().then(res=>this.orderStateList=res);

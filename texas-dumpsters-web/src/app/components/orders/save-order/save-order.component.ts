@@ -126,7 +126,7 @@ export class SaveOrderComponent implements OnInit {
 		this.title = "Add a Service Order";
 
 		// set default day tomorrow
-		this.date.date = Utils.date2FormmatedString(Utils.addDays(new Date, 1), "MM/DD/YYYY");
+		this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 1), "MM/DD/YYYY");
 
 		this.date.hour = 1;
 		this.date.minutes = 0;
