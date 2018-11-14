@@ -792,20 +792,18 @@ class GoogleUserVerifyHandler(BaseHandler):
 
         user = User.get_by_email(google_email)
 
-        # if not user:
-        #     if users.is_current_user_admin():
-        #         from os import urandom
-        #         password = urandom(12)
-        #         unique_properties = ['email']
-        #         if google_email == 'daniel@ditoweb.com':
-        #             password = "simplepassword"
-        #         user_data = self.user_model.create_user(google_email,
-        #         unique_properties,
-        #         email=google_email, password_raw=password, verified=True, activated=True)
-        #         user = user_data[1]
-        #     else:
-        #         return self.redirect('/errors/user_not_registered.html')
-        #
+        if not user:
+            if users.is_current_user_admin():
+                from os import urandom
+                password = urandom(12)
+                unique_properties = ['email']
+                user_data = self.user_model.create_user(google_email,
+                unique_properties,
+                email=google_email, password_raw=password, verified=True, activated=True)
+                user = user_data[1]
+            else:
+                return self.redirect('/errors/user_not_registered.html')
+        
         # todo: @adozier, this same check seems to be in multiple places. put it in one place
         if users.is_current_user_admin():
             # Automatically Add the ADMIN Role
