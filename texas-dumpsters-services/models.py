@@ -537,7 +537,7 @@ class Driver(BaseModel):
     authentication_failure_count = ndb.IntegerProperty()
 
     company_key = ndb.KeyProperty(kind=Company, required=True)
-    user_key = ndb.KeyProperty(kind=User, required=True)
+    user_key = ndb.KeyProperty(kind=User, required=False)
     driver_email = ndb.StringProperty(required=True)
     driver_name = ndb.StringProperty()
     driver_phone= ndb.StringProperty()

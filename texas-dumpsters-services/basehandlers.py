@@ -413,7 +413,6 @@ class SignupHandler(BaseHandler):
                     # )
                     driver.populate(
                         company_key=ndb.Key(urlsafe=company_key),
-                        user_key=user_key,
                         driver_email=email,
                         driver_name='{} {}'.format(first_name, last_name),
                         driver_phone=contact_phone_mobile or contact_phone_desk
@@ -426,6 +425,8 @@ class SignupHandler(BaseHandler):
                         email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
                         contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
                         verified=False)
+                    driver.driver_user_key = user_data[1].key
+                    DriverService.DriverInstance.save(driver)
 
                 else:
                     user_data = self.user_model.create_user(
