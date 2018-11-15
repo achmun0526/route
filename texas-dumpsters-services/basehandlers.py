@@ -425,7 +425,7 @@ class SignupHandler(BaseHandler):
                         email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
                         contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
                         verified=False)
-                    driver.driver_user_key = user_data[1].key
+                    driver.user_key = user_data[1].key
                     DriverService.DriverInstance.save(driver)
 
                 else:
