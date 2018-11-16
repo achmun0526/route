@@ -899,9 +899,11 @@ class UsersHandler(BaseHandler):
                 if user != None:
                     keys.append(user.key)
 
-            if not keys:
-                qry = qry.filter(User.email is None)
-            else:
+            # if not keys:
+            #     qry = qry.filter(User.email is None)
+            # else:
+            #     qry = qry.filter(User.key.IN(keys))
+            if keys:
                 qry = qry.filter(User.key.IN(keys))
 
         '''Email'''
