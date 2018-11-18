@@ -24,8 +24,36 @@
 			</ul>
 	</div>
 
-<!-- Dropdown that lists customers-->
 	<div class="input-field col s12 m3 l3">
+       <mat-form-field class="example-full-width">
+          <input matInput placeholder="Filter by Customer" aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl" (click)="filteredStatesCustomer()">
+          <!-- <input type="text" [(ngModel)]="user.name" (keypress)="doSomething($event.target.value)"> -->
+          <mat-autocomplete #auto="matAutocomplete" >
+            <mat-option *ngFor="let customer of filteredStates | async" [value]="customer.customer_name" (onSelectionChange)="onCustomerChanged2(customer.id)">
+              <!-- <img class="example-option-img" aria-hidden [src]="state.flag" height="25"> -->
+              {{customer.customer_name}}
+              <!-- <small>Population: {{state.population}}</small> -->
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+     </div>
+
+     <div class="input-field col s12 m3 l3">
+       <mat-form-field class="example-full-width1">
+          <input matInput placeholder="Filter by Site" aria-label="Site" [matAutocomplete]="auto1" [formControl]="siteCtrl" (click)="filteredStatesSite()">
+          <!-- <input type="text" [(ngModel)]="user.name" (keypress)="doSomething($event.target.value)"> -->
+          <mat-autocomplete #auto1="matAutocomplete" >
+            <mat-option *ngFor="let site of sitefilteredStates | async" [value]="site.site_name" (onSelectionChange)="onSiteChanged2(site.id)">
+              <!-- <img class="example-option-img" aria-hidden [src]="state.flag" height="25"> -->
+              {{site.site_name}}
+              <!-- <small>Population: {{state.population}}</small> -->
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+     </div>  
+
+<!-- Dropdown that lists customers-->
+	<!-- <div class="input-field col s12 m3 l3">
 		<select class="smallDropdown"
 						id="selectedCustomerIndex"
 						name="selectedCustomerIndex"
@@ -53,17 +81,17 @@
 		</select>
 		<label data-error="wrong">Filter by site</label>
 	</div>
+ -->
 
 
-
-	<div class="col s12 m6 l2" style="margin-top: 15px;">
+	<div class="col s12 m6 l2" style="margin-top: 35px;">
 		<input class="date" id="date" name="date" materialize="pickadate" type="text"
 					 [ngModelOptions]="{standalone: true}"
 					 [(ngModel)]="date.date"
 					 [min]="date.date"
 					 [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true }]">
 	</div>
-	<div class="col s12 m3 l2 button_container" style="margin-top:3px; ">
+	<div class="col s12 m3 l2 button_container" style="margin-top:24px; ">
 		<a  class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="loadFilteredOrders(true)">Filter</a>
 	</div>
 

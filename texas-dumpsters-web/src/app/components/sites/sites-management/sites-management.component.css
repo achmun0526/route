@@ -1,7 +1,19 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 .li .data-object{
     font-size: 12px;
 }
 
 .hideOverFlow{
     overflow-x: hidden;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 50%;
+}
+
+.example-full-width {
+  width: 50%;
 }
