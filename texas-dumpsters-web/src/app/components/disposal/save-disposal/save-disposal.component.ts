@@ -15,6 +15,7 @@ export class SaveDisposalComponent extends BaseComponent implements OnInit {
 	private disposal;
 	private title;
 	private selectCompany;
+	private errorThrown;
 	@Output() reloadData = new EventEmitter();
 	//save disposal modal
 	private disposalsModal = new EventEmitter<string|MaterializeAction>();
@@ -27,6 +28,8 @@ export class SaveDisposalComponent extends BaseComponent implements OnInit {
 	//delete disposal toasts
 	private deleteDisposalsToast = new EventEmitter<string|MaterializeAction>();
   private deleteDisposalsToastError = new EventEmitter<string|MaterializeAction>();
+  private errorModal = new EventEmitter<string|MaterializeAction>();
+
 
   constructor(activatedRoute:ActivatedRoute,private facilitiesService : FacilitiesService, private sharedService:SharedService) {
 		super(activatedRoute);
@@ -38,21 +41,23 @@ export class SaveDisposalComponent extends BaseComponent implements OnInit {
 
 	//** save disposal **//
 	saveDisposals(){
-    this.callServices();
+       this.callServices();
 	}
 
 	//** call the save service **//
 	callServices(){
-		this.disposal.active = true;
-		this.facilitiesService.saveDisposal(this.disposal).then(res =>{
-			if(res != null){
-				this.addDisposalsToast.emit('toast');
-				this.reloadData.emit();
-			}else{
-				this.addDisposalsToastError.emit('toast');
-			}
-			this.closeDisposalsModal();
-		});
+	    this.disposal.active = true;
+	    if(this.compileData(this.disposal)){
+		    this.facilitiesService.saveDisposal(this.disposal).then(res =>{
+			    if(res != null){
+				    this.addDisposalsToast.emit('toast');
+				    this.reloadData.emit();
+			    }else{
+				    this.addDisposalsToastError.emit('toast');
+			    }
+			    this.closeDisposalsModal();
+		    });
+		}
 	}
 
 
@@ -110,6 +115,36 @@ export class SaveDisposalComponent extends BaseComponent implements OnInit {
   }
   closeDisposalsModal() {
     this.disposalsModal.emit({action:"modal",params:['close']});
+  }
+
+  compileData(data){
+     try {
+        if(data.longitude == null || isNaN(data.longitude) || data.longitude.indexOf('.') == -1) {
+          this.closeDisposalsModal();
+          throw new Error('Please enter a valid longitude value.');
+        }
+        if(data.latitude == null || isNaN(data.latitude) || data.latitude.indexOf('.') == -1) {
+          this.closeDisposalsModal();
+          throw new Error('Please enter a valid latitude value.');
+        }
+     }
+     catch(e) {
+        console.log(e);
+        this.errorThrown = e;
+        this.openErrorModal();
+        return false;
+    }
+    return true;
+  }
+
+  openErrorModal(){
+    setTimeout(() => {
+        this.errorModal.emit({action:'modal',params:['open']})
+    }, 100);
+  }
+
+  onCloseClicked(){
+    this.errorModal.emit({action:'modal',params:['close']});
   }
 
 }

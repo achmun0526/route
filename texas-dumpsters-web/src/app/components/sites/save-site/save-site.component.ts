@@ -24,6 +24,7 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 
 	public site;
 	private title;
+	private errorThrown;
 
 	private customerList = [];
 	private totalCustomers = 0;
@@ -38,6 +39,7 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 	private deleteSiteToast 		= new EventEmitter<string|MaterializeAction>();
   	private deleteSiteToastError 	= new EventEmitter<string|MaterializeAction>();
 	private addressToastError 		= new EventEmitter<string|MaterializeAction>();
+	private errorModal              = new EventEmitter<string|MaterializeAction>();
 
 	private customerListEnabled = true;
 
@@ -77,29 +79,25 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 
 	/**save site**/
 	saveSite(){
-
-		if(this.site.customer_key == null || this.site.customer_key == ""){
-			this.customerToastError.emit('toast');
-		}else if(this.site.latitude == null || this.site.latitude == "" || this.site.latitude == 0 || this.site.longitude == "" || this.site.longitude == 0 || this.site.longitude == null)
-		{
-             this.LatlongToastError.emit('toast');
-		}else{
-
-
-			console.log("in saveSite()");
-            this.sitesService.saveSite(this.site).then(res =>{
-			console.log(res);
-			console.log(res.status)
-        if(res.status=="SUCCESS"){
-          this.site = new Site();
-          this.addSiteToast.emit('toast');
-          this.onSaveCompleted.emit();
-        }else{
+	    if(this.compileData(this.site)){
+		    if(this.site.customer_key == null || this.site.customer_key == ""){
+			    this.customerToastError.emit('toast');
+		    }else{
+			    console.log("in saveSite()");
+                this.sitesService.saveSite(this.site).then(res =>{
+			    console.log(res);
+			    console.log(res.status)
+            if(res.status=="SUCCESS"){
+                this.site = new Site();
+                this.addSiteToast.emit('toast');
+                this.onSaveCompleted.emit();
+            }else{
 					this.site={};
-          this.addSiteToastError.emit('toast');
-        }
-        this.onCancelAction.emit();
-      });
+                this.addSiteToastError.emit('toast');
+            }
+                this.onCancelAction.emit();
+            });
+		    }
 		}
 	}
 
@@ -173,4 +171,34 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 		$(".collapsibleItem").hide(); 							// close all
 		$(".collapsibleItem").removeClass("open");	// remove class
 	}
+
+  compileData(data){
+     try {
+        if(data.longitude == null || isNaN(data.longitude) || data.longitude.indexOf('.') == -1) {
+          throw new Error('Please enter a valid longitude value.');
+        }
+        if(data.latitude == null || isNaN(data.latitude) || data.latitude.indexOf('.') == -1) {
+          throw new Error('Please enter a valid latitude value.');
+        }
+     }
+     catch(e) {
+        console.log(e);
+        this.errorThrown = e;
+        this.openErrorModal();
+        return false;
+    }
+    return true;
+  }
+
+  openErrorModal(){
+    setTimeout(() => {
+        this.errorModal.emit({action:'modal',params:['open']})
+    }, 100);
+    console.log("This is open model")
+  }
+
+  onCloseClicked(){
+    this.errorModal.emit({action:'modal',params:['close']});
+    console.log("This is close model")
+  }
 }

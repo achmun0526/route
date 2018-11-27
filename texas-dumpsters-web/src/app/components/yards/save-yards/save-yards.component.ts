@@ -18,6 +18,7 @@ export class SaveYardsComponent extends BaseComponent implements OnInit {
 	private yard;
 	private title;
 	private selectCompany;
+    private errorThrown;
 	// private seletedCompany;
 
 	//add Yards modal
@@ -30,6 +31,7 @@ export class SaveYardsComponent extends BaseComponent implements OnInit {
   private deleteYardsToastError = new EventEmitter<string|MaterializeAction>();
 	 // address error toats
   private addressYardsToastError = new EventEmitter<string|MaterializeAction>();
+  private errorModal = new EventEmitter<string|MaterializeAction>();
   private validations = {
 	  latlong_valid: true
   }
@@ -52,16 +54,18 @@ export class SaveYardsComponent extends BaseComponent implements OnInit {
 
 	//**call the services **//
 	callServices(){
-		this.yard.active = true;
-		this.yardsService.saveYards(this.yard).then(res =>{
-			if(res != null){
-				this.addYardsToast.emit('toast');
-				this.reloadData.emit();
-			}else{
-				this.addYardsToastError.emit('toast');
-			}
-			this.closeYardsModal();
-		});
+	    if(this.compileData(this.yard)){
+		    this.yard.active = true;
+		    this.yardsService.saveYards(this.yard).then(res =>{
+			    if(res != null){
+				    this.addYardsToast.emit('toast');
+				    this.reloadData.emit();
+			    }else{
+				    this.addYardsToastError.emit('toast');
+			    }
+			    this.closeYardsModal();
+		    });
+		}
 	 }
 
 	 /** save yard function **/
@@ -129,5 +133,36 @@ export class SaveYardsComponent extends BaseComponent implements OnInit {
 		}
 	}
 
+
+
+  compileData(data){
+     try {
+        if(data.longitude == null || isNaN(data.longitude) || data.longitude.indexOf('.') == -1) {
+          this.closeYardsModal();
+          throw new Error('Please enter a valid longitude value.');
+        }
+        if(data.latitude == null || isNaN(data.latitude) || data.latitude.indexOf('.') == -1) {
+          this.closeYardsModal();
+          throw new Error('Please enter a valid latitude value.');
+        }
+     }
+     catch(e) {
+        console.log(e);
+        this.errorThrown = e;
+        this.openErrorModal();
+        return false;
+    }
+    return true;
+  }
+
+  openErrorModal(){
+    setTimeout(() => {
+        this.errorModal.emit({action:'modal',params:['open']})
+    }, 100);
+  }
+
+  onCloseClicked(){
+    this.errorModal.emit({action:'modal',params:['close']});
+  }
 
 }

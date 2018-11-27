@@ -157,3 +157,14 @@
 <a materialize [materializeParams]="['There was an error saving a Yard',4000]" [materializeActions]="deleteYardsToastError"></a>
 
 <a materialize [materializeParams]="['The given address could not be georeversed',4000]" [materializeActions]="addressYardsToastError"></a>
+
+ <!-- Modal Structure -->
+<div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
+    <div class="modal-content">
+      <h4>Oops something went wrong!</h4>
+      <p>{{errorThrown}}</p>
+    </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" name="onCloseClicked()">Try Again</a>
+  </div>
+</div>

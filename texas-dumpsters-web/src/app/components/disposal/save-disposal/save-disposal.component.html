@@ -172,3 +172,14 @@
 <a materialize [materializeParams]="['There was an error delete a Facilitie',4000]" [materializeActions]="deleteDisposalsToastError"></a>
 <!-- address toasts -->
 <a materialize [materializeParams]="['Address is not allowed',4000]" [materializeActions]="addressDisposalsToast"></a>
+
+ <!-- Modal Structure -->
+<div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
+    <div class="modal-content">
+      <h4>Oops something went wrong!</h4>
+      <p>{{errorThrown}}</p>
+    </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" name="onCloseClicked()">Try Again</a>
+  </div>
+</div>
