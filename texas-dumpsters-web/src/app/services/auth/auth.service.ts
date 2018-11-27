@@ -33,18 +33,20 @@ export class AuthService extends BaseService {
   getUserProfile(): Promise<User> {
     // debugger;
     console.log('in getUserProfile');
-    super.showSpinner();
+    //super.showSpinner();
 
     return this.http.get(PROFILE_URL).toPromise()
       .then(response => {
         super.hideSpinner();
         let res = response.json();
         if (res.status === SUCCESS) {
+          debugger
           this.saveSignedInUser(res.user as User);
           console.log('logging the user');
           console.log(res.user);
           return res.user as User;
         } else {
+          debugger
           this.clearSignedInUser();
           return null;
         }});
@@ -55,10 +57,10 @@ export class AuthService extends BaseService {
    * user given its username and password as parameter.
    * */
   signIn(username: String, password: String): Promise<boolean> {
-        super.showSpinner();
+        //super.showSpinner();
     return this.http.post(SIGN_IN_URL, {email: username, password: password}).toPromise()
       .then(response => {
-                super.hideSpinner();
+        super.hideSpinner();
         let res = response.json();
         console.log(res);
         if (res.status === SUCCESS) {
@@ -78,18 +80,19 @@ export class AuthService extends BaseService {
    * This method calls the signup service in orer to create a new account
    * sending the information given as parameter
    * */
-  signUp(userData): Promise<boolean> {
-    super.showSpinner();
+  signUp(userData): Promise<string> {
+    //super.showSpinner();
     return this.http.post(SIGN_UP_URL, userData).toPromise()
       .then(response => {
-                super.hideSpinner();
+        super.hideSpinner();
         let res = response.json();
+        console.log(res);
         if (res.status === SUCCESS) {
-          return true;
+          return "true";
         } else {
-          return false;
+          return "false";
         }})
-      .catch(this.handleError);
+      .catch(error => "error:" + error);
   }
 
   /**
@@ -106,10 +109,10 @@ export class AuthService extends BaseService {
    * checks if a given email is available
    * */
   validateEmail(email: String): Promise<boolean> {
-        super.showSpinner();
+        //super.showSpinner();
     return this.http.get(VALIDATE_EMAIL_URL + '/' + email).toPromise()
       .then(response => {
-                super.hideSpinner();
+        super.hideSpinner();
         let res = response.json();
         if (res.status === SUCCESS) {
           return true;
@@ -124,7 +127,7 @@ export class AuthService extends BaseService {
    * */
   public deleteUser(user_key: String): Promise<PaginationResponse> {
     let urlParams = '?id=' + user_key;
-    super.showSpinner();
+    //super.showSpinner();
     return this.http.delete(USERS_URL + urlParams).toPromise()
       .then(response => {
         super.hideSpinner();
@@ -148,10 +151,11 @@ export class AuthService extends BaseService {
     if (!isNullOrUndefined(pageInfo)) {
       urlParams = super.getPagingInfoAsURLParams(urlParams, pageInfo).toString();
     }
-        super.showSpinner();
+    //super.showSpinner();
+    debugger
     return this.http.get(USERS_URL + urlParams).toPromise()
       .then(response => {
-                super.hideSpinner();
+        super.hideSpinner();
         let res = response.json();
         if (res.status === SUCCESS) {
           return super.parsePaginationResponse(res, User);
@@ -302,13 +306,17 @@ export class AuthService extends BaseService {
   /**
    * This method set on the session the current selected company
    *
-   * */
+   **/
   public saveCurrentSelectedCompany(company: Company, overwrite) {
+    debugger
     if (!isNullOrUndefined(this.getCurrentUser())) {
       let key = this.getCurrentUser().email + '-company';
       if (isNullOrUndefined(sessionStorage.getItem(key)) || overwrite) {
         sessionStorage.setItem(key, JSON.stringify(company));
+        console.log("saved the company in session storage!!")
       }
+    }else{
+      console.log("showed the current user as null ");
     }
   }
 
@@ -317,11 +325,17 @@ export class AuthService extends BaseService {
    *
    * */
   public getCurrentSelectedCompany(): Company {
+    console.log("logging the session storage size")
+    console.log(sessionStorage.length)
+    debugger;
     if (!isNullOrUndefined(this.getCurrentUser())) {
       let key = this.getCurrentUser().email + '-company';
       let company: Company = new Company();
       company.parseServerResponse(JSON.parse(sessionStorage.getItem(key)));
       return company;
+    }else{
+      debugger;
+      console.log("says the current user is null!!")
     }
     return null;
   }
@@ -333,7 +347,7 @@ export class AuthService extends BaseService {
    *
    * */
   getUserByEmail(userEmail): Promise<User> {
-    super.showSpinner();
+    //super.showSpinner();
     return this.http.get(GET_USER_BY_EMAIL + userEmail).toPromise()
       .then(response => {
         super.hideSpinner();
@@ -354,7 +368,8 @@ export class AuthService extends BaseService {
    *
    * */
     getUsersByRole(roleType, optimized): Promise<PaginationResponse> {
-    super.showSpinner();
+      debugger
+    //super.showSpinner();
      let params = '?company_key=' + this.getCurrentSelectedCompany().id + '&roles=' + roleType +
      ( (optimized != null) ? '&optimized=' + optimized : '' );
         params = super.getPagingInfoAsURLParams(params, null).toString();
@@ -372,7 +387,7 @@ export class AuthService extends BaseService {
 
   /*** Get al users filtering only by rol not by company */
   getAllUsersByRole_superAdmin(roleType): Promise<PaginationResponse> {
-    super.showSpinner();
+    //super.showSpinner();
        let params = '?roles=' + roleType ;
         params = super.getPagingInfoAsURLParams(params, null).toString();
     return this.http.get(USERS_URL + params).toPromise()
@@ -389,7 +404,8 @@ export class AuthService extends BaseService {
 
   /*** Get al user filtering by company and specifc role */
   getUsersByRoleAndCompany_superAdmin(roleType, companyId): Promise<PaginationResponse> {
-    super.showSpinner();
+    debugger
+    //super.showSpinner();
        let params = '?company_key=' + companyId + '&roles=' + roleType ;
         params = super.getPagingInfoAsURLParams(params, null).toString();
     return this.http.get(USERS_URL + params).toPromise()

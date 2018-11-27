@@ -9,6 +9,7 @@ import {Utils} from "../common/utils";
 export class RouteItem extends ServerEntity{
 
   static ENTITY_TYPES={FACILITY:'facility',YARD:'yard',ORDER:"serviceorder"};
+  static STATUS_ENUM={1: 'New', 2: 'In Route', 3: 'Completed', 4: 'Canceled'};
 
 	constructor(){
     super();
@@ -23,6 +24,7 @@ export class RouteItem extends ServerEntity{
   route_number: number;
   active : boolean;
   entity: any;
+  status: number = 0;
 
   populate(_entity_type,_entity_key,_sort_index,_entity,_dist_2_next,_time_2_next,_route_number){
     this.route_number = _route_number;
@@ -260,6 +262,10 @@ export class RouteItem extends ServerEntity{
       iconUrl = iconUrl + iconName;
     }
     return iconUrl;
+  }
+
+  getStatus() {
+    return RouteItem.STATUS_ENUM[this.status];
   }
 
 }

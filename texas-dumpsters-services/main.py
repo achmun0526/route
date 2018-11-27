@@ -85,7 +85,10 @@ app = webapp2.WSGIApplication([
 
      # Route Item
      webapp2.Route('/x/a/v1/route_item', handler=RouteItemHandler),
+     webapp2.Route('/x/a/v1/route_item_status', handler=RouteItemStatusHandler),
 
+     # Route and RouteItems
+     webapp2.Route('/x/a/v1/routes_and_route_items', handler=RoutesAndRouteItemHandler),
      # Route Incident
      webapp2.Route('/x/a/v1/route_incident', handler=RouteIncidentHandler),
 

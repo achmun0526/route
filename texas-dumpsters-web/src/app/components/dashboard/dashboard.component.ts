@@ -21,6 +21,7 @@ import {SharedService} from '../../services/shared/shared.service';
 import {YardsService} from '../../services/yards/yards.service';
 import {FacilitiesService} from '../../services/facilities/facilities.service';
 import {CompaniesService} from '../../services/companies/companies.service';
+import {DriversService} from '../../services/drivers/drivers.service';
 
 // Models
 import {ServiceRoute} from '../../model/route';
@@ -39,11 +40,14 @@ declare var $: any;
 })
 
 export class DashboardComponent extends BaseComponent implements OnInit {
+  private serviceDetailModal = new EventEmitter<string|MaterializeAction>();
 
   private pageInfo = {page: 1, page_size: PAGE_SIZE};
-
+  private errorModal = new EventEmitter<string|MaterializeAction>();
   protected companyList = [];
   protected driverList = [];
+  private driver_list2=[];
+  private driver_names=[];
   protected vehicleList = [];
 
 
@@ -59,12 +63,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   public startDate: any;
   public endDate: any;
 
-  protected routeItemsList = [];
   protected routesList = [];
-  protected ordersList = [];
   protected totalRoutes = 0;
-  protected rawRouteList = [];
-  protected dest_num = 0;
 
   driver: string;
   vehicle: string;
@@ -72,6 +72,14 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   selectedValue: string;
   totalOrders: number;
 
+  private num_of_drivers=0;
+  private route_object_list_arr = [];
+  private service_routes = [];
+  private route_items_holder=[];
+  private markers_initialized = false;
+  private current_route_list_number:number;
+  service_detail_number:number;
+  service_detail_info:any;
   private firstLoad = true;
   private firstLoadOrders = true;
 
@@ -92,27 +100,19 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     public authService: AuthService, private vehiclesService: VehiclesService,
     private ordersService: OrdersService, private sharedService: SharedService,
     private yardsService: YardsService, private facilitiesService: FacilitiesService,
-    private companiesService: CompaniesService) {
+    private companiesService: CompaniesService, private driversService:DriversService) {
     super(route);
   }
 
   ngOnInit() {
     super.ngOnInit();
-    // this.ordersService.getPurposeOfServiceList().then(res => this.purposeServiceList = res);
-    // this.ordersService.getOrderStateList().then(res => this.orderStateList = res);
-    // this.ordersService.getAssetsSizeList().then(res => this.assetsSizeList = res);
-    // this.selectedCompany = null; this.authService.getCurrentSelectedCompany().id;
-    // this.selectedCompany = []; // set selected company what user belongs
-    // this.selectedCompany.push(this.authService.getCurrentSelectedCompany().id);
-    // this.selectedDriver = null;
-    // this.selectedVehicle = null;
-    // Set start and end dates to same day
     this.startDate = Utils.date2FormattedString(new Date(), 'MM-DD-YYYY');
     this.endDate = Utils.date2FormattedString(new Date(), 'MM-DD-YYYY');
     // At the begining filters are set to all possible values after that it filters
     this.getAllCompanies();
     this.getAllDrivers();
     this.getAllVehicles();
+    this.getAllDrivers2(); // fix this later
     this.filterRoutes();
   }
 
@@ -129,6 +129,20 @@ export class DashboardComponent extends BaseComponent implements OnInit {
       Styles.fixDropDownHeigh('smallDropdown', 5);
     });
   }
+
+  getAllDrivers2() {
+    console.log("Inside get all drivers2")
+    this.driversService.getDrivers(true,null).then(res => {
+      this.driver_list2=JSON.parse(res);
+      Styles.fixDropDownHeigh('smallDropdown', 5);
+    });
+  }
+
+  driverChange(route){
+    console.log("updating the driver info")
+    this.routesService.saveRoute(route);
+  }
+
   getAllVehicles() {
     this.vehiclesService.getAllVehicles_superAdmin(null).then(res => {
       this.vehicleList = res.records;
@@ -211,6 +225,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   filterRoutes() {
+    console.log("=================================================");
+    console.log("in filterRoutes");
     let begining_date = Utils.formattedString2Date(this.startDate, 'MM-DD-YYYY');
     let finish_date = Utils.formattedString2Date(this.endDate, 'MM-DD-YYYY');
     if ((finish_date.getTime() >= begining_date.getTime())) {
@@ -221,7 +237,8 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   loadRoutes() {
-    console.log("in LoadRoutes")
+    console.log("=================================================");
+    console.log("in loadRoutes")
     let f_startDate = null;
     let f_endDate = null;
 
@@ -234,182 +251,77 @@ export class DashboardComponent extends BaseComponent implements OnInit {
     // let f_vehicle = Utils.setParameter(this.selectedVehicle);
 
     this.routesService.getRoutesByCompanyOrDriverOrVehicle(null, f_company, f_driver, f_vehicle, f_startDate, f_endDate).then(res => {
-      console.log("before loadroutes res");
       this.routesList = res;
-      console.log(res);
+      var service_route = new ServiceRoute();
         this.totalRoutes = this.routesList.length;
         for(let i=0;i<this.totalRoutes;i++){
           this.routesList[i]["display"]=false;
-          this.rawRouteList[i] = new ServiceRoute;
-          this.rawRouteList[i].id = this.routesList[i].id;
-          this.rawRouteList[i].company_key = this.routesList[i].company_key;
-          this.rawRouteList[i].driver_key = this.routesList[i].driver_key;
-          this.rawRouteList[i].date = this.routesList[i].date;
-          this.rawRouteList[i].distance = this.routesList[i].total_distance;
-          this.rawRouteList[i].time = this.routesList[i].total_time;
-          this.rawRouteList[i].notes = this.routesList[i].notes;
+          service_route.extract_response_data(res[i]);
+          this.service_routes[i] = service_route;
         }
-        console.log("after loadRoutes");
     });
   }
 
-
-
-  /** Go to details of the routes **/
-  goToRouteDetails(data) {
-    this.router.navigate(['/management/routes', data.id]);
-  }
-
-  ////////////////////////////////////////////////////////////
-  ////////////  Orders ///////////////////////////////////////
-  ////////////////////////////////////////////////////////////
-
-  filterOrders() {
-    let begining_date = Utils.formattedString2Date(this.startDate, 'MM-DD-YYYY');
-    let finish_date = Utils.formattedString2Date(this.endDate, 'MM-DD-YYYY');
-    if ((finish_date.getTime() >= begining_date.getTime())) {
-      this.loadOrders();
-    } else {
-      this.filterToastError.emit('toast');
-    }
-  }
-
-  loadOrders() {
-    console.log("inside load orders");
-    let f_startDate = null;
-    let f_endDate = null;
-
-    let beginDate = Utils.formattedString2Date(this.startDate, 'MM-DD-YYYY');
-    let finishDate = Utils.formattedString2Date(this.endDate, 'MM-DD-YYYY');
-
-    f_startDate = Utils.formatDateToSlash(this.startDate);
-    f_endDate = Utils.formatDateToSlash(this.endDate);
-
-    let f_company = Utils.setParameter(this.selectedCompany);
-
-    this.ordersService.getOrders_superAdmin(null, f_company, null, f_startDate, f_endDate,false).then(res => {
-        this.ordersList = JSON.parse(res);
-        this.totalOrders = this.ordersList.length;
-        console.log(this.totalOrders);
-
-    });
-  }
-
-  goToOrderDetails(order) {
-    this.router.navigate(['/management/orders', order.id]);
-  }
-
-  centerMap(icon) {
-    this.mapHandler.openInfoWindowOnMarker(icon.id, true);
-  }
-
-  centerMapRoute(route) {
-    if (route.route_items.length > 0) {
-      this.mapHandler.openInfoWindowOnMarker(route.route_items[0].entity_key, true);
-    } else {
-      this.routeNoItemsToastError.emit('toast');
-    }
-  }
-
-  selectRoute(route) {
-    this.mapHandler.showRoute(route);
-  }
-
-  selectOrder(order) {
-
-  }
-
-  //openInfoWindowOnMarker($event, marker) {
-  //  this.mapHandler.openInfoWindowOnMarker($event, marker);
-  //}
-
-  // Order the routeItems by sort_index asc
-  orderRouteItemsBySortId(routeItems) {
-    if (routeItems.length > 1) {
-      for (let j = 0; j < routeItems.length - 1; j++) {
-        for (let i = 0; i < routeItems.length - 1; i++) {
-          let routeItem1 = routeItems[i];
-          let routeItem2 = routeItems[i + 1];
-          if (routeItem1.sort_index > routeItem2.sort_index) {
-            routeItems[i] = routeItem2;
-            routeItems[i + 1] = routeItem1;
-          }
-        }
-      }
-    }
-    return routeItems;
-  }
-
-  // Find company by id loaded in memory
-  getCompanyByKey(company_key) {
-    if (this.companyList.length > 0) {
-      for (let i = 0; i < this.companyList.length; i++) {
-        if (this.companyList[i].id === company_key) {
-          return this.companyList[i];
-        }
-      }
-      return null;
-    } else {
-      return null;
-    }
-  }
-
-  view_route(route,j) {
+  view_route(route,route_index) {
+    //close every route.
     for (let eachRoute of this.routesList) eachRoute.display = false;
+    //make the selected route visible.
     route.display = true;
-    console.log(route);
-    this.loadRouteItemsByRoute(route.id,j);
+    let route_object_list = [];
+    this.current_route_list_number = route_index;
+    //retrieve route items for the route.
+    this.routesService.getRouteItemsByRoute(route.id).then(res => {
+      this.route_items_holder[route_index] = res;
+      let route_object = {};
+      for(let i=0;i<res.length;i++){
+        let route_item = new RouteItem();
+        route_item.populate(res[i].entity_type, res[i].entity_key, res[i].sort_index, res[i].entity, res[i].dist_2_next, res[i].time_2_next, route_index);
+        this.service_routes[route_index].populate_route_items(route_item);
+        route_object['display']=false;
+        route_object['type']=res[i].entity_type;
+        if(res[i].entity_type=='serviceorder'){
+          route_object['size']=Utils.getNameFromVal(ASSET_SIZE_LIST, res[i].entity.asset_size);
+          route_object['order_type']=Utils.getNameFromVal(PURPOSE_OF_SERVICE_LIST,res[i].entity.purpose_of_service);
+        }
+        route_object_list[i]=route_object;
+        route_object = {};
+      }
+      this.route_object_list_arr[route_index]=route_object_list;
+    });
   }
 
   close_view_route(route) {
     route.display = false;
   }
 
-  //server_entity_view(item,route_number,server_route_number){
   server_entity_view(item, destination_number, route_number){
     item.display=true;
-    console.log("before route in server_entity_view");
-    let route_items = this.rawRouteList[route_number].route_items;
+    let route_items = this.service_routes[route_number]['route_items'];
     this.mapHandler.add_waypt(destination_number, route_items);
   }
-  //close_server_entity_view(item,route_number,server_route_number){
+
   close_server_entity_view(item, destination_number, route_number){
     item.display=false;
-    let route_items = this.rawRouteList[route_number].route_items;
+    let route_items = this.service_routes[route_number]['route_items'];
     this.mapHandler.remove_waypt(destination_number,route_items);
   }
 
-  loadRouteItems(){
-    console.log("inside dashboard.component.loadRouteitems()")
-    this.routesService.getRouteItems().then(res => {
-        console.log(res);
-    });
+  show_event_data(event_data){
+    this.service_detail_number = event_data;
+    this.service_detail_info = this.route_items_holder[this.current_route_list_number][this.service_detail_number];
+    this.markers_initialized = true;
+    setTimeout(() => {
+      this.serviceDetailModal.emit({action:'modal',params:['open']});
+      }, 100);
   }
 
-  loadRouteItemsByRoute(route_key,route_index){
-    console.log("inside dashboard.component.loadRouteitemsbyroute()");
-    console.log(route_key);
-    this.routesService.getRouteItemsByRouteAndCompany(route_key).then(res => {
-        let route_item_info = []
-        for(let i=0;i<res.length;i++){
-          var info={};
-          let temp = new RouteItem;
-          temp.populate(res[i].entity_type, res[i].entity_key, res[i].sort_index, res[i].item, res[i].dist_2_next, res[i].time_2_next, route_index);
-          this.rawRouteList[route_index].populate_route_items(temp);
-          //for some reason below is necessary because populate doesn't work for item.
-          this.rawRouteList[route_index].entity = res[i].item;
-          info["display"]=false;
-          info["entity_type"]=res[i].entity_type;
-          if(res[i].entity_type="serviceorder"){
-            info["size"] =ASSET_SIZE_LIST[res[i].item.asset_size]
-            info["order_type"] =PURPOSE_OF_SERVICE_LIST[res[i].item.purpose_of_service]
-          }
-          route_item_info[i]=info;
-        }
-        this.routeItemsList[route_index]=route_item_info;
-
-
-    });
+  openErrorModal(){
+    setTimeout(() => {
+      this.errorModal.emit({action:'modal',params:['open']})
+    }, 100);
   }
 
+  onCloseClicked(){
+    this.errorModal.emit({action:'modal',params:['close']});
+  }
 }

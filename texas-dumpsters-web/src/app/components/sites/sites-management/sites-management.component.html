@@ -19,23 +19,7 @@
 			</li>
 		</ul>
 	</div>
-
-     <div *ngIf="totalCustomers>0" class="input-field col s12 m3 l6">
-     <mat-form-field class="example-full-width">
-          <input matInput placeholder="Filter by Customer" aria-label="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
-          <!-- <input type="text" [(ngModel)]="user.name" (keypress)="doSomething($event.target.value)"> -->
-          <mat-autocomplete #auto="matAutocomplete" >
-            <mat-option *ngFor="let customer of filteredStates | async" [value]="customer.customer_name" (onSelectionChange)="changeCustomerFilter2(customer.id)">
-              <!-- <img class="example-option-img" aria-hidden [src]="state.flag" height="25"> -->
-              {{customer.customer_name}}
-              <!-- <small>Population: {{state.population}}</small> -->
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-    <!-- <label data-error="wrong">Filter by Customer</label> -->
-	</div> 
-
-	<!-- <div *ngIf="totalCustomers>0" class="input-field col s12 m3 l3">
+	<div *ngIf="totalCustomers>0" class="input-field col s12 m3 l3">
 		<select class="smallDropdown"
 				id="cutomerId"
 				name="cutomerId"
@@ -47,7 +31,7 @@
 			<option *ngFor="let item of customersList;let i = index" [value]="item.id">{{item.customer_name}}</option>
 		</select>
 		<label data-error="wrong">Filter by Customer</label>
-	</div> -->
+	</div>
 </div>
 
 <app-csv-file [entity]="'site'" (reloadData)="getSitesByCustomer(true)"></app-csv-file>

@@ -47,6 +47,10 @@ class RouteInstance:
         return Route.get_all(page, page_size, filters)
 
     @staticmethod
+    def get_todays(filters):
+        return Route.get_todays(filters)
+
+    @staticmethod
     def delete(id):
         entity = Route.get(id)
         if(entity is None):

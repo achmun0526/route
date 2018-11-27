@@ -250,6 +250,12 @@ indexes:
   - name: active
   - name: company_key
   - name: date
+
+- kind: Route
+  properties:
+  - name: active
+  - name: company_key
+  - name: date
     direction: desc
 
 - kind: Route
@@ -282,6 +288,11 @@ indexes:
   - name: active
   - name: created_at
     direction: desc
+
+- kind: Route
+  properties:
+  - name: active
+  - name: date
 
 - kind: Route
   properties:
@@ -321,6 +332,12 @@ indexes:
   properties:
   - name: company_key
   - name: created_at
+    direction: desc
+
+- kind: Route
+  properties:
+  - name: company_key
+  - name: date
     direction: desc
 
 - kind: Route

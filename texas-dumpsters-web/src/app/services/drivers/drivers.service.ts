@@ -20,26 +20,24 @@ export class DriversService extends BaseService{
    *
    *
    * */
-  getDrivers(overwrite,pagingInfo):Promise<string> {
+  getDrivers(overwrite,pagingInfo):Promise<any> {
     super.showSpinner();
 		var params = '?company_key=' + this.authService.getCurrentSelectedCompany().id;
     if (!isNullOrUndefined(pagingInfo)){
       params=super.getPagingInfoAsURLParams(params,pagingInfo).toString();
     }
     var key=this.authService.getCurrentUser().email+'-drivers'+params;
-    if(overwrite){
-      sessionStorage.clear();
-    }
     if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
       return this.http.get(DRIVERS_LIST_URL + params).toPromise()
       .then(response => {
           super.hideSpinner();
           var res = response.json();
+          console.log(res);
           var main_response= super.parsePaginationResponse(res, Driver);
           sessionStorage.setItem(key,JSON.stringify(main_response.records));
           return Promise.resolve(JSON.stringify(main_response.records));
          })
-      .catch(this.handleError);
+      .catch(error=>console.log("error: "+ error));
     }else{
         console.log("Sites local storage");
         super.hideSpinner();

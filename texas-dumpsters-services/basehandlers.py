@@ -263,14 +263,18 @@ class BaseHandler(webapp2.RequestHandler):
         return
 
     def audit(self, *errors):
+
         errors = [str(e) for e in errors]
+        error = '; '.join(errors)
+        logging.error(error)
+
         message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
 
         audit = Audit()
         user = users.get_current_user()
         audit.populate(
             user_email=user.email() if user else '',
-            error='; '.join(errors),
+            error=error,
             message=message,
         )
         AuditService.AuditInstance.save(audit)
@@ -398,55 +402,31 @@ class SignupHandler(BaseHandler):
                     return self.json_data(resp)
 
                 unique_properties = ['email']
-                # logging.warning(Role)
-                # logging.warning(Role.DRIVER)
-                # Creating Driver Entity for Role Driver
+                user_data = self.user_model.create_user(
+                    email,
+                    unique_properties,
+                    email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
+                    contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
+                    verified=False)
+
+                user_key = user_data[1].key.urlsafe()
                 if role is not None and role.upper() == Role.DRIVER:
                     from services import DriverService
                     from models import Driver
                     driver = Driver()
-                    # driver.populate(
-                    #     company_key=ndb.key(urlsafe=company_key),
-                    #     driver_email=email,
-                    #     driver_name='{} {}'.format(first_name, last_name),
-                    #     driver_phone=contact_phone_mobile or contact_phone_desk,
-                    # )
                     driver.populate(
                         company_key=ndb.Key(urlsafe=company_key),
+                        user_key=ndb.Key(urlsafe=user_key),
                         driver_email=email,
                         driver_name='{} {}'.format(first_name, last_name),
                         driver_phone=contact_phone_mobile or contact_phone_desk
                     )
                     entity = DriverService.DriverInstance.save(driver)
-                    user_data = self.user_model.create_user(
-                        email,
-                        unique_properties,
-                        driver_key=entity.key,
-                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
-                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
-                        verified=False)
-                    driver.user_key = user_data[1].key
-                    DriverService.DriverInstance.save(driver)
-
-                else:
-                    user_data = self.user_model.create_user(
-                        email,
-                        unique_properties,
-                        email=email, first_name=first_name, last_name=last_name, contact_phone_desk=contact_phone_desk,
-                        contact_phone_mobile=contact_phone_mobile, device_id=device_id, password_raw=password,
-                        verified=False)
 
                 if not user_data[0]:  # user_data is a tuple
                     errors = ['Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1])]
                     resp = get_fail_response(errors=errors)
                     return self.json_data(resp)
-                    # kwargs_temp =  errors
-                    # kwargs_temp.update(
-                    #     dict(
-                    #         status=FAIL,
-                    #     )
-                    # )
-                    # return kwargs_temp
 
                 # Push queue to send email verification url
                 user = user_data[1]
@@ -789,33 +769,31 @@ class GoogleUserVerifyHandler(BaseHandler):
 
         google_email = google_email.lower()
 
-        logger.info(google_email)
 
         user = User.get_by_email(google_email)
 
-        if not user:
-            if users.is_current_user_admin():
-                from os import urandom
-                password = urandom(12)
-                unique_properties = ['email']
-                user_data = self.user_model.create_user(google_email,
-                unique_properties,
-                email=google_email, password_raw=password, verified=True, activated=True)
-                user = user_data[1]
-            else:
-                return self.redirect('/errors/user_not_registered.html')
-        
-        # todo: @adozier, this same check seems to be in multiple places. put it in one place
-        if users.is_current_user_admin():
-            # Automatically Add the ADMIN Role
-            if (user is not None and hasattr(user, "key")):
-                Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
-        else:
-            ndb.Key(Role, Role.ADMIN, parent=user.key).delete()
+        logging.info(user)
+        print("inside google verify")
+        # if not user:
+        #     if users.is_current_user_admin():
+        #         from os import urandom
+        #         password = urandom(12)
+        #         unique_properties = ['email']
+        #         user_data = self.user_model.create_user(google_email,
+        #         unique_properties,
+        #         email=google_email, password_raw=password, verified=True, activated=True)
+        #         user = user_data[1]
+        #     else:
+        #         return self.redirect('/errors/user_not_registered.html')
 
-        # # UNCOMMENT THIS WHEN YOU WANT TO CREATE AN ADMIN FOR A NEW USER
-        #         if(user is not None and hasattr(user, "key")):
-        #             Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
+        # todo: @adozier, this same check seems to be in multiple places. put it in one place
+        # if users.is_current_user_admin():
+        #     # Automatically Add the ADMIN Role
+        #     if (user is not None and hasattr(user, "key")):
+        #         Role(id=Role.ADMIN, name=Role.ADMIN, user=user.key, parent=user.key).put()
+        # else:
+        #     ndb.Key(Role, Role.ADMIN, parent=user.key).delete()
+
 
         # Authenticate to this user and update session
         self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
@@ -899,10 +877,6 @@ class UsersHandler(BaseHandler):
                 if user != None:
                     keys.append(user.key)
 
-            # if not keys:
-            #     qry = qry.filter(User.email is None)
-            # else:
-            #     qry = qry.filter(User.key.IN(keys))
             if keys:
                 qry = qry.filter(User.key.IN(keys))
 
@@ -2567,6 +2541,117 @@ class RouteHandler(BaseHandler):
             return self.audit(e)
 
 
+class RoutesAndRouteItemHandler(BaseHandler):
+    def post(self):
+        try:
+            from services import RouteItemService
+            from models import RouteItem
+            from services import RouteService
+            from models import Route
+            from models import RouteStatus
+
+            print("Inside RoutesAndRouteItemHandler \n")
+
+            routes = json.loads(self.request.body)
+
+            for data in routes:
+
+                print("entering the data \n")
+
+
+
+                company_key = data.get('company_key')
+                date = data.get('date')
+                total_distance = data.get('distance')
+                total_time = data.get('time')
+                route_items = data.get('route_items')
+                num_of_stops = len(route_items)
+
+                route = Route()
+
+                if company_key is not None:
+                    company_key = ndb.Key(urlsafe=company_key)
+
+
+
+
+                print("about to populate the route \n")
+
+                route.populate(
+                    company_key= company_key,
+                    date=datetime.strptime(date, "%m/%d/%Y"),
+                    total_distance = total_distance,
+                    total_time = total_time,
+                    num_of_stops = num_of_stops,
+                )
+
+                route = RouteService.RouteInstance.save(route)
+
+
+
+
+                print("INSIDE RouteItemHandler")
+
+                data = json.loads(self.request.body)
+
+                entity_types = ["yard", "serviceorder", "facility"]
+
+                for item in route_items:
+
+                    dist_2_next = item.get('dist_2_next')
+                    time_2_next = item.get('time_2_next')
+
+                    route_key = route.key.id()
+                    entity_type = item.get('entity_type')
+                    item_key = item.get('entity_key')
+                    sort_index = item.get('sort_index')
+                    latitude = item.get('latitude')
+                    longitude = item.get('longitude')
+                    active = item.get('active')
+
+                    print("about to populate the route item")
+
+                    route_item = RouteItem()
+
+                    if entity_type not in entity_types:
+                        raise ValueError("Entity Type not allowed")
+
+                    print("ok we got this far")
+                    print(route_key)
+                    print(dist_2_next)
+                    print(time_2_next)
+                    print(entity_type)
+                    print(item_key)
+                    print(sort_index)
+
+                    route_item.populate(
+                        route_key=ndb.Key(Route,route_key),
+                        dist_2_next = dist_2_next,
+                        time_2_next = time_2_next,
+                        entity_type=entity_type,
+                        item_key=item_key,
+                        sort_index=sort_index,
+                    )
+                    print("past the populate")
+                    RouteItemService.RouteItemInstance.save(route_item)
+
+            return self.json_data("SUCCESS")
+
+        except Exception, e:
+            errors = [str(e)]
+
+            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
+
+            audit = Audit()
+            audit.populate(
+                user_email=users.get_current_user().email(),
+                error=str(e),
+                message=message
+            )
+            AuditService.AuditInstance.save(audit)
+
+            return self.json_data(get_fail_response(errors))
+
 class FlushRoutesHandler(BaseHandler):
     def delete(self):
         try:
@@ -2576,22 +2661,16 @@ class FlushRoutesHandler(BaseHandler):
             print("\n Inside FlushRoutesHandler \n")
             # Filters
             filters = {}
-            filters["active"] = self.request.get('active')
-            filters["route_key"] = self.request.get('route_key')
-            filters["vehicle_key"] = self.request.get('vehicle_key')
             filters["company_key"] = self.request.get('company_key')
-            filters["driver_key"] = self.request.get('driver_key')
-            filters["start_date"] = self.request.get('start_date')
-            filters["end_date"] = self.request.get('end_date')
-            filters["status"] = self.request.get('status')
-            filters["optimized"] = self.request.get('optimized')
+            filters["date"]=self.request.get('date')
+
 
             print("\n About to query entities \n")
 
             print(filters)
             print("\n")
 
-            entities, total = RouteService.RouteInstance.get_all('', '', filters)
+            entities, total = RouteService.RouteInstance.get_todays(filters)
 
             print("finished the query")
 
@@ -2607,6 +2686,30 @@ class FlushRoutesHandler(BaseHandler):
                 entity.key.delete()
 
             return self.json_data(get_success_reponse())
+
+        except Exception, e:
+            return self.audit(e)
+
+
+class RouteItemStatusHandler(BaseHandler):
+
+    def post(self):
+        try:
+            from services import RouteItemService
+            data = json.loads(self.request.body)
+            key = data.get('id')
+            status = int(data.get('status'))
+            RouteItemService.RouteItemInstance.set_status(key, status)
+
+        except Exception, e:
+            return self.audit(e)
+
+    def get(self):
+        try:
+            from services import RouteItemService
+            key = self.request.get('id')
+            status = RouteItemService.RouteItemInstance.get_status(key)
+            return self.json_data(get_success_reponse(status=status))
 
         except Exception, e:
             return self.audit(e)
@@ -2636,6 +2739,7 @@ class RouteItemHandler(BaseHandler):
                 latitude = item.get('latitude')
                 longitude = item.get('longitude')
                 active = item.get('active')
+                status = item.get('status')
 
                 route_item = RouteItem()
 
@@ -2663,10 +2767,10 @@ class RouteItemHandler(BaseHandler):
             from services import RouteItemService
             from models import RouteItem
             logging.warning("inside routeitemget")
+            logging.warning(self)
             # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
-
             # Filters
             filters = {}
             filters["active"] = self.request.get('active')

@@ -61,8 +61,8 @@ Styles.fixDropDownHeigh("smallDropdown", 5);
       this.totalCustomers=this.customersList.length;
       this.customersDisplayList=this.customersList.slice(0,10);
       console.log("total customer: " + this.totalCustomers);
-    });
-
+    })
+    .catch(error=> console.log("error"+error));
   }
 
 

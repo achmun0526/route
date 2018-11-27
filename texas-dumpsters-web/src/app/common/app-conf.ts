@@ -124,15 +124,17 @@ export const DRIVERS_URL = SECURE_END_POINT + '/driver';
 export const DRIVERS_LIST_URL = SECURE_END_POINT + '/driver_list';
 // export const GET_DRIVERS_BY_ID_URL= SECURE_END_POINT+'/driver?driver_key=';
 
-/**--------------------ROuTE ITEM SERVICES URLs-----------------------------------------------------*/
+/**--------------------ROUTE ITEM SERVICES URLs-----------------------------------------------------*/
 export const ADD_ROUTES_ITEM_URL= SECURE_END_POINT+'/route_item';
 export const GET_ALL_ROUTES_ITEM_URL= SECURE_END_POINT+'/route_item';
+export const ROUTE_ITEM_STATUS_URL = SECURE_END_POINT+'/route_item_status';
 export const GET_ROUTES_ITEM_BY_ID_URL= SECURE_END_POINT+'/route?active=all&route_key=';
 export const ARRANGE_ROUTE_ITEM_URL = SECURE_END_POINT + '/route/arrange_item';
 
 /**--------------------ROUTES SERVICES URLs-----------------------------------------------------*/
 export const ROUTES_URL= SECURE_END_POINT+'/route';
 export const FLUSH_ROUTES_URL = SECURE_END_POINT+'/flush_routes'
+export const ROUTES_AND_ROUTE_ITEMS = SECURE_END_POINT+'/routes_and_route_items'
 /**--------------------PRICING SERVICES URLs-----------------------------------------------------*/
 export const ADD_PRICING_URL= SECURE_END_POINT+'/servicepricing';
 export const GET_ALL_PRICINGS_URL= SECURE_END_POINT+'/servicepricing?company=';

@@ -1,10 +1,11 @@
 import config
 import logging
 
-from models import RouteItem
+from models import RouteItem, RouteItemStatus
 from google.appengine.api import app_identity
 
 logger = logging.getLogger()
+
 
 class RouteItemInstance:
 
@@ -42,3 +43,13 @@ class RouteItemInstance:
     @staticmethod
     def get_all(page, page_size, filters):
         return RouteItem.get_all(page, page_size, filters)
+
+    @staticmethod
+    def get_status(id):
+        return RouteItem.get(id).status
+
+    @staticmethod
+    def set_status(id, status):
+        item = RouteItem.get(id)
+        item.status = RouteItemStatus(int(status))
+        item.put()

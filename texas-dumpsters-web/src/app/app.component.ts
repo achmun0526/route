@@ -28,6 +28,7 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
+    debugger
     this.authService.getUserProfile().then(response =>{
       if (response!=null){
 

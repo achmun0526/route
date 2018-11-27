@@ -32,38 +32,21 @@ export class CustomerService extends BaseService{
 
 
 getAllCustomers(overwrite,pageInfo):Promise<string> {
-
-    super.showSpinner();
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id;
-    if (!isNullOrUndefined(pageInfo)){
-      params=super.getPagingInfoAsURLParams(params,pageInfo).toString();
-    }
-    var key=this.authService.getCurrentUser().email+'-customers'+params;
-    if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
-      console.log("pulling from server");
+    console.log(params);
     return this.http.get(GET_ALL_CUSTOMER_URL + params).toPromise()
       .then(response => {
-          super.hideSpinner();
           var res=response.json();
-          if (res.status===SUCCESS){
+          console.log(res);
             var main_response = super.parsePaginationResponse(res,Customer);
-            sessionStorage.setItem(key,JSON.stringify(main_response.records));
             return JSON.stringify(main_response.records);
-          }else{
-              console.log("error to debug later");
-          }
       })
       .catch(this.handleError);
-  }else{
-    console.log("pulling customers from local storage");
-    super.hideSpinner();
-    return Promise.resolve(sessionStorage.getItem(key));
-  }
 }
 
 
 	getCustomerById(customerId):Promise<Customer> {
-    super.showSpinner();
+    //super.showSpinner();
     var params='?customer_key='+customerId;
     return this.http.get(GET_ALL_CUSTOMER_URL + params).toPromise()
       .then(response => {
@@ -85,7 +68,7 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
 	 *
 	 * */
 	addCustomer(customerData):Promise<string> {
-		super.showSpinner();
+		//super.showSpinner();
     return this.http.post(ADD_CUSTOMER_URL , customerData).toPromise()
       .then(response => {
 				super.hideSpinner();
@@ -99,7 +82,7 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
   }
 
   deleteCustomer(id:string):Promise<string> {
-		super.showSpinner();
+		//super.showSpinner();
     var urlParams='?id='+id;
     return this.http.delete(DELETE_CUSTOMER_URL+urlParams).toPromise()
       .then(response => {
@@ -119,7 +102,7 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
    *
    * */
   getAllAddress(customerId,pagingInfo):Promise<PaginationResponse> {
-    super.showSpinner();
+    //super.showSpinner();
 		var params = super.getPagingInfoAsURLParams(customerId,pagingInfo);
 /*    if (!isNullOrUndefined(pagingInfo)){
     	params = '';
@@ -143,7 +126,7 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
 	 *
 	 * */
 	addAddress(addressData):Promise<string> {
-		super.showSpinner();
+		//super.showSpinner();
     return this.http.post(ADD_ADDRESS_TO_CUSTOMER_URL , addressData).toPromise()
       .then(response => {
 				super.hideSpinner();

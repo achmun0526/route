@@ -1,15 +1,15 @@
-<div class="row">
-    <div class="col s12 m6 l1">
-        <ul>
-            <li class="btn-list">
-                <a class="btn-floating red" (click)="addRouteModal.emit({action:'modal',params:['open']})">
-                    <app-icon-tooltip [iconName]="'add'" [tooltipText]="'Add Route'">
-                    </app-icon-tooltip>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
+<!--<div class="row">-->
+<!--<div class="col s12 m6 l1">-->
+<!--<ul>-->
+<!--<li class="btn-list">-->
+<!--<a class="btn-floating red" (click)="addRouteModal.emit({action:'modal',params:['open']})">-->
+<!--<app-icon-tooltip [iconName]="'add'" [tooltipText]="'Add Route'">-->
+<!--</app-icon-tooltip>-->
+<!--</a>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--</div>-->
 
 <div class="row">
     <div class="col s12">
@@ -19,10 +19,23 @@
     <div class="input-field-col col s12 m4 l2" style="display: flex">
         <input materialize="pickadate" [(ngModel)]="date"
                [materializeParams]="[{format:'mm/dd/yyyy', closeOnSelect: true}]"
-               (ngModelChange)="loadRoutes()"
+               (ngModelChange)="checkUserRole()"
                type="text" style="margin-right: 0.5rem">
     </div>
-
+    <div class="col  s12 m4 l2" *ngIf="showDrivers == true">
+        <select class="smallDropdown"
+                        id="routeItemDriver"
+                        name="routeItemDriver"
+                        materialize="material_select"
+                        [(ngModel)]="driverId"
+                        (change)="driverChange(driverId)"
+                        [materializeSelectOptions]="typeFence">
+                <option value="">Select a Driver</option>
+                <option *ngFor="let driver of driversList;"
+                        selected="{{false ? 'selected' : ''}}"
+                        value="{{driver.id}}">{{driver.driver_name}}</option>
+        </select>
+</div>
     <div class="alert-text" *ngIf="routeItemsList.length == 0">
         <h2 class="center"><i class="material-icons">assignment_late</i></h2>
         <h4 class="center">There are no Routes to list</h4>
@@ -79,7 +92,18 @@
                         </div>
                         <div class="col  s12 m4 l2">
                             <div class="tab_label">Status:</div>
-                            {{item.status}}
+                            <select class="smallDropdown"
+                                    id="routeItemStatus"
+                                    name="routeItemStatus"
+                                    materialize="material_select"
+                                    [(ngModel)]="item.status"
+                                    (change)="statusChange(item)"
+                                    [materializeSelectOptions]="typeFence">
+                                <option value="">Select a status</option>
+                                <option *ngFor="let st of status_enum;"
+                                        selected="{{st.num == item.status ? 'selected' : ''}}"
+                                        value="{{st.num}}">{{st.name}}</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -90,18 +114,18 @@
 
 <!--&lt;!&ndash;add route modal &ndash;&gt;-->
 <!--<div id="modal1" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]"-->
-     <!--[materializeActions]="addRouteModal">-->
-    <!--<app-save-route (afterSaveCompleted)="onRouteCreated()" (onCancelAction)="closeAddRuteModal()"></app-save-route>-->
+<!--[materializeActions]="addRouteModal">-->
+<!--<app-save-route (afterSaveCompleted)="onRouteCreated()" (onCancelAction)="closeAddRuteModal()"></app-save-route>-->
 <!--</div>-->
 
 <!--&lt;!&ndash;edit route modal &ndash;&gt;-->
 <!--<div *ngIf="selectedRoute!=null" id="modal2" class="modal modal-fixed-footer" materialize="modal"-->
-     <!--[materializeParams]="[{dismissible: true}]" [materializeActions]="editRouteModal">-->
-    <!--<app-save-route [routeToEdit]="selectedRoute" (afterSaveCompleted)="onRouteUpdated()"-->
-                    <!--(onCancelAction)="onRouteEditCancelled()"></app-save-route>-->
+<!--[materializeParams]="[{dismissible: true}]" [materializeActions]="editRouteModal">-->
+<!--<app-save-route [routeToEdit]="selectedRoute" (afterSaveCompleted)="onRouteUpdated()"-->
+<!--(onCancelAction)="onRouteEditCancelled()"></app-save-route>-->
 <!--</div>-->
 
 <!--&lt;!&ndash; delete customer toasts &ndash;&gt;-->
 <!--<a materialize [materializeParams]="['Route deleted successfully',4000]" [materializeActions]="deleteRoutesToast"></a>-->
 <!--<a materialize [materializeParams]="['There was an error Delete a Route',4000]"-->
-   <!--[materializeActions]="deleteRoutesToastError"></a>-->
+<!--[materializeActions]="deleteRoutesToastError"></a>-->

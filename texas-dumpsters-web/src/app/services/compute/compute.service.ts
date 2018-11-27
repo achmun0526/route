@@ -88,29 +88,9 @@ export class ComputeService extends BaseService {
         this.selectedCompany = company;
     }
 
-
-
     refreshRoutes(routes,date){
-      let num_of_routes = routes.length;
-
-        // create observable
-        const simpleObservable = new Observable((observer) => {
-
-            // observable execution
-            observer.next(this.routesService.deleteRoutesByDate(date));
-            for(let i=0;i<num_of_routes;i++){
-              let route = routes[i];
-              observer.next(this.routesService.saveRoutes(route));
-            }
-            observer.complete();
-        })
-        // subscribe to the observable
-        console.log('just before subscribe');
-        simpleObservable.subscribe({
-          next: x => console.log('got value ' + x),
-          error: err => console.error('something wrong occurred: ' + err),
-          complete: () => console.log('done'),
+        this.routesService.deleteRoutesByDate(date).then(res=>{
+            this.routesService.saveRoutesAndRouteItems(routes);
         });
-        console.log('just after subscribe');
       }
 }

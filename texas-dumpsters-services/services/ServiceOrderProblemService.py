@@ -33,7 +33,7 @@ class ServiceOrderProblemInstance:
         sender = config.NOREPLY_EMAIL
 
         try:          
-            route_item = RouteItem.get_by_entity_key(entity.service_order_key)        
+            route_item = RouteItem.get_by_item_key(entity.service_order_key)
             if route_item is not None:            
                 route = route_item.route_key.get()                    
                 if route is not None:

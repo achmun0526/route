@@ -113,10 +113,9 @@ export class SaveUserComponent extends BaseComponent implements OnInit, OnChange
 
     this.authService.signUp(this.user).then(res=>{
       console.log('check');
-      //console.log(JSON.parse(res));
-    
+      console.log(res);
 
-      if(res == true){
+      if(res == "true"){
         this.addUserToast.emit('toast');
       }else{
         this.addUserToastError.emit('toast');

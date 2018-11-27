@@ -9,7 +9,7 @@ class DriverInstance:
         if entity.key is None:
             entity = Driver.save(entity)
         else:
-            current = Driver.get(entity.key.urlsafe())
+            current = Driver.get(entity.key)
             if current is not None:
                 # current.driver_phone = entity.driver_phone
                 # current.driver_email = entity.driver_email

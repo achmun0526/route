@@ -1,34 +1,7 @@
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 /* You can add global styles to this file, and also import other style files */
 body{
 	background: #eeeeee;
-}
-
-.cdk-overlay-container {
-  z-index: 1005 !important;
-  /* position: absolute !important;
-    top: 130px !important;
-    left: 437px !important;
-    
-    background: white !important;*/
-}
-
-.mat-form-field-infix {
-    
-    position: unset!important;
-    
-}
-
-.mat-form-field-underline {
-   
-    height: 0px!important; 
-    
-}
-
-mat-form-field input:not([type]), input[type=text]:not(.browser-default), input[type=password]:not(.browser-default), input[type=email]:not(.browser-default), input[type=url]:not(.browser-default), input[type=time]:not(.browser-default), input[type=date]:not(.browser-default), input[type=datetime]:not(.browser-default), input[type=datetime-local]:not(.browser-default), input[type=tel]:not(.browser-default), input[type=number]:not(.browser-default), input[type=search]:not(.browser-default), textarea.materialize-textarea {
-    
-    margin: 0 0 -6px 0 !important;
-    
 }
 h1,h2,h3,h4,h5,h6,h7{
 	font-weight: 200;

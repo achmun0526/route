@@ -15,18 +15,6 @@ import { CustomerService} from "../../../services/customer/customer.service";
 import { Company } from "../../../model/company";
 import { Utils } from "../../../common/utils";
 
-import {FormControl} from '@angular/forms';
-import {Observable} from 'rxjs/Observable';
-import {startWith} from 'rxjs/operators/startWith';
-import {map} from 'rxjs/operators/map';
-import { OverlayModule } from '@angular/cdk/overlay';
-
-export interface State {
-  //id: string;
-  customer_name: string;
-  //population: string;
-}
-
 @Component({
   selector: 'app-sites-management',
   templateUrl: './sites-management.component.html',
@@ -34,7 +22,6 @@ export interface State {
 })
 export class SitesManagementComponent extends BaseComponent implements OnInit {
 
-	public customersData = [];
 	private siteToEdit:Site = null;
 
 	private siteList = [];
@@ -56,49 +43,19 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 
 	//Toasts
 	private deleteSiteToast = new EventEmitter<string|MaterializeAction>();
-		private deleteSiteToastError = new EventEmitter<string|MaterializeAction>();
+	private deleteSiteToastError = new EventEmitter<string|MaterializeAction>();
 
-    stateCtrl = new FormControl();
-		filteredStates: Observable < State[] > ; 
-
-    
   	constructor(private router:Router, actRoute:ActivatedRoute,private sitesService:SitesService, private customerService:CustomerService, private authService:AuthService) {
     super(actRoute);
 		this.csv = {};
 	}
 
-	
-      
-
 	ngOnInit() {
-
-	     
-
-         
 		super.ngOnInit();
 		this.company = this.authService.getCurrentSelectedCompany();
 		this.getCustomers(true);
 		this.getSitesByCustomer(false);
-	     
-	     this.filteredStates = this.stateCtrl.valueChanges
-		        .pipe(
-		            startWith(''),
-		            map(state => state ? this._filterStates(state) : this.customersData.slice())
-		        ); 
-
-
 	}
-
-	 
-   
-     states: State[] = this.customersData;
-		private _filterStates(value: string): State[] {
-		    const filterValue = value.toLowerCase();
-		    //console.log('jhjhjh');
-		    // console.log(this.states);
-		    //console.log(this.customersData);
-		    return this.customersData.filter(state => state.customer_name.toLowerCase().indexOf(filterValue) === 0);
-		}  
 
 
 
@@ -122,26 +79,6 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 
   }
 
-  getSitesByCustomer2(overwrite,id) {
-		    //console.log(overwrite);
-		    var custID;
-		    if (id == "" || isNullOrUndefined(id)) {
-		        custID = null;
-		        console.log(custID);
-		    } else {
-		        custID = id
-		        console.log(custID);
-		    }
-		    //console.log("component call to get sites");
-		    this.sitesService.getSitesByCustomer(overwrite, custID, null).then(res => {
-		        //console.log(res);
-		        this.siteList = JSON.parse(res);
-		        this.totalSites = this.siteList.length;
-		        this.siteDisplayList = this.siteList.slice(0, 10);
-		        //console.log("total sites: " + this.totalSites);
-		    });
-		}
-
 	changeCustomerFilter(){
 		//reset pagination
 		this.siteList = [];
@@ -150,21 +87,11 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 		this.getSitesByCustomer(false);
 	}
 
-	changeCustomerFilter2(id) {
-		    //reset pagination
-		    this.siteList = [];
-		    this.totalSites = 0;
-		    this.pageInfo.page = 1;
-		    this.getSitesByCustomer2(false,id);
-		}
 
-     
   getCustomers(overwrite){
+    debugger
     this.customerService.getAllCustomers(overwrite,null).then(res =>{
           this.customersList = JSON.parse(res);
-          console.log(this.customersList);
-          this.customersData=this.customersList.map((res1)=>{return  {customer_name:res1.customer_name,id:res1.id}});
-                  console.log(this.customersData);
           this.totalCustomers=this.customersList.length;
           Styles.fixDropDownHeigh("smallDropdown", 5);
         });

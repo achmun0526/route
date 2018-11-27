@@ -182,7 +182,7 @@ compute() {
       this.data_loaded = 1;
 
       console.log(JSON.stringify(this.data));
-      this.http.post('http://127.0.0.1:5000', this.data)
+      this.http.post('http://35.243.153.186:80', this.data)
       .toPromise()
         .then(val => {
           let data = val['_body'];
@@ -212,7 +212,7 @@ compute() {
       this.data['num_of_iterations']=this.iterations;
 
       console.log(this.data);
-      this.http.post('http://127.0.0.1:5000', this.data).toPromise()
+      this.http.post('http://35.243.153.186:80', this.data).toPromise()
         .then(val => {
           console.log(val);
             let data = val['_body'];
@@ -379,8 +379,6 @@ update_page(json_data) {
           service_route.populate_route_items(route_item);
           service_route.company_key= this.authService.getCurrentSelectedCompany().id;
           //// GET RID OF THE IF STATEMENT LATER AND KEEP THE ELSE ///////////////////////////////
-          this.date.date = Utils.date2FormattedString(Utils.addDays(new Date, 0), 'MM/DD/YYYY');   //GET RID OF THIS DURING PRODUCTION
-          console.log(this.date.date);
           service_route.date = this.date.date;
           //////////////////////////////////////////////
 
@@ -408,6 +406,7 @@ update_page(json_data) {
     }
     console.log('LOGGING ROUTE OBJECT LIST ARR');
     console.log(this.route_object_list_arr);
+    console.log(this.service_routes);
     this.compiled_route_distance = this.compiled_route_distance.toFixed(2);
 }
 
@@ -535,6 +534,7 @@ filter() {
 }
 
 view_route(number,route_list_number) {
+  for (let num of this.numbers) num.display = false;
   number.display = true;
   this.num_of_displayed_routes=this.num_of_displayed_routes+1;
   this.current_route_list_display_number=route_list_number;
@@ -569,6 +569,7 @@ show_event_data(event_data){
 }
 
 saveRoutes(){
+   this.authService.getCurrentSelectedCompany().id
   console.log("Compute.saveRoutes()");
   this.computeService.refreshRoutes(this.service_routes,this.date.date)
 

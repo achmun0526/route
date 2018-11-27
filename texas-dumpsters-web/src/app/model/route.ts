@@ -27,6 +27,7 @@ export class ServiceRoute extends ServerEntity{
 	distance =0;
 
 
+
 	/**
    *
    *
@@ -48,16 +49,27 @@ export class ServiceRoute extends ServerEntity{
     console.log("in parse server response before route items");
     console.log(this.route_items);
     var temp:User=new User();
-    temp.parseServerResponse(response.driver)
+    temp.parseServerResponse(response.driver);
     this.driver=temp;
 
     var temp2:Vehicle=new Vehicle();
-    temp2.parseServerResponse(response.vehicle)
+    temp2.parseServerResponse(response.vehicle);
     this.vehicle=temp2;
 
     var temp3:Company=new Company();
     temp3.parseServerResponse(response.company);
     this.company=temp3;
+  }
+
+  extract_response_data(response) {
+    console.log("in extract_response_Data");
+    this.id = response.id;
+    this.company_key = response.company_key;
+    this.driver_key = response.driver_key;
+    this.date = response.date;
+    this.distance = response.total_distance;
+    this.time = response.total_time;
+    this.notes = response.notes;
   }
 
 	populate_route_items(route_item){

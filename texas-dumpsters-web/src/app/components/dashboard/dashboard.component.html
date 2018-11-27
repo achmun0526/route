@@ -78,61 +78,6 @@
 				(click)="filterRoutes()">Filter</a>
 		</div>
 	</div>
-
-	<!-- routes table -->
-	<!-- <div class="row">
-		<div class="col s12">
-			<ul class="collapsible" data-collapsible="accordion"
-				*ngIf="routesList.length > 0">
-				<li class="tab-header lead">
-					<div class="collapsible-header">
-						<div class="row data-object col s12">
-							<div class="col s12 m4 l2">Company:</div>
-							<div class="col s12 m4 l2">Driver:</div>
-							<div class="col s12 m4 l2">Vehicle:</div>
-							<div class="col s12 m4 l3">Date:</div>
-							<div class="col s12 m4 l3">Notes:</div>
-						</div>
-					</div>
-				</li>
-				<div class="routes-dashboard">
-					<li *ngFor="let item of routesList" (click)="selectRoute(item)"
-						class="table">
-						<div class="collapsible-header">
-							<div class="row data-object col s12">
-								<div class="col s12 m4 l2">
-									<div class="tab_label">Company:</div>
-									{{item.company.name}}
-								</div>
-								<div class="col s12 m4 l2">
-									<div class="tab_label">Driver:</div>
-									{{item.driver.first_name}} {{item.driver.last_name}}
-								</div>
-								<div class="col s12 m4 l2">
-									<div class="tab_label">Vehicle:</div>
-									{{item.vehicle.vehicle_name}}-{{item.vehicle.tag_number}}
-								</div>
-								<div class="col s12 m4 l3">
-									<div class="tab_label">Date:</div>
-									{{Utils.toAMPM(item.date)}}
-								</div>
-								<div class="col s12 m4 l3">
-									<div class="tab_label">Notes:</div>
-									{{Utils.trimStringOnLength(item.notes,15,'...')}}
-								</div>
-							</div>
-							<p class="secondary-content">
-								<app-icon-tooltip [iconName]="'visibility'"
-									[tooltipText]="'Details'" (click)="goToRouteDetails(item)">
-								</app-icon-tooltip>
-							</p>
-
-						</div>
-					</li>
-				</div>
-			</ul>
-		</div> -->
-
 		<div class="alert-text" *ngIf="totalRoutes == 0">
 			<h2 class="center">
 				<i class="material-icons">assignment_late</i>
@@ -146,9 +91,24 @@
 			<ul class="collapsible" >
 				<li class="tab-header lead">
 	          <div class="row data-object h4">
-	            <div class="col s12 m12 l4">Route {{j+1}}</div>
-	            <div class="col s12 m12 l4">Hours: {{route.total_time}}</div>
-	            <div class="col s12 m12 l4">Miles: {{route.total_distance}}</div>
+	            <div class="col s12 m12 l3">Route {{j+1}}</div>
+	            <div class="col s12 m12 l3">Hours: {{route.total_time}}</div>
+	            <div class="col s12 m12 l3">Miles: {{route.total_distance}}</div>
+							<div class="col s12 m12 l2">
+									<div class="tab_label">Status:</div>
+									<select class="smallDropdown"
+													id="routeItemStatus"
+													name="routeItemStatus"
+													materialize="material_select"
+													(change)="driverChange(route)"
+													[(ngModel)]="route.driver_key"
+													[materializeSelectOptions]="typeFence">
+											<option value="">Select a Driver</option>
+											<option *ngFor="let st of driver_list2;"
+											selected="{{st.id == route.driver_key ? 'selected' : ''}}"
+											  value="{{st.id}}">{{st.driver_name}}</option>
+									</select>
+							</div>
 	        	</div>
 						<div class="col s12 m2 l1">
 							<a  *ngIf="route.display==false" class="waves-effect waves-light btn modal-trigger blue lighten-3" (click)="view_route(route,j)">View</a>
@@ -157,23 +117,21 @@
 					<div class="row data-object">
 						<div *ngIf="route.display">
 							<div  class="col s12 m10 l10 map" style="padding: 0;">
-								<app-map-handler [service_route]="route" (marker_clicked)="show_event_data($event)"> </app-map-handler>
+								<app-map-handler [service_route]="service_routes[j]" (marker_clicked)="show_event_data($event)"> </app-map-handler>
 							</div>
 							<div class="col s12 m2 l2 scrollable">
-								<li *ngFor="let item of routeItemsList[j]; let i = index">
-
-
-										<div  *ngIf="item.entity_type=='facility'">
+								<li *ngFor="let item of route_object_list_arr[j]; let i = index">
+										<div  *ngIf="item.type=='facility'">
 											<div *ngIf="item.display==false" class="facility_info" (click)="server_entity_view(item,i,j)">Facility</div>
 											<div *ngIf="item.display==true" class="facility_info_close" (click)="close_server_entity_view(item,i,j)">Facility</div>
 											<div class="route_item_seperator"></div>
 										</div>
-										<div  *ngIf="item.entity_type=='serviceorder'">
-											<div *ngIf="item.display==false" class="serviceorder_info" (click)="server_entity_view(item,i,j)">{{item.size.name + " " + item.order_type.name}}</div>
-											<div *ngIf="item.display==true" class="serviceorder_info_close" (click)="close_server_entity_view(item,i,j)">{{item.size.name + " " + item.order_type.name}}</div>
+										<div  *ngIf="item.type=='serviceorder'">
+											<div *ngIf="item.display==false" class="serviceorder_info" (click)="server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
+											<div *ngIf="item.display==true" class="serviceorder_info_close" (click)="close_server_entity_view(item,i,j)">{{item.size + " " + item.order_type}}</div>
 											<div class="route_item_seperator"></div>
 										</div>
-										<div  *ngIf="item.entity_type=='yard'">
+										<div  *ngIf="item.type=='yard'">
 											<div *ngIf="item.display==false" class="yard_info" (click)="server_entity_view(item,i,j)">Landfill</div>
 											<div *ngIf="item.display==true" class="yard_info_close" (click)="close_server_entity_view(item,i,j)">Landfill</div>
 											<div class="route_item_seperator"></div>
@@ -191,9 +149,26 @@
 	<app-map-handler [service_route]="routesList[j]" (marker_clicked)="show_event_data($event)"> </app-map-handler>
 </div> -->
 
+<!-- Add service detail modal -->
+<div *ngIf="markers_initialized">
+	<div id="serviceDetailModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="serviceDetailModal">
+		<app-service-detail [service_detail_number]="service_detail_number" [service_detail_info]="service_detail_info"></app-service-detail>
+	</div>
+  </div>
 <!-- toast messages -->
 <a materialize
 	[materializeParams]="['Error, please enter a valid range of dates',4000]"
 	[materializeActions]="filterToastError"></a>
 <a materialize [materializeParams]="['Route with no items',4000]"
 	[materializeActions]="routeNoItemsToastError"></a>
+
+<!-- Modal Structure -->
+  <div id="errorModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="errorModal">
+    <div class="modal-content">
+      <h4>Oops something went wrong!</h4>
+      <p>{{errorThrown}}</p>
+    </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat" name="onCloseClicked()">Try Again</a>
+  </div>
+</div>

@@ -21,7 +21,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	// getCompaniesByUser(pagingInfo):Promise<any> {
-	// 	super.showSpinner();
+	// 	//super.showSpinner();
 	// 	var params=super.getPagingInfoAsURLParams('',pagingInfo);
 	// 	if (!isNullOrUndefined(this.authService.getCurrentUser())){
   //     params=super.getFilterAsUrlParams(params,{user:this.authService.getCurrentUser().user_key});
@@ -40,7 +40,6 @@ export class CompaniesService extends BaseService{
   // }
 
   getCompaniesByUser(pagingInfo):Promise<any> {
-		super.showSpinner();
 		var params=super.getPagingInfoAsURLParams('',pagingInfo);
 		if (!isNullOrUndefined(this.authService.getCurrentUser())){
       params=super.getFilterAsUrlParams(params,{user:this.authService.getCurrentUser().id});
@@ -49,8 +48,8 @@ export class CompaniesService extends BaseService{
     console.log(GET_ALL_COMPANIES_URL + params);
     return this.http.get(GET_ALL_COMPANIES_URL + params).toPromise()
       .then(response => {
+        super.hideSpinner();
         console.log(response);
-				super.hideSpinner();
         var res=response.json();
         var main_response= super.parsePaginationResponse(res, Company);
         return Promise.resolve(JSON.stringify(main_response.records));
@@ -63,7 +62,7 @@ export class CompaniesService extends BaseService{
    *
    * */
   getAllCompanies(pagingInfo):Promise<PaginationResponse> {
-    super.showSpinner();
+    //super.showSpinner();
     var params='';
     if (!isNullOrUndefined(pagingInfo)){
       params=super.getPagingInfoAsURLParams(params,pagingInfo).toString();
@@ -86,7 +85,7 @@ export class CompaniesService extends BaseService{
    *
    * */
   getCompanyById(companyId):Promise<Company> {
-    super.showSpinner();
+    //super.showSpinner();
     var params='?company='+companyId;
     return this.http.get(GET_ALL_COMPANIES_URL + params).toPromise()
       .then(response => {
@@ -108,7 +107,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	addCompany(companyData):Promise<string> {
-		super.showSpinner();
+		//super.showSpinner();
     return this.http.post(ADD_COMPANY_URL , companyData).toPromise()
       .then(response => {
 				super.hideSpinner();
@@ -127,7 +126,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	addUserCompany(userData):Promise<string> {
-		super.showSpinner()
+		//super.showSpinner();
     return this.http.post(ADD_USER_TO_COMPANY_URL,userData).toPromise()
       .then(response => {
 				super.hideSpinner();
@@ -146,7 +145,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	getUsersCompany(companyId,pagingInfo):Promise<PaginationResponse> {
-		super.showSpinner();
+		//super.showSpinner();
 		var params=super.getPagingInfoAsURLParams('',pagingInfo);
     return this.http.get(GET_ALL_USER_FOR_COMPANY_URL+companyId+pagingInfo).toPromise()
       .then(response => {
@@ -166,7 +165,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	deleteUser(id):Promise<string> {
-		super.showSpinner()
+		//super.showSpinner();
     return this.http.post(DELETE_USER_TO_COMPANY_URL,'id='+id).toPromise()
       .then(response => {
 				super.hideSpinner();
@@ -185,7 +184,7 @@ export class CompaniesService extends BaseService{
 	 *
 	 * */
 	addPricingCompany(pricingData):Promise<string> {
-		super.showSpinner()
+		//super.showSpinner();
     return this.http.post(ADD_PRICING_URL,pricingData).toPromise()
       .then(response => {
 				super.hideSpinner();
@@ -205,7 +204,7 @@ export class CompaniesService extends BaseService{
    *
    * */
 	getAllPricing(companyId,pagingInfo):Promise<PaginationResponse> {
-		super.showSpinner();
+		//super.showSpinner();
 		var params = super.getPagingInfoAsURLParams(companyId,pagingInfo);
 		return this.http.get(GET_ALL_PRICINGS_URL + params).toPromise()
 			.then(response => {

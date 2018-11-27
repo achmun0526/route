@@ -9,6 +9,8 @@ import {
   ROUTES_URL,
   FLUSH_ROUTES_URL,
   ARRANGE_ROUTE_ITEM_URL,
+  ROUTES_AND_ROUTE_ITEMS,
+  ROUTE_ITEM_STATUS_URL
 } from '../../common/app-conf';
 import { BaseService} from '../../common/base-service';
 import { isNullOrUndefined} from "util";
@@ -32,6 +34,7 @@ export class RoutesService extends BaseService{
    *
    * */
   getAllRoutes(pagingInfo, optimized):Promise<PaginationResponse> {
+    console.log("in routes.service.getAllRoutes()");
     super.showSpinner();
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id +
     ( (optimized != null)? "&optimized="+optimized : "");
@@ -228,44 +231,27 @@ addRouteItems(route_items):Promise<any>{
       .catch(this.handleError);
   }
 
-
+////////////////////////// THESE ARE THE IMPORTANT ONES ////////////////////////
+////////////////////// START CLEANING OUT THE OTHER ONES //////////////
 // This saves the ServiceRoute model to the session storage so we can look at it inside the Route segment in the Dashboard
-  saveRoutes(route){
-    debugger
-    console.log("routes.service.saveRoutes()");
-
-    let route_portion={};
-    let route_items = route.route_items;
-    route_portion["total_time"]=parseFloat(route.time);
-    route_portion["total_distance"]=parseFloat(route.distance);
-    route_portion["driver"]=null;
-    route_portion["num_of_stops"]=route_items.length;
-    route_portion["company_key"]=route.company_key;
-    route_portion["date"]=route.date;
-    route_portion["status"]=1;
-
-    console.log(route_portion);
-
-    return this.http.post(ROUTES_URL, route_portion).toPromise()
+  saveRoutesAndRouteItems(routes){
+    return this.http.post(ROUTES_AND_ROUTE_ITEMS, routes).toPromise()
       .then(response => {
-        let res = response.json();
-        console.log(res);
-        for(let i=0;i<route_items.length;i++){
-          route_items[i]["route_key"]=res.response.id;
-        }
-
-        console.log(route_items);
-        debugger
-        this.http.post(ADD_ROUTES_ITEM_URL, route_items).toPromise()
-          .then(response => {
-            super.hideSpinner();
-            console.log(response);
-          })
-          .catch(err=>(console.log("error: "+err)));
-
+        console.log(response)
       })
       .catch(err=>(console.log("error: "+err)));
   }
+
+  saveRoute(route){
+    console.log("inside save route");
+    return this.http.post(ROUTES_URL, route).toPromise()
+      .then(response => {
+        console.log(response)
+      })
+      .catch(err=>(console.log("error: "+err)));
+  }
+
+////////////////////////////////////////////////////////////////////////
 
   /**
    * Deletes all the routes and route items for a given day
@@ -329,18 +315,20 @@ addRouteItems(route_items):Promise<any>{
   }
 
   getRouteItemsByRoute(route_key): Promise<RouteItem[]> {
-
     if (route_key === '') {
+      console.log("in getRouteItemsByRoute");
       return Promise.all([]);
     }
-
+    console.log("route_key not ''");
+    console.log(route_key);
     super.showSpinner();
 
     return this.http.get(ADD_ROUTES_ITEM_URL + '?route_key=' + route_key).toPromise()
       .then(response => {
         super.hideSpinner();
         let res = response.json();
-
+        console.log("in routes.service get RouteItemsByROute");
+        console.log(res);
         let items: RouteItem[] = [];
 
         if (res.status===SUCCESS){
@@ -360,7 +348,7 @@ addRouteItems(route_items):Promise<any>{
       });
   }
 
-  getRouteByDriver(driverKey, date = ''): Promise<ServiceRoute> {
+  getRouteByDriver(driverKey, date): Promise<ServiceRoute> {
       let params = '?driver_key=' + driverKey;
 
       if (date == '') {
@@ -383,7 +371,8 @@ addRouteItems(route_items):Promise<any>{
       });
   }
 
-  getRouteByUser(date = ''): Promise<ServiceRoute> {
+  getRouteByUser(date): Promise<ServiceRoute> {
+    console.log("in getRouteByUser");
     return this.driverService.getDriverByUser().then(driver => {
       return this.getRouteByDriver(driver.id, date);
     });
@@ -400,6 +389,22 @@ addRouteItems(route_items):Promise<any>{
       return this.getRouteItemsByRoute(route.id);
     })
   }
+
+  getRouteItemStatus(route_item_key) {
+    return this.http.get(ROUTE_ITEM_STATUS_URL + '?id=' + route_item_key).toPromise().then(response => {
+      return response.status;
+    });
+  }
+
+  setRouteItemStatus(route_item_key, status) {
+    console.log('Route item ' + route_item_key + '; Status ' + status);
+    return this.http.post(ROUTE_ITEM_STATUS_URL, {id: route_item_key, status: status}).toPromise();
+  }
+
+  //setRouteItemDriver(route_item_key, driver) {
+  //  console.log('Route item ' + route_item_key + '; Driver ' + driver);
+  //  return this.http.post(ROUTE_ITEM)
+  //}
 
   get_routes_from_cache(){
     super.showSpinner();

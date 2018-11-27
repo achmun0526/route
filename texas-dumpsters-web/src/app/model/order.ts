@@ -41,13 +41,13 @@ export class Order extends ServerEntity{
 	service_ticket_id:string="";
 
   parseServerResponse(response){
-		super.parseServerResponse(response);
-
+    super.parseServerResponse(response);
+		console.log("from order parseserver");
     this.site=new Site();
-		this.site.parseServerResponse(response.site);
+    this.site.parseServerResponse(response.site);
 
-		this.customer=new Customer();
-		this.customer.parseServerResponse(response.customer);
+    this.customer=new Customer();
+    this.customer.parseServerResponse(response.customer);
   }
 
   /**

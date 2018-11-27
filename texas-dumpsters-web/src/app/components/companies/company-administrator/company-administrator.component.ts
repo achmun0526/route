@@ -43,6 +43,7 @@ export class CompanyAdministratorComponent extends BaseComponent implements OnIn
     }
 
     getCompanies() {
+        debugger
         this.companiesService.getCompaniesByUser(this.pageInfo).then(res => {
             this.companiesList = JSON.parse(res);
             this.totalCompanies = this.companiesList.length;

@@ -537,7 +537,7 @@ class Driver(BaseModel):
     authentication_failure_count = ndb.IntegerProperty()
 
     company_key = ndb.KeyProperty(kind=Company, required=True)
-    user_key = ndb.KeyProperty(kind=User, required=False)
+    user_key = ndb.KeyProperty(kind=User, required=True)
     driver_email = ndb.StringProperty(required=True)
     driver_name = ndb.StringProperty()
     driver_phone= ndb.StringProperty()
@@ -1744,11 +1744,13 @@ class Vehicle(BaseModel):
             active = self.active
         )
 
+
 class RouteStatus(messages.Enum):
-    New = 1 #default
+    New = 1  # default
     InProgress = 2
     Completed = 3
-    Failed = 4 #when the route is not completed
+    Failed = 4  # when the route is not completed
+
 
 class Route(BaseModel):
 
@@ -1785,7 +1787,32 @@ class Route(BaseModel):
     @classmethod
     def get_all_in_progress_by_driver_key(cls, driver_key):
         return cls.query().filter(ndb.AND(cls.driver_key == driver_key, ndb.AND(cls.status == RouteStatus.InProgress))).fetch()
+    @classmethod
+    def get_todays(cls,filters):
 
+
+        total = 0
+        query = cls.query()
+        entities = None
+
+        print("inside get todays routes \n")
+        print(filters["company_key"])
+        print(filters["date"])
+
+        if str(filters["company_key"]):
+            query = query.filter(cls.company_key == ndb.Key(urlsafe = filters["company_key"]))
+
+        if(str(filters["date"]) ):
+            date = datetime.strptime(str(filters["date"]), "%m/%d/%Y")
+            print("inside filters for the flush \n")
+            print(date)
+            query = query.filter(cls.date == date)
+
+
+        entities = query.order(-cls.date).fetch()
+        total = len(entities)
+
+        return entities, total
     @classmethod
     def get_all(cls, page, page_size, filters):
 
@@ -1901,6 +1928,14 @@ class Route(BaseModel):
             status = int(self.status) if self.status is not None else None
         )
 
+
+class RouteItemStatus(messages.Enum):
+    New = 1  # default
+    InProgress = 2
+    Completed = 3
+    Failed = 4  # when the route is not completed
+
+
 class RouteItem(BaseModel):
 
     dist_2_next = ndb.FloatProperty()
@@ -1915,6 +1950,7 @@ class RouteItem(BaseModel):
     active = ndb.BooleanProperty(required=True, default=True)
     latitude = ndb.StringProperty()
     longitude = ndb.StringProperty()
+    status = msgprop.EnumProperty(RouteItemStatus, default=RouteItemStatus.New)
 
     def save(self):
         logging.warning("inside save")
@@ -1967,8 +2003,8 @@ class RouteItem(BaseModel):
             audit.save()
 
     @classmethod
-    def get_by_entity_key(cls, entity_key):
-        query = cls.query().filter(cls.entity_key == entity_key).get()
+    def get_by_item_key(cls, item_key):
+        query = cls.query().filter(cls.item_key == item_key).get()
         return query
 
     @classmethod
@@ -2015,22 +2051,29 @@ class RouteItem(BaseModel):
         return entity
 
     def to_dict(self):
+        logger.warning("in route_item to_dict")
         entity = self.key.get()
 
         if self.entity_type == "serviceorder":
             #Very temporary fix to the specific key type problem
             self.serviceorder_key = ndb.Key(ServiceOrder,self.item_key)
             item_entity = self.serviceorder_key.get()
+            logger.warning("before serviceorder entity item")
+            logger.warning(item_entity)
             item = item_entity.to_dict() if self.serviceorder_key is not None else None
         elif self.entity_type == "facility":
             #Very temporary fix to the specific key type problem
             self.facility_key = ndb.Key(Facility,self.item_key)
             item_entity = self.facility_key.get()
+            logger.warning("before facility entity item")
+            logger.warning(item_entity)
             item = item_entity.to_dict() if self.facility_key is not None else None
         else:
             #Very temporary fix to the specific key type problem
             self.yard_key = ndb.Key(Yard,self.item_key)
             item_entity = self.yard_key.get()
+            logger.warning("before yard entity item")
+            logger.warning(item_entity)
             item = item_entity.to_dict() if self.yard_key is not None else None
 
         return dict(
@@ -2045,6 +2088,7 @@ class RouteItem(BaseModel):
             active = self.active,
             latitude = self.latitude,
             longitude = self.longitude,
+            status = self.status.number,
         )
 
 
@@ -2633,3 +2677,4 @@ class RoutePositionHistory(BaseModel):
             modified_at=self.modified_at.isoformat(),
             modified_by=self.modified_by
         )
+
