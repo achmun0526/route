@@ -83,6 +83,8 @@ export class RoutesService extends BaseService{
   // Get the routes fitering by one of these paremeters
   getRoutesByCompanyOrDriverOrVehicle(pagingInfo, company_key, driver_key, vehicle_key, startDate, endDate):Promise<any> {
     super.showSpinner();
+    console.log("in getRoutesByCompanyOrDriverOrVehicle");
+    console.log(driver_key);
     var params='?parameter=' +
        (company_key != null? '&company_key=' + company_key : '') +
        (driver_key != null ? '&driver_key=' + driver_key:'') +
