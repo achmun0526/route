@@ -31,7 +31,7 @@ export class AdministratorRouteComponent extends BaseComponent implements OnInit
   private date = Utils.date2FormattedString(new Date(), 'MM/DD/YYYY');
   private currentUser = null;
   private driverRoutes;
-  private driversList;
+  private driversList = null;
   private showDrivers = false;
   private currentDriver = null;
   private userRole;
@@ -122,7 +122,8 @@ export class AdministratorRouteComponent extends BaseComponent implements OnInit
     this.routeItemsList = [];
     this.totalRouteItems = 0;
     this.currentDriver = driver;
-    this.routesService.getRoutesByCompanyOrDriverOrVehicle(this.pageInfo, null, driver.key, null, this.date, this.date).then(routes => {
+    console.log(driver);
+    this.routesService.getRoutesByCompanyOrDriverOrVehicle(this.pageInfo, null, driver, null, this.date, this.date).then(routes => {
       this.driverRoutes = routes;
       console.log(routes);
       for(let route of this.driverRoutes) {

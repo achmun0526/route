@@ -1815,7 +1815,8 @@ class Route(BaseModel):
         return entities, total
     @classmethod
     def get_all(cls, page, page_size, filters):
-
+        logger.warning("from inside get_all in route models")
+        logger.warning(filters)
         total = 0
         query = cls.query()
         entities = None
@@ -1839,10 +1840,13 @@ class Route(BaseModel):
                 query = query.filter(cls.date == fictional_date)
 
         if str(filters["driver_key"]):
+            logger.warning("from inside driver key")
             keys = str(filters["driver_key"]).split(',')
+            logger.warning(keys)
             drivers_keys = []
             for key in keys:
                 drivers_keys.append(ndb.Key(urlsafe=key))
+                logger.warning(key)
             if len(drivers_keys) > 0:
                 query = query.filter(cls.driver_key.IN(drivers_keys))
             else:
@@ -1851,6 +1855,7 @@ class Route(BaseModel):
                 query = query.filter(cls.date == fictional_date)
 
         if str(filters["company_key"]):
+            logger.warning("inside company_key in models")
             keys = str(filters["company_key"]).split(',')
             companies_keys = []
             for key in keys:
@@ -1863,7 +1868,7 @@ class Route(BaseModel):
                 query = query.filter(cls.date == fictional_date)
 
         if str(filters["start_date"]) and str(filters["end_date"]):
-
+            logger.warning("inside date thing in model")
             sd = datetime.strptime(str(filters["start_date"]), "%m/%d/%Y")
             ed = datetime.strptime(str(filters["end_date"]), "%m/%d/%Y")
             ed = ed + timedelta(hours=23, minutes=59, seconds=59)

@@ -2453,6 +2453,8 @@ class RouteHandler(BaseHandler):
             num_of_stops = data.get('num_of_stops')
             status = data.get('status')
             notes = data.get('notes')
+            logger.warning("before date in route basehandlers======================")
+            logger.warning(date)
 
             route = Route()
 
@@ -2467,7 +2469,7 @@ class RouteHandler(BaseHandler):
 
             route.populate(
                 company_key=company_key,
-                date=datetime.strptime(date, "%m/%d/%Y"),
+                date=datetime.strptime(date, "%m/%d/%y"),
                 driver_key=driver_key,
                 total_distance=total_distance,
                 total_time=total_time,
