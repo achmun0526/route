@@ -182,9 +182,11 @@ compute() {
       this.data_loaded = 1;
 
       console.log(JSON.stringify(this.data));
+      $(".spinnerImg").show();
       this.http.post('http://35.243.153.186:80', this.data)
       .toPromise()
         .then(val => {
+          $(".spinnerImg").hide();
           let data = val['_body'];
           console.log(data);
           data = JSON.parse(data);
@@ -199,7 +201,12 @@ compute() {
             this.update_page(body)
           }
           })
-        .catch(err => console.log('error: %s', err));
+        .catch(
+        err => console.log('error: %s', err);
+            this.errorThrown = "The response did not go through correctly. Please try again";
+            $(".spinnerImg").hide();
+            this.openErrorModal();
+        );
     } else {
       let Truck_Value = {};
       Truck_Value['truck_num'] = parseInt(this.num_of_trucks);
@@ -210,7 +217,7 @@ compute() {
       Iteration_Value['iteration_num'] = parseInt(this.num_of_iterations);
       this.iterations[0]=Iteration_Value;
       this.data['num_of_iterations']=this.iterations;
-
+      $(".spinnerImg").show();
       console.log(this.data);
       this.http.post('http://35.243.153.186:80', this.data).toPromise()
         .then(val => {
@@ -229,7 +236,11 @@ compute() {
               this.update_page(body)
             }
           })
-        .catch(err => console.log('error: %s', err));
+        .catch(err => console.log('error: %s', err);
+            this.errorThrown = "The response did not go through correctly. Please try again";
+            $(".spinnerImg").hide();
+            this.openErrorModal();
+        );
 
     }
 }
