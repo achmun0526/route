@@ -115,7 +115,6 @@ export class ComputeComponent extends BaseComponent implements OnInit {
   private companyList: any;
   private errorModal = new EventEmitter<string|MaterializeAction>();
   private errorThrown;
-
   private isAdmin = false;
 
   constructor(private authService: AuthService,private route: ActivatedRoute, private http: Http, private computeService: ComputeService,
@@ -202,11 +201,12 @@ compute() {
           }
           })
         .catch(
-        err => console.log('error: %s', err);
-            this.errorThrown = "The response did not go through correctly. Please try again";
-            $(".spinnerImg").hide();
-            this.openErrorModal();
-        );
+        err => {
+        console.log('error: %s', err);
+        $(".spinnerImg").hide();
+        this.errorThrown = "The response did not go through correctly. Please try again";
+        this.openErrorModal();
+         });
     } else {
       let Truck_Value = {};
       Truck_Value['truck_num'] = parseInt(this.num_of_trucks);
@@ -222,6 +222,7 @@ compute() {
       this.http.post('http://35.243.153.186:80', this.data).toPromise()
         .then(val => {
           console.log(val);
+            $(".spinnerImg").hide();
             let data = val['_body'];
             data = JSON.parse(data);
             let body = data['body'];
@@ -236,17 +237,16 @@ compute() {
               this.update_page(body)
             }
           })
-        .catch(err => console.log('error: %s', err);
-            this.errorThrown = "The response did not go through correctly. Please try again";
-            $(".spinnerImg").hide();
-            this.openErrorModal();
-        );
-
+        .catch(err => {
+        console.log('error: %s', err);
+        $(".spinnerImg").hide();
+        this.errorThrown = "The response did not go through correctly. Please try again";
+        this.openErrorModal();
+        });
     }
 }
 
 compile_data(){
-
   this.data = {};
   this.orders = [];
   this.trucks = [];
