@@ -3,7 +3,9 @@ import { Http } from '@angular/http';
 import { Customer } from '../../model/customer';
 import { ServicesAddress } from '../../model/service_address';
 import { PaginationResponse } from '../../model/pagination_response';
-import { SUCCESS, ADD_CUSTOMER_URL, DELETE_CUSTOMER_URL,GET_ALL_CUSTOMER_URL, ADD_ADDRESS_TO_CUSTOMER_URL, DELETE_ADDRESS_TO_CUSTOMER_URL, GET_ALL_ADDRESS_FOR_CUSTOMER_URL} from '../../common/app-conf';
+import { SUCCESS, ADD_CUSTOMER_URL, DELETE_CUSTOMER_URL,
+  GET_ALL_CUSTOMER_URL, ADD_ADDRESS_TO_CUSTOMER_URL,
+  DELETE_ADDRESS_TO_CUSTOMER_URL, GET_ALL_ADDRESS_FOR_CUSTOMER_URL, CHAR_QUERY_CUSTOMER} from '../../common/app-conf';
 import { BaseService} from '../../common/base-service';
 import { isNullOrUndefined} from "util";
 import {AuthService} from "../auth/auth.service";
@@ -20,15 +22,6 @@ export class CustomerService extends BaseService{
    *
    *
    * */
-
-
-   // if (!isNullOrUndefined(this.getCurrentUser())){
-   //   var key=this.getCurrentUser().email+'-company';
-   //   if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
-   //     sessionStorage.setItem(key,JSON.stringify(company));
-
-// I need to update this
-//
 
 
 getAllCustomers(overwrite,pageInfo):Promise<string> {
@@ -62,12 +55,36 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
       .catch(this.handleError);
   }
 
+  getCustomerByPhoneNumber(phone_number):Promise<Customer[]>{
+    var params = '?params=';
+    params+='&company_key='+this.authService.getCurrentSelectedCompany().id;
+    params+='&phone_number='+phone_number;
+    return this.http.get(CHAR_QUERY_CUSTOMER + params).toPromise()
+      .then(response => {
+        let res =response.json();
+        let items: Customer[] = [];
+        if (res.status===SUCCESS){
+          items = res.response.records.map(rec => {
+            let item = new Customer();
+            item.parseServerResponse(rec);
+            return item;
+          });
+        }
+        return items;
+      }).catch(err => {
+        console.log("error in customer.service.getCustomersByPhoneNumber %s",err);
+        return [];
+      });
+  }
+
 	/**
 	 * This method calls the server in order to add customer
 	 *
 	 *
 	 * */
 	addCustomer(customerData):Promise<string> {
+    console.log("INSIDE customer.service.addCustomer()")
+    console.log(customerData);
 		//super.showSpinner();
     return this.http.post(ADD_CUSTOMER_URL , customerData).toPromise()
       .then(response => {
@@ -138,5 +155,6 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
         }})
       .catch(this.handleError);
   }
+
 
 }

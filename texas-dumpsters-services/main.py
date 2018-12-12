@@ -48,6 +48,7 @@ app = webapp2.WSGIApplication([
 
      # Customer
      webapp2.Route('/x/a/v1/customer', handler=CustomerHandler),
+     webapp2.Route('/x/a/v1/customer_char_query', handler=CustomerQueryHandler),
 
      # Driver
      webapp2.Route('/x/a/v1/driver', handler=DriverHandler),

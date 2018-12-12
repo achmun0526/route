@@ -16,7 +16,6 @@
 	<ul class="tabs" materialize="tabs" style="background-color: white;">
 		<li class="tab col s6"><a href="#routes" (click)="loadRoutes()">Routes</a></li>
 		<li class="tab col s6"><a href="#orders" (click)="loadOrders()">Orders</a></li>
-		<li class="tab col s6"><a href="#routeitems" (click)="loadRoutes()">Route Items</a></li>
 	</ul>
 </div>
 
@@ -26,7 +25,7 @@
 	<!-- filters -->
 	<div class="row">
 
-		<div class="input-field-col col s12 m3 l2" *ngIf="enableCompanyDD">
+		<!-- <div class="input-field-col col s12 m3 l2" *ngIf="enableCompanyDD">
 			<select multiple (change)="companyFilterChanged($event)"
 				class="smallDropdown" [(ngModel)]="selectedCompany"
 				materialize="material_select"
@@ -35,7 +34,7 @@
 				<option *ngFor="let item of companyList;let i = index;"
 					[value]="item.id">{{item.name}}</option>
 			</select>
-		</div>
+		</div> -->
 
 		<div class="input-field-col col s12 m3 l2" *ngIf="enableDriverDD">
 			<select multiple (change)="driverFilterChanged(selectedDriver)"
@@ -98,8 +97,8 @@
 							<div class="col s12 m12 l2">
 									<div class="tab_label">Status:</div>
 									<select class="smallDropdown"
-													id="routeItemStatus"
-													name="routeItemStatus"
+													id="routeDriver"
+													name="routeDriver"
 													materialize="material_select"
 													(change)="driverChange(route)"
 													[(ngModel)]="route.driver_key"

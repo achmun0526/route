@@ -728,6 +728,7 @@ class Customer(BaseModel):
     contact_name = ndb.StringProperty()
     contact_email = ndb.StringProperty()
     contact_phone = ndb.StringProperty()
+    contact_phone_lower = ndb.ComputedProperty(lambda self: self.contact_phone.lower())
     billing_address = ndb.StringProperty()
     billing_zipcode = ndb.StringProperty()
     billing_state = ndb.StringProperty()
@@ -1094,6 +1095,7 @@ class ServiceOrder(BaseModel):
             action_type = AuditActionType.Updated
 
         key = self.put()
+
         if key is not None:
             audit = Audit()
             audit.populate(
@@ -1102,6 +1104,7 @@ class ServiceOrder(BaseModel):
                 action=action_type,
                 user_email=users.get_current_user().email() if users.get_current_user() is not None else ''
             )
+
             audit.save()
 
         return self.get(key.urlsafe())
@@ -1226,7 +1229,7 @@ class ServiceOrder(BaseModel):
             failure_reason = int(self.failure_reason) if self.failure_reason is not None else None,
             service_time_frame = self.service_time_frame,
             purpose_of_service = int(self.purpose_of_service) if self.purpose_of_service is not None else None,
-            driver_entry_info = self.driver_entry_info,
+            driver_entry_info = self.driver_entry_info if self.driver_entry_info is not None else None,
             service_date = self.service_date.strftime("%Y-%m-%d %H:%M:%S") if self.service_date is not None else None,
             active = self.active,
             quantity = self.quantity,
@@ -1908,7 +1911,7 @@ class Route(BaseModel):
         return dict(
             id = self.key.urlsafe(),
             company_key = self.company_key.urlsafe(),
-            date = self.date.strftime("%m/%d/%y"),
+            date = self.date.strftime("%m/%d/%Y"),
             driver_key = self.driver_key.urlsafe() if self.driver_key is not None else None,
             total_distance = self.total_distance,
             total_time = self.total_time,
@@ -2061,24 +2064,18 @@ class RouteItem(BaseModel):
 
         if self.entity_type == "serviceorder":
             #Very temporary fix to the specific key type problem
-            self.serviceorder_key = ndb.Key(ServiceOrder,self.item_key)
+            self.serviceorder_key = ndb.Key(urlsafe = self.item_key)
             item_entity = self.serviceorder_key.get()
-            logger.warning("before serviceorder entity item")
-            logger.warning(item_entity)
             item = item_entity.to_dict() if self.serviceorder_key is not None else None
         elif self.entity_type == "facility":
             #Very temporary fix to the specific key type problem
-            self.facility_key = ndb.Key(Facility,self.item_key)
+            self.facility_key = ndb.Key(urlsafe = self.item_key)
             item_entity = self.facility_key.get()
-            logger.warning("before facility entity item")
-            logger.warning(item_entity)
             item = item_entity.to_dict() if self.facility_key is not None else None
         else:
             #Very temporary fix to the specific key type problem
-            self.yard_key = ndb.Key(Yard,self.item_key)
+            self.yard_key = ndb.Key(urlsafe = self.item_key)
             item_entity = self.yard_key.get()
-            logger.warning("before yard entity item")
-            logger.warning(item_entity)
             item = item_entity.to_dict() if self.yard_key is not None else None
 
         return dict(
@@ -2682,4 +2679,3 @@ class RoutePositionHistory(BaseModel):
             modified_at=self.modified_at.isoformat(),
             modified_by=self.modified_by
         )
-

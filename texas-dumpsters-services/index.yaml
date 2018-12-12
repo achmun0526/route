@@ -57,6 +57,11 @@ indexes:
 - kind: Customer
   properties:
   - name: company_key
+  - name: contact_phone
+
+- kind: Customer
+  properties:
+  - name: company_key
   - name: created_at
     direction: desc
 

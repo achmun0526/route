@@ -207,6 +207,8 @@ class BaseHandler(webapp2.RequestHandler):
 
     def redirect(self, *args, **kwargs):
         request_origin = self.request.headers.get('Origin', None)
+        print("inside request origin approval")
+        print(request_origin)
         if request_origin in config.CORS_APPROVED:
             self.response.headers['Access-Control-Allow-Origin'] = request_origin
         return super(BaseHandler, self).redirect(*args, **kwargs)
@@ -237,6 +239,8 @@ class BaseHandler(webapp2.RequestHandler):
 
     def options(self):
         request_origin = self.request.headers.get('Origin', None)
+        print("inside request origin approval")
+        print(request_origin)
         if request_origin in config.CORS_APPROVED:
             self.response.headers['Access-Control-Allow-Origin'] = request_origin
         self.response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
@@ -244,6 +248,8 @@ class BaseHandler(webapp2.RequestHandler):
 
     def json_data(self, output):
         request_origin = self.request.headers.get('Origin', None)
+        print("inside request origin approval")
+        print(request_origin)
         if request_origin in config.CORS_APPROVED:
             self.response.headers['Access-Control-Allow-Origin'] = request_origin
         web_output = json.dumps(output, indent=2)
@@ -479,6 +485,8 @@ class SignInHandler(BaseHandler):
         from models import User
         from webapp2_extras import security
 
+        print("INSIDE THE SIGN IN HANDLER \n")
+
         email, password = self.get_request_values("email", "password")
 
         email = email.lower()
@@ -494,8 +502,13 @@ class SignInHandler(BaseHandler):
                 return self.json_data(get_fail_response(errors, locked=True))
 
             if password_check or (password == user.password):
+                print("inside SingInHandler.password_check")
                 resp = get_success_reponse(email=email, user=user.to_dict())
+                print(resp)
+                print("ABOUT TO SET THE SESSION")
+                print(self.auth.store.user_to_dict(user))
                 self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
+                print("AFTER SETTING THE SESSION")
                 return self.json_data(resp)
             else:
                 errors = ['Login failed for user %s  password: %s was incorrect ' % (email, password)]
@@ -519,16 +532,19 @@ class ProfileHandler(BaseHandler):
         from services import UserService
         from models import User
 
-        google_user = users.get_current_user()
-        resp = None
-        if google_user is None:
-            user = UserService.UserInstance.get_by_email('test@gmail.com')
-            if user is None:
-                resp = get_fail_response(['Not Authenticated.  No user found in session'])
-            else:
-                resp = get_success_reponse(user=self.user.to_dict())
-        else:
-            resp = get_success_reponse(user=self.user.to_dict())
+        print(self)
+        resp = get_success_reponse(user=self.user.to_dict())
+
+        # current_user = users.get_current_user()
+        # print("INSIDE THE PROFILE HANDLER!!!!!!!!!!! \n")
+        # print(current_user)
+        # resp = None
+        # if current_user is None:
+        #     print("user is none")
+        #     resp = get_fail_response(['Not Authenticated.  No user found in session'])
+        # else:
+        #     print("returning the user")
+        #     resp = get_success_reponse(user=self.user.to_dict())
         return self.json_data(resp)
 
     @role_required()
@@ -1099,16 +1115,27 @@ class UserXCompanyHandler(BaseHandler):
 
     def get(self):
         try:
-
             from services import UserXCompanyService
+            from services import CompanyService
             from models import UserXCompany
+            from models import Company
 
-            # Pagination
-            page = self.request.get('page')
-            page_size = self.request.get('page_size')
+            print("INSIDE GET USERXCOMPANY \n")
 
-            entities, total = UserXCompanyService.UserXCompanyInstance.get_all(page, page_size)
-
+            user = self.request.get('user')
+            user_entity = ndb.Key(urlsafe=user).get()
+            user_roles = user_entity.get_roles()
+            user_role = user_roles[0].name
+            if user_role=='ADMIN':
+                print("user DOES HAVE THE ROLE ADMIN ;0)")
+                entities = Company.query(Company.active==True).fetch()
+                total = len(entities)
+            else:
+                uxc_list = UserXCompany.query(UserXCompany.user == ndb.Key(urlsafe = user)).fetch()
+                entities = []
+                for uxc_item in uxc_list:
+                    entities.append(uxc_item.company.get())
+                    total = len(entities)
             response = {
                 "total": total,
                 "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))
@@ -1137,6 +1164,8 @@ class CustomerHandler(BaseHandler):
             contact_name = data.get('contact_name')
             contact_email = data.get('contact_email')
             contact_phone = data.get('contact_phone')
+            print("INSIDE CustomerHandler.Post \n")
+            print(contact_phone)
             billing_address = data.get('billing_address')
             billing_zipcode = data.get('billing_zipcode')
             billing_state = data.get('billing_state')
@@ -1152,6 +1181,8 @@ class CustomerHandler(BaseHandler):
 
             customer = Customer()
 
+            print("before customer populate \n")
+
             customer.populate(
                 company_key=ndb.Key(urlsafe=company_key),
                 source_system_id=source_system_id,
@@ -1165,11 +1196,11 @@ class CustomerHandler(BaseHandler):
                 billing_zipcode=billing_zipcode,
                 billing_state=billing_state,
                 billing_city=billing_city,
-                active=active,
                 notes=notes
             )
 
-            if id is not None:
+
+            if id:
                 customer.key = ndb.Key(urlsafe=id)
 
             customer = CustomerService.CustomerInstance.save(customer, create_service_address)
@@ -1219,6 +1250,52 @@ class CustomerHandler(BaseHandler):
         except Exception, e:
             return self.audit(e)
 
+class CustomerQueryHandler(BaseHandler):
+    def get(self):
+        try:
+            from services import CustomerService
+            from models import Customer
+
+            print("inside the customer query handler \n")
+
+             #Filters
+            company_key= self.request.get('company_key')
+            phone_number = self.request.get('phone_number')
+
+
+            print(company_key)
+            query = Customer.query()
+            if str(company_key):
+                query = query.filter(Customer.company_key == ndb.Key(urlsafe = company_key))
+            if str(phone_number):
+                phone_number = phone_number.lower()
+                limit = phone_number[:-1] + chr(ord(phone_number[-1]) + 1)
+                query = query.filter(Customer.contact_phone >=phone_number, Customer.contact_phone < limit)
+
+            entities = query.order().fetch(10)
+            total = len(entities)
+
+            response = {
+                "total":  total,
+                "records":  json.loads(json.dumps([entity.to_dict() for entity in entities]))
+            }
+
+            return self.json_data(get_success_reponse(response=response))
+
+        except Exception, e:
+            errors = [str(e)]
+
+            message = "class: %s, method: %s" % (self.__class__.__name__, inspect.stack()[0][3])
+
+            audit = Audit()
+            audit.populate(
+                user_email=users.get_current_user().email(),
+                error=str(e),
+                message=message
+            )
+            AuditService.AuditInstance.save(audit)
+
+            return self.json_data(get_fail_response(errors))
 
 class CustomerServiceAddressHandler(BaseHandler):
 
@@ -1707,7 +1784,7 @@ class SiteHandler(BaseHandler):
                 longitude=longitude
             )
 
-            if id is not None:
+            if id:
                 site.key = ndb.Key(urlsafe=id)
 
             site = SiteService.SiteInstance.save(site)
@@ -1772,6 +1849,8 @@ class ServiceOrderHandler(BaseHandler):
             data = json.loads(self.request.body)
             # logging.warning(data)
 
+            print("inside service order handler \n")
+
             id = data.get('id')
             source_system = data.get('source_system_id')
             customer_key = data.get('customer_key')
@@ -1793,6 +1872,8 @@ class ServiceOrderHandler(BaseHandler):
             asset_size = data.get('asset_size')
             failure_reason = data.get('failure_reason')
 
+            print("finished asssignment")
+
             service_order = ServiceOrder()
 
             if state is None:
@@ -1813,6 +1894,7 @@ class ServiceOrderHandler(BaseHandler):
             if service_date is not None:
                 service_date = datetime.strptime(service_date, "%m/%d/%Y %H:%M:%S")
 
+            print("about to populate")
             service_order.populate(
                 company_key=ndb.Key(urlsafe=company_key),
                 customer_account_id=customer_account_id,
@@ -1828,10 +1910,12 @@ class ServiceOrderHandler(BaseHandler):
                 site_key=ndb.Key(urlsafe=site_key),
                 state=state,
 
-                # active=json.loads(row[8].lower()) if row[8] is not None else True,
             )
 
-            if id is not None:
+            print("after order populate \n")
+
+            if id:
+                print("inside the id assignment")
                 service_order.key = ndb.Key(urlsafe=id)
 
             service_order = ServiceOrderService.ServiceOrderInstance.save(service_order)
@@ -2457,6 +2541,8 @@ class RouteHandler(BaseHandler):
             logger.warning(date)
 
             route = Route()
+            if driver_key == "":
+                driver_key = None
 
             if company_key is not None:
                 company_key = ndb.Key(urlsafe=company_key)
@@ -2469,7 +2555,7 @@ class RouteHandler(BaseHandler):
 
             route.populate(
                 company_key=company_key,
-                date=datetime.strptime(date, "%m/%d/%y"),
+                date=datetime.strptime(date, "%m/%d/%Y"),
                 driver_key=driver_key,
                 total_distance=total_distance,
                 total_time=total_time,
@@ -2768,11 +2854,13 @@ class RouteItemHandler(BaseHandler):
         try:
             from services import RouteItemService
             from models import RouteItem
-            logging.warning("inside routeitemget")
+            logging.warning("inside route item get")
             logging.warning(self)
             # Pagination
             page = self.request.get('page')
             page_size = self.request.get('page_size')
+
+            print(self)
             # Filters
             filters = {}
             filters["active"] = self.request.get('active')
@@ -2780,8 +2868,8 @@ class RouteItemHandler(BaseHandler):
 
             entities, total = RouteItemService.RouteItemInstance.get_all(page, page_size, filters)
 
-            # print("total route items: %s"%total)
-            # print(entities)
+            print("total route items: %s"%total)
+            print(entities)
             response = {
                 "total": total,
                 "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))

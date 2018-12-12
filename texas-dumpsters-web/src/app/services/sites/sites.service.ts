@@ -41,34 +41,7 @@ export class SitesService extends BaseService{
       .catch(this.handleError);
   }
 
-// //Session storage version
-//   getAllSites(overwrite,pagingInfo):Promise<string> {
-//     var key=this.authService.getCurrentUser().email+'-sites';
-//       if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
-//     //super.showSpinner();
-//     var params='';
-//     if (!isNullOrUndefined(pagingInfo)){
-//       params=super.getPagingInfoAsURLParams(params,pagingInfo).toString();
-//     }
-//
-//     return this.http.get(GET_ALL_SITE_URL + params).toPromise()
-//       .then(response => {
-//         super.hideSpinner();
-//         var res=response.json();
-//         if (res.status===SUCCESS){
-//           main_response= super.parsePaginationResponse(res,Site);
-//           sessionStorage.setItem(key,main_response.records);
-//           return main_response.records;
-//         }else{
-//
-//           return [];
-//         }})
-//       .catch(this.handleError);
-//     }else{
-//           console.log("Sites local storage");
-//           return sessionStorage.getItem(key);
-//     }
-//   }
+
 
 
 	  /**
@@ -138,6 +111,7 @@ export class SitesService extends BaseService{
       .then(response => {
 				super.hideSpinner();
         var res=response.json();
+        console.log(res);
         return res;
       })
       .catch(err => console.log('error: %s', err));

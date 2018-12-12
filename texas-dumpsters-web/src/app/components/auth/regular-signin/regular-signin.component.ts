@@ -37,16 +37,8 @@ export class RegularSigninComponent extends BaseComponent implements OnInit {
 
   ngOnInit() {
     super.ngOnInit();
-    this.openInitialPage();
   }
 
-  openInitialPage() {
-    this.authService.getUserProfile().then(user => {
-      if (user != null) {
-        window.location.href = (user.roles.indexOf(this.ROLE_NAMES.DRIVER)) > -1 ? '/management/routes' : '/';
-      }
-    });
-  }
   /*Name : singIn function*/
   /*Date : 12/20/2016 */
   /*Description : function to make the singin
@@ -64,13 +56,9 @@ export class RegularSigninComponent extends BaseComponent implements OnInit {
   private doSignIn(email:string,password:string){
     // debugger;
     console.log("doing the sign in");
-    this.authService.signIn(email,password).then(signedIn => {
-      if (signedIn){
-        // We need to reload the entire page in order to recreate the menu properly
-        this.openInitialPage();
-      } else {
-        this.valid.error = true;
-        this.valid.errorMess = "The username or password are incorrect";
+    this.authService.signIn(email,password).then(user=> {
+      if(user!=null){
+        window.location.href = (user.roles.indexOf(this.ROLE_NAMES.DRIVER)) > -1 ? '/management/routes' : '/dashboard';
       }
     });
   }

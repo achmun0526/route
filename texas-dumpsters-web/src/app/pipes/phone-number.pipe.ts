@@ -6,7 +6,7 @@ const PADDING = "000000";
   name: 'phoneNumber'
 })
 export class PhoneNumberPipe implements PipeTransform {
-	
+
   private separator: string;
 	replace;
 
@@ -15,7 +15,6 @@ export class PhoneNumberPipe implements PipeTransform {
   }
 
   transform(value, fractionSize: number = 2): string {
-		 
 		let [ integer, fraction = "" ] = (value || "").toString().split(".");
 		integer = integer.replace(/\D/g, "");
 		value = integer;
@@ -27,16 +26,22 @@ export class PhoneNumberPipe implements PipeTransform {
 		var result = "";
 		if(value.length > 10){
 			result = "(" + one + ")" + "-" + two + "-" + three + " ext " + four;
-		}
-		else{
+		}else if(value.length<=10 && value.length>6){
 			result = "(" + one + ")" + "-" + two + "-" + three ;
-		}
-		if(result == "()--" || result == "()-- ext "){
-			result = "";	
+		}else if(value.length>3 && value.length<=6){
+      result = "(" + one + ")" + "-" + two;
+    }else if(value.length==3){
+      result = "(" + one + ")";
+    }else{
+      result="("+one;
+    }
+
+		if(result == "()--" || result == "()-- ext " || value.length==0){
+			result = "";
 			return result;
 		}else{
 			return result;
 		}
-		
+
   }
 }

@@ -90,6 +90,7 @@ export const GET_ALL_CUSTOMER_URL= SECURE_END_POINT+'/customer';
 export const ADD_ADDRESS_TO_CUSTOMER_URL= SECURE_END_POINT+'/customer_service_address';
 export const DELETE_ADDRESS_TO_CUSTOMER_URL= SECURE_END_POINT+'/customer_service_address';
 export const GET_ALL_ADDRESS_FOR_CUSTOMER_URL= SECURE_END_POINT+'/customer_service_address?customer=';
+export const CHAR_QUERY_CUSTOMER = SECURE_END_POINT+'/customer_char_query';
 
 /**--------------------SITES SERVICES URLs-----------------------------------------------------*/
 export const ADD_SITE_URL= SECURE_END_POINT+'/site';

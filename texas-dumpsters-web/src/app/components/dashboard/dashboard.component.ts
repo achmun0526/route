@@ -82,6 +82,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   service_detail_info:any;
   private firstLoad = true;
   private firstLoadOrders = true;
+  private errorThrown;
 
   public purposeServiceList: KeyValueEntity[] = [];
   public orderStateList: KeyValueEntity[] = [];
@@ -131,7 +132,7 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   getAllDrivers2() {
-    console.log("Inside get all drivers2")
+    console.log("Inside get all drivers2");
     this.driversService.getDrivers(true,null).then(res => {
       this.driver_list2=JSON.parse(res);
       Styles.fixDropDownHeigh('smallDropdown', 5);
@@ -139,8 +140,21 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   driverChange(route){
-    console.log("updating the driver info")
-    this.routesService.saveRoute(route);
+    if (route.driver_key == '') {
+      this.routesService.saveRoute(route);
+    } else {
+      this.routesService.getRoutesByCompanyOrDriverOrVehicle(this.pageInfo, null, route.driver_key, null, route.date, route.date).then(res => {
+        if (res.length == 0) {
+          console.log("Okay driver can be added to the route!");
+          this.routesService.saveRoute(route);
+        } else {
+          this.errorThrown = "The selected driver already has a route for that day. Please remove them from the other route before trying to add them to a new one.";
+          this.openErrorModal();
+        /** This is to revert the driver back to the original one. **/
+          this.filterRoutes();
+        }
+      })
+    }
   }
 
   getAllVehicles() {
@@ -225,8 +239,6 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   filterRoutes() {
-    console.log("=================================================");
-    console.log("in filterRoutes");
     let begining_date = Utils.formattedString2Date(this.startDate, 'MM-DD-YYYY');
     let finish_date = Utils.formattedString2Date(this.endDate, 'MM-DD-YYYY');
     if ((finish_date.getTime() >= begining_date.getTime())) {
@@ -237,8 +249,6 @@ export class DashboardComponent extends BaseComponent implements OnInit {
   }
 
   loadRoutes() {
-    console.log("=================================================");
-    console.log("in loadRoutes")
     let f_startDate = null;
     let f_endDate = null;
 

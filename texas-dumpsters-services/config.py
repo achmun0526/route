@@ -6,8 +6,10 @@ if not APP_ID:
 CORS_APPROVED = [
     'http://localhost:4200',
     'http://localhost:8000',
+    'http://localhost:8080',
     'https://localhost:8080',
-    'https://ropromo-214500.appspot.com/pricing',
+    'https://texas-dumpsters-production.appspot.com',
+    'https://texas-dumpsters-development.appspot.com'
     ]
 
 NOREPLY_EMAIL = 'noreply@%s.appspotmail.com' % APP_ID
@@ -46,7 +48,7 @@ IOS_CLIENT_ID = '767088802341-lcq4sqio8lbcecovpsa9q5tldupgdaql.apps.googleuserco
 
 
 #### PROD CONFIGURATION
-#VALID_AUTHENTICATION = True
+VALID_AUTHENTICATION = True
 
 #'''Mobile Api Settings'''
 #WEB_CLIENT_ID = '718296751806-fntcnd4n2qugnn4nlsdipv3lrak7ucpb.apps.googleusercontent.com'

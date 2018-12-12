@@ -54,7 +54,7 @@
 			<div style="float: right;">
 
 				<a materialize="dropdown" class="waves-effect waves-light indigo darken-3" style="top: -1px;min-width: 200px; text-align: right;" data-activates='dropdown2' >
-					<i *ngIf="authService.getCurrentUser().hasAdminRole()" class="material-icons right">keyboard_arrow_down</i>{{selectedCompany.name}}
+					<i *ngIf="authService.getCurrentUser().hasAdminRole()" (click)="getCompanies()" class="material-icons right">keyboard_arrow_down</i>{{selectedCompany.name}}
 				</a>
 				<ul *ngIf="authService.getCurrentUser().hasAdminRole()" id='dropdown2' class='dropdown-content'>
 				 <li *ngFor="let item of companiesList" (click)="changeSelectedCompany(item)" class="smallDropDownItem"><a>{{item.name}}</a></li>

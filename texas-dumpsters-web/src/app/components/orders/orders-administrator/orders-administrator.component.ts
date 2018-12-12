@@ -109,7 +109,10 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
     }
     console.log("updating orders inside the orders-administrator")
     this.ordersService.getOrdersByCustomersAndSitesAndDate(filters,this.date.date,this.date.date ,null,overwrite).then(res =>{
-        this.ordersList = JSON.parse(res);
+        console.log("inside the orders administrator");
+        console.log(res);
+        this.ordersList = res['response']['records'];
+        console.log(this.ordersList);
         this.ordersDisplayList=this.ordersList.slice(0,10);
         this.totalOrders = this.ordersList.length;
         for(let i=0;i<this.ordersDisplayList.length;i++){
@@ -250,7 +253,7 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
   openAddOrderModal(){
     setTimeout(() => {
       this.addOrderModal.emit({action:'modal',params:['open']});
-    }, 350);
+    }, 700);
   }
 
   closeAddOrderModal(){

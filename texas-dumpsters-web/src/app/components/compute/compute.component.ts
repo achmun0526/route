@@ -202,11 +202,11 @@ compute() {
           }
           })
         .catch(
-        err => console.log('error: %s', err);
+        err => {console.log('error: %s', err);
             this.errorThrown = "The response did not go through correctly. Please try again";
             $(".spinnerImg").hide();
             this.openErrorModal();
-        );
+        });
     } else {
       let Truck_Value = {};
       Truck_Value['truck_num'] = parseInt(this.num_of_trucks);
@@ -236,11 +236,11 @@ compute() {
               this.update_page(body)
             }
           })
-        .catch(err => console.log('error: %s', err);
+        .catch(err => {console.log('error: %s', err);
             this.errorThrown = "The response did not go through correctly. Please try again";
             $(".spinnerImg").hide();
             this.openErrorModal();
-        );
+        });
 
     }
 }

@@ -68,7 +68,6 @@ export class AdministratorRouteComponent extends BaseComponent implements OnInit
   checkUserRole() {
   /** Admin and dispatcher should be able to select a driver and a date, and see the available routes.
   Drivers should be able to see their personal routes. **/
-    console.log("in checkUserRole");
     if(this.currentUser == null) {
       this.currentUser = this.authService.getCurrentUser();
       this.userRole = this.currentUser["roles"];
@@ -94,7 +93,6 @@ export class AdministratorRouteComponent extends BaseComponent implements OnInit
 
   /** Loads routes for the user/driver that is currently logged in. **/
   loadDriverRoutes() {
-    console.log("in loadDriverRoutes");
     this.routesService.getRouteByUser(this.date).then(route => {
       this.selectedRoute = route;
       this.routesService.getRouteItemsByRoute(route.id).then((response: RouteItem[]) => {
@@ -117,15 +115,12 @@ export class AdministratorRouteComponent extends BaseComponent implements OnInit
   }
   /** Updates the routes on the page when the driver is changed in the dropdown. **/
   driverChange(driver){
-    console.log("loading driver routes");
   /** Clear the previous routeItems. **/
     this.routeItemsList = [];
     this.totalRouteItems = 0;
     this.currentDriver = driver;
-    console.log(driver);
     this.routesService.getRoutesByCompanyOrDriverOrVehicle(this.pageInfo, null, driver, null, this.date, this.date).then(routes => {
       this.driverRoutes = routes;
-      console.log(routes);
       for(let route of this.driverRoutes) {
         this.routesService.getRouteItemsByRoute(route.id).then((response: RouteItem[]) => {
           if(response == null) {

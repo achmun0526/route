@@ -15,38 +15,13 @@ export class CompaniesService extends BaseService{
 		super();
 	}
 
-	/**
-	 * This method calls the server in order to get list of companies
-	 *
-	 *
-	 * */
-	// getCompaniesByUser(pagingInfo):Promise<any> {
-	// 	//super.showSpinner();
-	// 	var params=super.getPagingInfoAsURLParams('',pagingInfo);
-	// 	if (!isNullOrUndefined(this.authService.getCurrentUser())){
-  //     params=super.getFilterAsUrlParams(params,{user:this.authService.getCurrentUser().user_key});
-  //   }
-  //   console.log("(CompaniesService.getCompaniesByUser) Logging the request url");
-  //   console.log(GET_ALL_COMPANIES_URL + params);
-  //   return this.http.get(GET_ALL_COMPANIES_URL + params).toPromise()
-  //     .then(response => {
-  //       console.log(response);
-	// 			super.hideSpinner();
-  //       var res=response.json();
-  //       var main_response= super.parsePaginationResponse(res, Company);
-  //       return Promise.resolve(JSON.stringify(main_response.records));
-  //       })
-  //     .catch(err=>console.log("getCompaniesByUser Error: %s", err));
-  // }
 
   getCompaniesByUser(pagingInfo):Promise<any> {
-		var params=super.getPagingInfoAsURLParams('',pagingInfo);
-		if (!isNullOrUndefined(this.authService.getCurrentUser())){
-      params=super.getFilterAsUrlParams(params,{user:this.authService.getCurrentUser().id});
-    }
+		let user = this.authService.getCurrentUser();
+    var params='user='+user.user_key;
     console.log("(CompaniesService.getCompaniesByUser) Logging the request url");
-    console.log(GET_ALL_COMPANIES_URL + params);
-    return this.http.get(GET_ALL_COMPANIES_URL + params).toPromise()
+    console.log(GET_ALL_USER_FOR_COMPANY_URL + params);
+    return this.http.get(GET_ALL_USER_FOR_COMPANY_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         console.log(response);

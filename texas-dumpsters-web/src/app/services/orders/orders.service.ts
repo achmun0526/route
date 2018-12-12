@@ -186,7 +186,7 @@ export class OrdersService extends BaseService {
   }
   }
 
-  getOrdersByCustomersAndSitesAndDate(filters, startDate, endDate, pagingInfo,overwrite): Promise<any> {
+  getOrdersByCustomersAndSitesAndDate(filters, startDate, endDate, pagingInfo,overwrite):Promise<string> {
     super.showSpinner();
 
     var params = '?company_key=' + this.authService.getCurrentSelectedCompany().id;
@@ -205,18 +205,20 @@ export class OrdersService extends BaseService {
     return this.http.get(SERVICE_ORDER_URL + params).toPromise()
       .then(response => {
           super.hideSpinner();
-          console.log(res);
           var res = response.json();
-          var main_response= super.parsePaginationResponse(res, Order);
-          sessionStorage.setItem(key,JSON.stringify(main_response.records));
-          return Promise.resolve(JSON.stringify(main_response.records));
+          let data = res.records;
+          sessionStorage.setItem(key,JSON.stringify(data));
+          console.log("inside service order response");
+          console.log(res);
+          return res;
          })
       .catch(err=>console.log("error: %s",err));
     }else{
       console.log("Sites local storage");
       super.hideSpinner();
-      return Promise.resolve(sessionStorage.getItem(key));
-  }
+      let data = sessionStorage.getItem(key)
+      return JSON.parse(data);
+    }
   }
 
   /**
@@ -266,7 +268,6 @@ export class OrdersService extends BaseService {
    *
    *
    * */
-
 
   saveOrder(orderData): Promise<any> {
     // debugger

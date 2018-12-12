@@ -29,9 +29,6 @@ export class AppComponent {
 
   ngOnInit(): void {
     debugger
-    this.authService.getUserProfile().then(response =>{
-      if (response!=null){
-
 				this.loggedUser = this.authService.getCurrentUser();
 
 				if ( !isNullOrUndefined(this.loggedUser) ){
@@ -46,10 +43,7 @@ export class AppComponent {
 						this.authService.saveCurrentSelectedCompany(this.selectedCompany, true);
 					}
 				}
-      }
       this.menuService = this.authService.isUserSignedIn();
-    })
-    .catch(err => console.log('Get User Profile Error: %s', err));
   }
 
 	openMenu = false;
@@ -64,10 +58,13 @@ export class AppComponent {
 
 	/** get company id **/
 	getCompanies(){
-		this.companiesService.getCompaniesByUser(null).then(res=>{
+    debugger
+    console.log("INDIDE GET COMPANIES IN APP COMPONENET");
+    console.log()
+		this.companiesService.getAllCompanies(null).then(res=>{
       console.log("Logging the response");
       console.log(res);
-			this.companiesList = JSON.parse(res);
+			this.companiesList = res.records;
       console.log(this.companiesList);
       if (this.companiesList.length>0){
 				this.authService.saveCurrentSelectedCompany(this.companiesList[0],false);
@@ -76,6 +73,22 @@ export class AppComponent {
 			}
 		})
     .catch(err => console.log('error: %s', err));
+
+
+    // console.log("INDIDE GET COMPANIES IN APP COMPONENET");
+    // console.log()
+		// this.companiesService.getCompaniesByUser(null).then(res=>{
+    //   console.log("Logging the response");
+    //   console.log(res);
+		// 	this.companiesList = JSON.parse(res);
+    //   console.log(this.companiesList);
+    //   if (this.companiesList.length>0){
+		// 		this.authService.saveCurrentSelectedCompany(this.companiesList[0],false);
+		// 		this.selectedCompany=this.authService.getCurrentSelectedCompany();
+		// 		this.menuComponent.refreshLogoMenu();
+		// 	}
+		// })
+    // .catch(err => console.log('error: %s', err));
 	}
 
 

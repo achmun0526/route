@@ -19,5 +19,5 @@ export class Customer extends ServerEntity{
 	billing_city: string = '';
 	id: string = '';
 	notes: string = '';
-	active:boolean; 
+	active:boolean;
 }
