@@ -37,7 +37,7 @@
 						<div class="col s12 m4 l3">Customer Address:</div>
 					</div>
 			</li>
-			<li *ngFor="let item of customersDisplayList" class="table">
+			<li *ngFor="let item of customersDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1'}; let i = index"  class="table">
 					<div class="row data-object">
 						<div class="col  s12 m4 l4">
 							<div class="tab_label">Customer Name :</div>
@@ -85,6 +85,13 @@
 <div id="addCustomerModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: false}]" [materializeActions]="addCustomerModal">
 	<app-save-customer (onSaveCompleted)="onCustomerCreated()" (onCancelAction)="onAddCancelled()"></app-save-customer>
 </div>
+
+<pagination-controls
+		(pageChange)="page = $event" id="1"
+		maxSize="5"
+		directionLinks="true"
+		autoHide="true">
+</pagination-controls>
 
 <!-- Edit customer modal -->
 <div id="editCustomerModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: false}]" [materializeActions]="editCustomerModal">

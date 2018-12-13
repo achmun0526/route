@@ -19,19 +19,27 @@
 			</li>
 		</ul>
 	</div>
-	<div *ngIf="totalCustomers>0" class="input-field col s12 m3 l3">
-		<select class="smallDropdown"
-				id="cutomerId"
-				name="cutomerId"
-				[(ngModel)]="customerSelectedId"
-				materialize="material_select"
-				(change)="changeCustomerFilter()"
-				[materializeSelectOptions]="typeFence">
-			<option value="">All customers</option>
-			<option *ngFor="let item of customersList;let i = index" [value]="item.id">{{item.customer_name}}</option>
-		</select>
-		<label data-error="wrong">Filter by Customer</label>
-	</div>
+	<div class="input-field col s12 m3 l3">
+          <input
+            id="customer_search_info"
+            type="text"
+            [(ngModel)]="customer_search_info"
+            class="validate"
+            (ngModelChange)="changePhone($event)"
+            pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+            appPhoneDirective
+            #ta
+            (blur)="customer_search_info=ta.value"
+            name="customer_search_info"
+            placeholder="Search Criteria"
+            >
+          <label for="customer_search_info">Search Critera</label>
+        </div>
+        <div class="col l1">
+            <a class="waves-effect search-button"
+            (click)=searchCustomerInfo()
+            ><i class="material-icons left">search</i></a>
+		</div>
 </div>
 
 <app-csv-file [entity]="'site'" (reloadData)="getSitesByCustomer(true)"></app-csv-file>
@@ -55,7 +63,7 @@
 		</div>
 	</li>
 
-	<li *ngFor="let item of siteDisplayList" class="table">
+	<li *ngFor="let item of siteDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1'}; let i = index" class="table">
 			<div class="row data-object">
 
 				<div class="col s12 m6 l2 hideOverFlow" title="{{item.site_name}}">
@@ -116,7 +124,7 @@
 	<h4 class="center">There are no Sites to list</h4>
 </div>
 
-<app-pagination *ngIf="totalSites>0" [totalObjects]="totalSites" [maxPaginationDisplay]="5" (pageChange)="changePage($event)"></app-pagination>
+<app-pagination *ngIf="siteList.length>0" [totalObjects]="siteList.length" [maxPaginationDisplay]="2" (pageChange)="changePage($event)"></app-pagination>
 
 <!-- Add site modal -->
 <div id="addSiteModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="addSiteModal">
@@ -127,6 +135,13 @@
 <div *ngIf="siteToEdit" id="editSiteModal" class="modal modal-fixed-footer" materialize="modal" [materializeParams]="[{dismissible: true}]" [materializeActions]="editSiteModal">
 	<app-save-site [siteToEdit]="siteToEdit" (onSaveCompleted)="onSiteEdited()" (onCancelAction)="onEditCancelled()"></app-save-site>
 </div>
+<pagination-controls
+		(pageChange)="page = $event" id="1"
+		maxSize="5"
+		directionLinks="true"
+		autoHide="true">
+</pagination-controls>
+
 
 <!-- delete sites toasts -->
 <a materialize [materializeParams]="['Site deleted successfully',4000]" [materializeActions]="deleteSiteToast"></a>

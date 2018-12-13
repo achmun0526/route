@@ -12,6 +12,7 @@ import { SitesService } from '../../../services/sites/sites.service';
 import { CompaniesService } from '../../../services/companies/companies.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { CustomerService} from "../../../services/customer/customer.service";
+import { Customer } from "../../../model/customer";
 import { Company } from "../../../model/company";
 import { Utils } from "../../../common/utils";
 
@@ -33,6 +34,12 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 	private customerSelectedId = "";
 	private csv;
 	private pageInfo = {page:1,page_size:PAGE_SIZE};
+	private filteredSites = []
+    private currentPage = 1
+    private numPerPage = 10
+    private maxSize = 5;
+    private customer_selected_index;
+    private customer_search_info;
 
 	// CSV modal
 	@ViewChild(CsvFileComponent) CSVModal:CsvFileComponent;
@@ -68,6 +75,7 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
     		custID = this.customerSelectedId
 			}
 		console.log("component call to get sites");
+		console.log(this.customerSelectedId,overwrite,custID)
     this.sitesService.getSitesByCustomer(overwrite,custID,null).then(res =>{
 				 console.log(res);
 				 this.siteList = JSON.parse(res);
@@ -148,6 +156,33 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 		this.editSiteModal.emit({action:'modal',params:['close']});
 	}
 
+    searchCustomerInfo(){
+        console.log("customer search info changed");
+        console.log(this.customer_search_info);
+        if (this.customer_search_info == "" || isNullOrUndefined(this.customer_search_info)) {
+            console.log("Inside If condition")
+            this.customerSelectedId = ""
+            this.getSitesByCustomer(false)
+        }
+        else
+        {
+            this.customerService.getCustomerByPhoneNumber(this.customer_search_info).then((response: Customer[]) => {
+            if (response == null) {
+                response = [];
+
+            }else{
+                console.log("Logging the customer list");
+                console.log(this.customersList);
+                this.customerSelectedId = response[0].id
+                this.getSitesByCustomer(false);
+            }
+            })
+        .catch(err => {
+            console.log("error: "+ err);
+        })
+        }
+    }
+
 	/********* Pagination ************/
 	changePage(page) {
       this.pageInfo.page = page+1;
@@ -165,5 +200,11 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 	addCVSfile(){
 		this.CSVModal.addCVSfile(this.csv);
 	}
+
+	//*change phone numeber model update *//
+    changePhone(ev){
+        this.customer_search_info = ev;
+
+    }
 
 }

@@ -14,6 +14,7 @@ import { LZStringModule, LZStringService } from 'ng-lz-string';
 import {SigninComponent} from './components/auth/signin/signin.component';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {Ng2PaginationModule} from 'ng2-pagination'; //importing ng2-pagination
 
 // Services
 import {AuthGuard} from './services/auth/auth.guard.service';
@@ -98,6 +99,7 @@ import { SaveDriversComponent } from './components/drivers/save-drivers/save-dri
 import { ServiceDetailComponent } from './components/compute/service-detail/service-detail.component';
 import { SaveIncidentComponent } from './components/incidents/save-incident/save-incident.component';
 import { RegularSigninComponent } from './components/auth/regular-signin/regular-signin.component';
+
 
 const routes: Routes = [
   {path: '', component: DashboardComponent, canActivate: [AuthGuard], data: {title: 'Dashboard'}},
@@ -204,6 +206,7 @@ const routes: Routes = [
     MatFormFieldModule,
     FormsModule,
     RouterModule.forRoot(routes),
+    Ng2PaginationModule,
     NguiMapModule.forRoot({
         apiUrl: 'https://maps.google.com/maps/api/js?key=' + PROD_API_KEY
     }),
