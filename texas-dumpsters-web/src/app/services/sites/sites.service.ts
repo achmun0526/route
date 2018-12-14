@@ -35,7 +35,6 @@ export class SitesService extends BaseService{
         if (res.status===SUCCESS){
           return super.parsePaginationResponse(res,Site);
         }else{
-
           return [];
         }})
       .catch(this.handleError);

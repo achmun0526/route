@@ -23,6 +23,7 @@ export class CustomersComponent extends BaseComponent implements OnInit {
   private customersDisplayList=[];
 	private pageInfo = {page:1,page_size:PAGE_SIZE};
 	private csv;
+	private customer_search_info;
 
 	private customer:Customer = null;
 	private customerToEdit:Customer = null;
@@ -47,7 +48,7 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 		super.ngOnInit();
 		this.getCustomers(false);
 		this.csv.company_key = this.authService.getCurrentSelectedCompany().id;
-Styles.fixDropDownHeigh("smallDropdown", 5);
+        Styles.fixDropDownHeigh("smallDropdown", 5);
 	}
 
 	/**get customers**/
@@ -138,6 +139,30 @@ Styles.fixDropDownHeigh("smallDropdown", 5);
 
 	}
 
+	searchCustomerInfo(){
+        console.log("customer search info changed");
+        console.log(this.customer_search_info);
+        if (this.customer_search_info == "" || isNullOrUndefined(this.customer_search_info)) {
+            this.getCustomers(false);
+        }
+        else
+        {
+            this.customerService.getCustomerByPhoneNumber(this.customer_search_info).then((response: Customer[]) => {
+            if (response == null) {
+                response = [];
+		        this.getCustomers(false);
+            }else{
+                console.log("Logging the customer list");
+                console.log(this.customersDisplayList);
+                this.customersDisplayList = response
+            }
+            })
+        .catch(err => {
+            console.log("error: "+ err);
+        })
+        }
+    }
+
 
   	/*******   CSV  **********/
   	/** open modal to add a customer **/
@@ -150,7 +175,22 @@ Styles.fixDropDownHeigh("smallDropdown", 5);
     this.getCustomers(true);
   }
 
-
-
+  getAllCustomersWithPagination(event,page_size){
+  this.pageInfo = {page:event,page_size:page_size}
+        this.customerService.getAllCustomers(true,this.pageInfo).then(
+            response =>{
+                if(response == null) {
+                    console.log('Server Error');
+                } else {
+                    console.log("The response we got is ")
+                    console.log(response)
+                }
+            },
+            error =>{
+                console.log("error: "+ error);
+            }
+        );
+        return event;
+    }
 
 }

@@ -26,7 +26,7 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 	private siteToEdit:Site = null;
 
 	private siteList = [];
-  private siteDisplayList=[];
+    private siteDisplayList=[];
 	private customersList = [];
 	private totalCustomers = 0;
 	private totalSites = 0;
@@ -160,7 +160,6 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
         console.log("customer search info changed");
         console.log(this.customer_search_info);
         if (this.customer_search_info == "" || isNullOrUndefined(this.customer_search_info)) {
-            console.log("Inside If condition")
             this.customerSelectedId = ""
             this.getSitesByCustomer(false)
         }
@@ -201,10 +200,27 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 		this.CSVModal.addCVSfile(this.csv);
 	}
 
-	//*change phone numeber model update *//
+	//*change phone number model update *//
     changePhone(ev){
         this.customer_search_info = ev;
+    }
 
+    getSitesAllWithPagination(event,page_size){
+        this.pageInfo = {page:event,page_size:page_size}
+        this.sitesService.getAllSites(this.pageInfo).then(
+            response =>{
+                if(response == null) {
+                    console.log('Server Error');
+                } else {
+                    console.log("The response we got is ")
+                    console.log(response)
+                }
+            },
+            error =>{
+                console.log("error: "+ error);
+            }
+        );
+        return event;
     }
 
 }

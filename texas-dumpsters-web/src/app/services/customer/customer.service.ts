@@ -26,6 +26,9 @@ export class CustomerService extends BaseService{
 
 getAllCustomers(overwrite,pageInfo):Promise<string> {
     var params='?company_key='+this.authService.getCurrentSelectedCompany().id;
+    if (!isNullOrUndefined(pageInfo)){
+      params=super.getPagingInfoAsURLParams(params,pageInfo).toString();
+    }
     console.log(params);
     return this.http.get(GET_ALL_CUSTOMER_URL + params).toPromise()
       .then(response => {

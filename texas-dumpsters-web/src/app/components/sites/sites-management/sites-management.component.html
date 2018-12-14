@@ -136,7 +136,8 @@
 	<app-save-site [siteToEdit]="siteToEdit" (onSaveCompleted)="onSiteEdited()" (onCancelAction)="onEditCancelled()"></app-save-site>
 </div>
 <pagination-controls
-		(pageChange)="page = $event" id="1"
+		(pageChange)="page = getSitesAllWithPagination($event,10)"
+		id="1"
 		maxSize="5"
 		directionLinks="true"
 		autoHide="true">

@@ -1812,6 +1812,7 @@ class SiteHandler(BaseHandler):
 
             entities, total = SiteService.SiteInstance.get_all(page, page_size, filters)
 
+
             response = {
                 "total": total,
                 "records": json.loads(json.dumps([entity.to_dict() for entity in entities]))

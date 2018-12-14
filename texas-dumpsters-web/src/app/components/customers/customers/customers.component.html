@@ -1,5 +1,5 @@
-<div class="row" style="z-index:5000">
-	<div class="col s12">
+<div class="row">
+	<div class="col s12 m6 l2">
 		<ul>
 			<li class="btn-list">
 				<a class="btn-floating red" (click)="openAddCustomerModal()">
@@ -10,7 +10,7 @@
 				</a>
 			</li>
 			<li class="btn-list">
-				<a class="btn-floating green" (click)="addCVSfile(getCustomers) ">
+				<a class="btn-floating green" (click)="addCVSfile(getCustomers)">
 					<app-icon-tooltip
 						[iconName]="'publish'"
 						[tooltipText]="'CSV Customer'">
@@ -19,6 +19,27 @@
 			</li>
 		</ul>
 	</div>
+	<div class="input-field col s12 m3 l3">
+          <input
+            id="customer_search_info"
+            type="text"
+            [(ngModel)]="customer_search_info"
+            class="validate"
+            (ngModelChange)="changePhone($event)"
+            pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
+            appPhoneDirective
+            #ta
+            (blur)="customer_search_info=ta.value"
+            name="customer_search_info"
+            placeholder="Search Criteria"
+            >
+          <label for="customer_search_info">Search Critera</label>
+        </div>
+        <div class="col l1">
+            <a class="waves-effect search-button"
+            (click)=searchCustomerInfo()
+            ><i class="material-icons left">search</i></a>
+		</div>
 </div>
 
 <app-csv-file [entity]="'customer'" (reloadData)="getCustomers(true)"></app-csv-file>
@@ -87,7 +108,8 @@
 </div>
 
 <pagination-controls
-		(pageChange)="page = $event" id="1"
+		(pageChange)="page = getAllCustomersWithPagination($event,10)"
+		id="1"
 		maxSize="5"
 		directionLinks="true"
 		autoHide="true">
