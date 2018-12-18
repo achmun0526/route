@@ -33,7 +33,8 @@ export class SitesService extends BaseService{
         super.hideSpinner();
         var res=response.json();
         if (res.status===SUCCESS){
-          return super.parsePaginationResponse(res,Site);
+          var formating_response = super.parsePaginationResponse(res,Site)
+          return formating_response;
         }else{
           return [];
         }})
@@ -81,7 +82,7 @@ export class SitesService extends BaseService{
     var key=this.authService.getCurrentUser().email+'-sitesByCustomer'+params;
     if(isNullOrUndefined(sessionStorage.getItem(key)) || overwrite){
 		params=super.getPagingInfoAsURLParams(params, pagingInfo).toString();
-    return this.http.get(GET_SITES_BY_CUSTOMER_URL + params).toPromise()
+        return this.http.get(GET_SITES_BY_CUSTOMER_URL + params).toPromise()
       .then(response => {
         super.hideSpinner();
         var res=response.json();
@@ -96,7 +97,6 @@ export class SitesService extends BaseService{
        return Promise.resolve(sessionStorage.getItem(key));
       }
   }
-
 
 
 	/**

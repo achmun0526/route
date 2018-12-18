@@ -121,8 +121,8 @@ export class SaveSiteComponent extends BaseComponent implements OnInit {
 		//for the refresh the lenth needs to be reset to zero
 		this.totalCustomers = 0;
 		this.customerService.getAllCustomers(false,null).then(res =>{
-			this.customerList = JSON.parse(res);
-			this.totalCustomers = this.customerList.length;
+			this.customerList = JSON.parse(res).records;
+			this.totalCustomers = JSON.parse(res).total_records;
 			Styles.fixDropDownHeigh("smallDropdown", 5);
 		});
 	}

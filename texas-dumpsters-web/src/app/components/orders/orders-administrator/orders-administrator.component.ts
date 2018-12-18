@@ -91,7 +91,7 @@ export class OrdersAdministratorComponent extends BaseComponent implements OnIni
 
   getAllCustomersForCompany(overwrite){
     this.customerService.getAllCustomers(overwrite,this.pageInfo).then(res =>{
-      this.customersList = JSON.parse(res);
+      this.customersList = JSON.parse(res).records;
       Styles.fixDropDownHeigh("smallDropdown", 5);
     });
   }

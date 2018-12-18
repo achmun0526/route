@@ -25,7 +25,6 @@
             type="text"
             [(ngModel)]="customer_search_info"
             class="validate"
-            (ngModelChange)="changePhone($event)"
             pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}?([\s+a-zA-Z0-9_]{0,11}){0,1}$"
             appPhoneDirective
             #ta
@@ -58,7 +57,7 @@
 						<div class="col s12 m4 l3">Customer Address:</div>
 					</div>
 			</li>
-			<li *ngFor="let item of customersDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1'}; let i = index"  class="table">
+			<li *ngFor="let item of customersDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1',totalItems: totalCustomers}; let i = index"  class="table">
 					<div class="row data-object">
 						<div class="col  s12 m4 l4">
 							<div class="tab_label">Customer Name :</div>
@@ -108,7 +107,7 @@
 </div>
 
 <pagination-controls
-		(pageChange)="page = getAllCustomersWithPagination($event,10)"
+		(pageChange)="page = getAllCustomersWithPagination(true,$event,10)"
 		id="1"
 		maxSize="5"
 		directionLinks="true"

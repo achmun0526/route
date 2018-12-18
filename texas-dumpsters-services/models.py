@@ -14,6 +14,7 @@ from google.appengine.ext.blobstore.blobstore import BlobInfo
 from google.appengine.ext.ndb import msgprop
 from protorpc import messages
 from webapp2_extras import security
+from google.appengine.ext.ndb import stats
 
 logger = logging.getLogger()
 
@@ -783,7 +784,9 @@ class Customer(BaseModel):
             offset = int(page_size) * (int(page) - 1)
             limit = int(page_size)
             entities = query.order(-cls.created_at).fetch(offset=offset, limit=limit)
-            total = query.count()
+            # total = stats.GlobalStat.all().get()
+            total = stats.KindStat.query().fetch()[2].count
+            logger.info('Total entities stored: %s', total)
 
         return entities, total
 
@@ -973,7 +976,8 @@ class Site(BaseModel):
             offset = int(page_size) * (int(page) - 1)
             limit = int(page_size)
             entities = query.order(-cls.created_at).fetch(offset=offset, limit=limit)
-            total = query.count()
+            total = stats.KindStat.query().fetch()[8].count
+            logger.info("the total number of sites are : %s",total)
 
         return entities, total
 

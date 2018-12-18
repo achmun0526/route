@@ -30,7 +30,7 @@
             appPhoneDirective
             #ta
             (blur)="customer_search_info=ta.value"
-            name="customer_search_info"
+            name="customer_search_info">
             placeholder="Search Criteria"
             >
           <label for="customer_search_info">Search Critera</label>
@@ -63,7 +63,7 @@
 		</div>
 	</li>
 
-	<li *ngFor="let item of siteDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1'}; let i = index" class="table">
+	<li *ngFor="let item of siteDisplayList | paginate: {itemsPerPage: 10, currentPage:page, id: '1',totalItems: totalSites}; let i = index" class="table">
 			<div class="row data-object">
 
 				<div class="col s12 m6 l2 hideOverFlow" title="{{item.site_name}}">

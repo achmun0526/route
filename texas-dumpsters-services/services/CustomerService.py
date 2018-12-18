@@ -33,7 +33,6 @@ class CustomerInstance:
                 )
 
                 CustomerServiceAddressService.CustomerServiceAddressInstance.save(customerServiceAddress)
-
         else:
             current = Customer.get(entity.key.urlsafe())
             if current is not None:

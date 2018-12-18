@@ -27,6 +27,8 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 
 	private customer:Customer = null;
 	private customerToEdit:Customer = null;
+	private recordsList;
+	private totalCount;
 
 	// Modals
 	private addCustomerModal = new EventEmitter<string|MaterializeAction>();
@@ -46,26 +48,10 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 
 	ngOnInit() {
 		super.ngOnInit();
-		this.getCustomers(false);
+		this.getAllCustomersWithPagination(false,1,10);
 		this.csv.company_key = this.authService.getCurrentSelectedCompany().id;
         Styles.fixDropDownHeigh("smallDropdown", 5);
 	}
-
-	/**get customers**/
-
-  getCustomers(overwrite){
-    console.log(overwrite);
-    console.log("component call to get customers");
-    this.customerService.getAllCustomers(overwrite,null).then(res =>{
-      console.log(res);
-      this.customersList = JSON.parse(res);
-      this.totalCustomers=this.customersList.length;
-      this.customersDisplayList=this.customersList.slice(0,10);
-      console.log("total customer: " + this.totalCustomers);
-    })
-    .catch(error=> console.log("error"+error));
-  }
-
 
 	/** open modal to add a customer **/
 	openAddCustomerModal(){
@@ -77,7 +63,6 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 	onCustomerCreated(){
 		this.customer = new Customer();
 		this.addCustomerModal.emit({action:'modal',params:['close']});
-		this.getCustomers(true);
 	}
 	onAddCancelled(){
 		this.customer = new Customer();
@@ -98,7 +83,7 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 	onCustomerEdited(){
 		this.customerToEdit = null;
 		this.editCustomerModal.emit({action:'modal',params:['close']});
-		this.getCustomers(true);
+		this.getAllCustomersWithPagination(true,1,10);
 	}
 	onEditCancelled(){
 		this.customerToEdit = null;
@@ -117,7 +102,7 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 			if(res != null){
 				this.deleteCustomerToast.emit('toast');
 				this.pageInfo.page = 1;
-				this.getCustomers(true);
+				this.getAllCustomersWithPagination(true,1,10);
 			}else{
 				this.deleteCustomerToastError.emit('toast');
 			}
@@ -143,18 +128,19 @@ export class CustomersComponent extends BaseComponent implements OnInit {
         console.log("customer search info changed");
         console.log(this.customer_search_info);
         if (this.customer_search_info == "" || isNullOrUndefined(this.customer_search_info)) {
-            this.getCustomers(false);
+            this.getAllCustomersWithPagination(false,1,10);
         }
         else
         {
             this.customerService.getCustomerByPhoneNumber(this.customer_search_info).then((response: Customer[]) => {
             if (response == null) {
                 response = [];
-		        this.getCustomers(false);
+		        this.getAllCustomersWithPagination(false,1,10);
             }else{
                 console.log("Logging the customer list");
                 console.log(this.customersDisplayList);
                 this.customersDisplayList = response
+                this.totalCustomers = response.length
             }
             })
         .catch(err => {
@@ -172,18 +158,22 @@ export class CustomersComponent extends BaseComponent implements OnInit {
 	}
 
   reloadCustomerData(){
-    this.getCustomers(true);
+    this.getAllCustomersWithPagination(true,1,10);
   }
 
-  getAllCustomersWithPagination(event,page_size){
+  getAllCustomersWithPagination(overwrite,event,page_size){
   this.pageInfo = {page:event,page_size:page_size}
-        this.customerService.getAllCustomers(true,this.pageInfo).then(
+        this.customerService.getAllCustomers(overwrite,this.pageInfo).then(
             response =>{
                 if(response == null) {
                     console.log('Server Error');
                 } else {
-                    console.log("The response we got is ")
-                    console.log(response)
+                    this.recordsList = JSON.parse(response);
+                    console.log(this.recordsList)
+                    this.customersList = this.recordsList.records;
+                    this.totalCustomers=this.recordsList.total_records;
+                    this.customersDisplayList=this.recordsList.records;
+                    console.log("total customers: " + this.totalCustomers);
                 }
             },
             error =>{

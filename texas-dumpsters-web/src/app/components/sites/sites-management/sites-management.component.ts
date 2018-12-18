@@ -67,7 +67,6 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
 
 
   getSitesByCustomer(overwrite){
-			console.log(overwrite);
 			var custID;
     	if(this.customerSelectedId == "" || isNullOrUndefined(this.customerSelectedId)){
     		custID = null;
@@ -75,11 +74,11 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
     		custID = this.customerSelectedId
 			}
 		console.log("component call to get sites");
-		console.log(this.customerSelectedId,overwrite,custID)
-    this.sitesService.getSitesByCustomer(overwrite,custID,null).then(res =>{
+		console.log(custID)
+        this.sitesService.getSitesByCustomer(overwrite,custID,null).then(res =>{
 				 console.log(res);
 				 this.siteList = JSON.parse(res);
-         this.totalSites=this.siteList.length;
+                 this.totalSites=this.siteList.length;
 				 this.siteDisplayList=this.siteList.slice(0,10);
 				 console.log("total sites: " + this.totalSites);
        });
@@ -99,8 +98,8 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
   getCustomers(overwrite){
     debugger
     this.customerService.getAllCustomers(overwrite,null).then(res =>{
-          this.customersList = JSON.parse(res);
-          this.totalCustomers=this.customersList.length;
+          this.customersList = JSON.parse(res).records;
+          this.totalCustomers = JSON.parse(res).total_records;
           Styles.fixDropDownHeigh("smallDropdown", 5);
         });
   }
@@ -172,6 +171,7 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
             }else{
                 console.log("Logging the customer list");
                 console.log(this.customersList);
+                console.log(response)
                 this.customerSelectedId = response[0].id
                 this.getSitesByCustomer(false);
             }
@@ -212,8 +212,11 @@ export class SitesManagementComponent extends BaseComponent implements OnInit {
                 if(response == null) {
                     console.log('Server Error');
                 } else {
-                    console.log("The response we got is ")
+                    console.log("FOR DEBUG")
                     console.log(response)
+                    //this.siteList = JSON.parse(response).records;
+                    this.totalSites=this.siteList.length;
+				    this.siteDisplayList=this.siteList;
                 }
             },
             error =>{

@@ -34,8 +34,8 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
       .then(response => {
           var res=response.json();
           console.log(res);
-            var main_response = super.parsePaginationResponse(res,Customer);
-            return JSON.stringify(main_response.records);
+          var main_response = super.parsePaginationResponse(res,Customer);
+          return JSON.stringify(main_response);
       })
       .catch(this.handleError);
 }
@@ -64,7 +64,9 @@ getAllCustomers(overwrite,pageInfo):Promise<string> {
     params+='&phone_number='+phone_number;
     return this.http.get(CHAR_QUERY_CUSTOMER + params).toPromise()
       .then(response => {
+        console.log("Printing the customer search response")
         let res =response.json();
+        console.log(response);
         let items: Customer[] = [];
         if (res.status===SUCCESS){
           items = res.response.records.map(rec => {
